@@ -2,7 +2,7 @@
 
 namespace Template.Models.ViewModels.Account
 {
-    public class RegisterViewModel : BaseViewModel<RegisterRequest>
+    public class RegisterViewModel : ViewModel<RegisterRequest>
     {
         #region Constructors
 

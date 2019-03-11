@@ -1,25 +1,41 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Template.Common.Notifications;
+using Template.Models;
 using Template.Models.ServiceModels;
 
 namespace Template.MVC.Controllers
 {
     public class BaseController : Controller
     {
+        #region Properties
+
+        public new ApplicationUser User
+        {
+            get
+            {
+                return new ApplicationUser(base.User);
+            }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public IActionResult RedirectToHome()
+        {
+            return RedirectToHome(string.Empty);
+        }
+
         public IActionResult RedirectToHome(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         public void AddFormErrors(IServiceResponse response)
@@ -44,5 +60,7 @@ namespace Template.MVC.Controllers
             notifications.AddRange(response.Notifications);
             TempData["Notifications"] = JsonConvert.SerializeObject(notifications);
         }
+
+        #endregion
     }
 }

@@ -8,7 +8,7 @@ BEGIN
    SELECT TOP 1
 		[U].[Id]
    FROM   [User] [U](NOLOCK)
-   WHERE  ([U].[Email] = @Email_Address
+   WHERE  ([U].[Email_Address] = @Email_Address
 		 OR [U].[Mobile_Number] = @Mobile_Number
 		 OR [U].[Username] = @Username)
 		AND [U].[Id] != ISNULL(@User_Id, 0)

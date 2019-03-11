@@ -41,10 +41,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new
-                    {
-                        Token = request.Token
-                    },
+                    parameters: new DynamicParameters(request),
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,

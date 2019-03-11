@@ -64,7 +64,7 @@ namespace Template.MVC
 
             // add identity
             services.AddIdentity<User, Role>()
-                .AddSignInManager()
+                .AddSignInManager<AuthenticationManager>()
                 .AddDefaultTokenProviders();
 
             // Configure Identity options and password complexity here
@@ -85,7 +85,7 @@ namespace Template.MVC
                 options.Lockout.MaxFailedAccessAttempts = 10;
             });
 
-            services.ConfigureApplicationCookie(options => options.LoginPath = "/login");
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Account/Login");
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policies.ViewAllUsersPolicy, policy => policy.RequireClaim(ClaimConstants.Permission, ApplicationPermissions.ViewUsers));

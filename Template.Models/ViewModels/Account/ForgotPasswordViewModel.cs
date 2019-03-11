@@ -2,7 +2,7 @@
 
 namespace Template.Models.ViewModels.Account
 {
-    public class ForgotPasswordViewModel : BaseViewModel<ForgotPasswordRequest>
+    public class ForgotPasswordViewModel : ViewModel<ForgotPasswordRequest>
     {
         #region Constructors
 

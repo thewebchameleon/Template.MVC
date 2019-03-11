@@ -5,7 +5,7 @@ BEGIN
    SELECT
 		[U].[Id],
 		[U].[Username],
-		[U].[Email],
+		[U].[Email_Address],
 		[U].[Registration_Confirmed],
 		[U].[Password_Hash],
 		[U].[Is_Locked_Out],

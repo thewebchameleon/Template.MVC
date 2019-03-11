@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Template.Models.ServiceModels;
+using Template.Models.ServiceModels.Account;
 using Template.Models.ViewModels.Account;
 using Template.Services.Contracts;
 
 namespace Template.MVC.Controllers
 {
+    //[Authorize]
     public class AccountController : BaseController
     {
         #region Instance Fields
@@ -89,6 +91,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Logout()
         {
             _accountService.Logout();
@@ -102,31 +105,72 @@ namespace Template.MVC.Controllers
             return View();
         }
 
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var result = await _accountService.ForgotPassword(request);
+        //        if (result.IsSuccessful)
+        //        {
+        //            // Don't reveal that the user does not exist or is not confirmed
+        //            return RedirectToAction(nameof(AccountController.ForgotPasswordConfirmation), "Account");
+        //        }
+        //    }
+
+        //    // If we got this far, something failed, redisplay form
+        //    return View(request);
+        //}
+
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public IActionResult ForgotPasswordConfirmation()
+        //{
+        //    return View();
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var viewModel = new ProfileViewModel();
+            var response = await _accountService.GetProfile(new GetProfileRequest()
+            {
+                UserId = User.UserId
+            });
+
+            viewModel.Request = new UpdateProfileRequest()
+            {
+                EmailAddress = response.EmailAddress,
+                FirstName = response.FirstName,
+                LastName = response.LastName,
+                MobileNumber = response.MobileNumber,
+                Username = response.Username
+            };
+
+            return View(viewModel);
+        }
+
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
+        public async Task<IActionResult> Profile(UpdateProfileRequest request)
         {
             if (ModelState.IsValid)
             {
-                var result = await _accountService.ForgotPassword(request);
-                if (result.IsSuccessful)
+                var response = await _accountService.UpdateProfile(request);
+                if (response.IsSuccessful)
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return RedirectToAction(nameof(AccountController.ForgotPasswordConfirmation), "Account");
+                    AddNotifications(response);
+                    return RedirectToHome();
                 }
+                AddFormErrors(response);
             }
 
             // If we got this far, something failed, redisplay form
-            return View(request);
+            return View(new ProfileViewModel(request));
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ForgotPasswordConfirmation()
-        {
-            return View();
-        }
 
         #region External Login
 

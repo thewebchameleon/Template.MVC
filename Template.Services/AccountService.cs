@@ -11,6 +11,7 @@ using Template.Infrastructure.Configuration;
 using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models.DomainModels;
 using Template.Models.ServiceModels;
+using Template.Models.ServiceModels.Account;
 using Template.Services.Contracts;
 
 namespace Template.Services
@@ -136,6 +137,32 @@ namespace Template.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<GetProfileResponse> GetProfile(GetProfileRequest request)
+        {
+            var users = await _entityCache.Users();
+            var user = users.FirstOrDefault(u => u.Id == request.UserId);
+
+            return new GetProfileResponse()
+            {
+                EmailAddress = user.Email_Address,
+                FirstName = user.First_Name,
+                LastName = user.Last_Name,
+                MobileNumber = user.Mobile_Number,
+                Username = user.Username
+            };
+        }
+
+        public async Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request)
+        {
+            var users = await _entityCache.Users();
+            var user = users.FirstOrDefault(u => u.Id == request.UserId);
+            
+            //todo: do work
+            
+            return new UpdateProfileResponse();
+        }
+
 
         //public async Task<ActivateAccountResponse> ActivateAccount(ActivateAccountRequest request, int userId)
         //{

@@ -2,7 +2,7 @@
 
 namespace Template.Models.ViewModels.Account
 {
-    public class LoginViewModel : BaseViewModel<LoginRequest>
+    public class LoginViewModel : ViewModel<LoginRequest>
     {
         #region Constructors
 

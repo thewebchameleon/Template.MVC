@@ -3,7 +3,7 @@ AS
      BEGIN
          SELECT [Id],
                 [Username],
-                [Email],
+                [Email_Address],
                 [Registration_Confirmed],
                 [First_Name],
                 [Last_Name],

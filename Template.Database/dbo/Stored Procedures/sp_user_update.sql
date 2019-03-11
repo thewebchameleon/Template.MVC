@@ -22,7 +22,7 @@ BEGIN
    UPDATE [User]
    SET
 		[Username] = @Username,
-		[Email] = @Email,
+		[Email_Address] = @Email,
 		[First_Name] = @FirstName,
 		[Last_Name] = @LastName,
 		[Mobile_Number] = @MobileNumber,

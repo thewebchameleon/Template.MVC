@@ -47,7 +47,7 @@ namespace Template.Infrastructure.Identity
                 var userId = await uow.UserRepo.CreateUser(new CreateUserRequest()
                 {
                     Username = user.Username,
-                    Email = user.Email_Address,
+                    Email_Address = user.Email_Address,
                     Registration_Confirmed = user.Registration_Confirmed,
                     First_Name = user.First_Name,
                     Last_Name = user.Last_Name,

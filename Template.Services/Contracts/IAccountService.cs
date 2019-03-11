@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Template.Models.ServiceModels;
+using Template.Models.ServiceModels.Account;
 
 namespace Template.Services.Contracts
 {
@@ -12,5 +13,9 @@ namespace Template.Services.Contracts
         void Logout();
 
         Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request);
+
+        Task<GetProfileResponse> GetProfile(GetProfileRequest request);
+
+        Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request);
     }
 }

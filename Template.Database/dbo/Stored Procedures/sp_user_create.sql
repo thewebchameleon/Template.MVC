@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[sp_user_create]
 	@Username					VARCHAR(256),
-	@Email						VARCHAR(256),
+	@Email_Address				VARCHAR(256),
 	@Registration_Confirmed     BIT,
 	@First_Name					VARCHAR(256),
 	@Last_Name					VARCHAR(256),
@@ -14,7 +14,7 @@ BEGIN
    INSERT INTO [User]
 	    (
 		[Username],
-		[Email],
+		[Email_Address],
 		[Registration_Confirmed],
 		[First_Name],
 		[Last_Name],
@@ -31,7 +31,7 @@ BEGIN
    VALUES
 	    (
 		@Username,
-		@Email,
+		@Email_Address,
 		@Registration_Confirmed,
 		@First_Name,
 		@Last_Name,
