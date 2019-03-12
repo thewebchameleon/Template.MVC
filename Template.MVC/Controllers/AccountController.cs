@@ -171,7 +171,6 @@ namespace Template.MVC.Controllers
             return View(new ProfileViewModel(request));
         }
 
-
         #region External Login
 
         //[HttpPost]

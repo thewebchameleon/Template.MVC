@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using Template.Models.DomainModels;
 
-namespace Template.Models.ViewModels.Admin
+namespace Template.Models.ServiceModels.Admin
 {
-    public class UserManagementViewModel
+    public class GetUserManagementResponse
     {
         public List<User> Users { get; set; }
 
-        public UserManagementViewModel()
+        public GetUserManagementResponse()
         {
             Users = new List<User>();
         }

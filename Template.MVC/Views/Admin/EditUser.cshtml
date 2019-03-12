@@ -1,13 +1,13 @@
-﻿@model ProfileViewModel
+﻿@model EditUserViewModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Edit User";
 }
 
 <h4>@ViewData["Title"]</h4>
 <hr />
 <div class="row">
     <div class="col-12">
-        <form asp-controller="Account" asp-action="Profile" method="post" class="form-horizontal" role="form">
+        <form asp-controller="Admin" asp-action="EditUser" method="post" class="form-horizontal" role="form">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Request.Username" class="control-label"></label>
@@ -18,6 +18,14 @@
                 <label asp-for="Request.EmailAddress" class="control-label"></label>
                 <input asp-for="Request.EmailAddress" class="form-control" />
                 <span asp-validation-for="Request.EmailAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label asp-for="Request.RegistrationConfirmed">
+                        <input asp-for="Request.RegistrationConfirmed" />
+                        @Html.DisplayNameFor(m => m.Request.RegistrationConfirmed)
+                    </label>
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="Request.FirstName" class="control-label"></label>
@@ -45,7 +53,7 @@
                 <span asp-validation-for="Request.PasswordConfirm" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn btn-default">Edit</button>
             </div>
         </form>
     </div>

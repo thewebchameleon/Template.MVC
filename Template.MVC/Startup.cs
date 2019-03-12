@@ -54,6 +54,7 @@ namespace Template.MVC
 
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IAdminService, AdminService>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

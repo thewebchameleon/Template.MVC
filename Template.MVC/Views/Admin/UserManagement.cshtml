@@ -1,0 +1,116 @@
+﻿@model UserManagementViewModel
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+<div class="row">
+    <div class="col-12">
+
+        <div id="panelUserControls">
+            <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Create User</a>
+            <div id="panelEditUserControls" style="display: none;">
+                <input id="hdnSelectedUserId" type="hidden" />
+                <button id="btnDeactivateUserModal" type="button" class="btn btn-primary">Deactivate</button>
+                <button id="btnEditUser" type="button" class="btn btn-secondary">Edit</button>
+            </div>
+        </div>
+
+        <table id="usermanagementTable" class="table table-striped table-bordered" style="        width: 100%">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email Address</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Mobile Number</th>
+                    <th>Registered Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td class="user-identifier">
+                            <input id="#userId_@user.Id" type="hidden" value="@user.Id" />
+                            @user.Username
+                        </td>
+                        <td>@user.Email_Address</td>
+                        <td>@user.First_Name</td>
+                        <td>@user.Last_Name</td>
+                        <td>@user.Mobile_Number</td>
+                        <td>@user.Created_Date.ToShortDateString()</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Username</th>
+                    <th>Email Address</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Mobile Number</th>
+                    <th>Registered Date</th>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>
+
+@section Scripts  {
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var table = $('#usermanagementTable').DataTable();
+
+            // select row feature
+            $('#usermanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                    $('#panelEditUserControls').hide();
+                    $("#hdnSelectedUserId").val('');
+                }
+                else {
+                    var userId = $(e.target.parentNode).children('.user-identifier').children('input').val();
+
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('#panelEditUserControls').show();
+                    $("#hdnSelectedUserId").val(userId);
+                }
+            });
+
+        });
+
+        @{
+             var baseUrl = @Url.Content("~/");
+        }
+
+        // deactivate user
+        $('#btnDeactivateUserModal').click(function () {
+                var userId = GetSelectedUserId();
+
+        });
+
+        // edit user
+        $('#btnEditUser').click(function () {
+            var userId = GetSelectedUserId();
+            window.location.href = '@(Url.Action(nameof(AdminController.EditUser), "Admin"))/' + userId;
+        });
+
+        function GetSelectedUserId() {
+            return $("#hdnSelectedUserId").val();
+        }
+
+    </script>
+
+}
