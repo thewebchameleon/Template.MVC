@@ -56,17 +56,23 @@ namespace Template.Services
 
         public async Task<ActivateUserResponse> ActivateUser(ActivateUserRequest request)
         {
-            throw new System.NotImplementedException();
+            var response = new ActivateUserResponse();
+            response.Notifications.AddError("I still need to implement this");
+            return response;
         }
 
         public async Task<CreateOrUpdateUserResponse> CreateOrUpdateUser(CreateOrUpdateUserRequest request)
         {
-            throw new System.NotImplementedException();
+            var response = new CreateOrUpdateUserResponse();
+            response.Notifications.AddError("I still need to implement this");
+            return response;
         }
 
         public async Task<DeactivateUserResponse> DeactivateUser(DeactivateUserRequest request)
         {
-            throw new System.NotImplementedException();
+            var response = new DeactivateUserResponse();
+            response.Notifications.AddError("I still need to implement this");
+            return response;
         }
 
         public async Task<GetUserResponse> GetUser(GetUserRequest request)
@@ -96,12 +102,16 @@ namespace Template.Services
 
         public async Task<CreateUserResponse> CreateUser(CreateUserRequest request)
         {
-            return new CreateUserResponse();
+            var response = new CreateUserResponse();
+            response.Notifications.AddError("I still need to implement this");
+            return response;
         }
 
         public async Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request)
         {
-            return new UpdateUserResponse();
+            var response = new UpdateUserResponse();
+            response.Notifications.AddError("I still need to implement this");
+            return response;
         }
 
         #endregion

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Template.Models.ServiceModels.Admin
+﻿namespace Template.Models.ServiceModels.Admin
 {
-    public class DeactivateUserResponse
+    public class DeactivateUserResponse : ServiceResponse
     {
     }
 }

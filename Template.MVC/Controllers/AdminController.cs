@@ -115,6 +115,24 @@ namespace Template.MVC.Controllers
             return View(new EditUserViewModel(request));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeactivateUser(DeactivateUserRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.DeactivateUser(request);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToHome();
+                }
+                // this redirects so we push notification to the redirect
+                // todo: maintain state of selected item
+                AddNotifications(response);
+            }
+            return RedirectToAction(nameof(AdminController.UserManagement));
+        }
+
         #endregion
     }
 }

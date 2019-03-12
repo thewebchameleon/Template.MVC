@@ -15,7 +15,7 @@
             <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Create User</a>
             <div id="panelEditUserControls" style="display: none;">
                 <input id="hdnSelectedUserId" type="hidden" />
-                <button id="btnDeactivateUserModal" type="button" class="btn btn-primary">Deactivate</button>
+                <button id="btnDeactivateUserModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalDeactivateUser">Deactivate</button>
                 <button id="btnEditUser" type="button" class="btn btn-secondary">Edit</button>
             </div>
         </div>
@@ -62,6 +62,30 @@
     </div>
 </div>
 
+@* deactivate modal *@
+<div class="modal fade" id="modalDeactivateUser" tabindex="-1" role="dialog" aria-labelledby="modalDeactivateUserLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDeactivateUserLabel">Deactivate User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to deactivate this user?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <form asp-controller="Admin" asp-action="DeactivateUser" method="post" role="form">
+                    <input id="hdnDeactivateUserId" name="UserId" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts  {
 
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -97,8 +121,8 @@
 
         // deactivate user
         $('#btnDeactivateUserModal').click(function () {
-                var userId = GetSelectedUserId();
-
+            var userId = GetSelectedUserId();
+            $("#hdnDeactivateUserId").val(userId);
         });
 
         // edit user
