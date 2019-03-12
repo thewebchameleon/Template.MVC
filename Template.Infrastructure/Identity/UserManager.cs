@@ -138,7 +138,7 @@ namespace Template.Infrastructure.Identity
                 {
                     Id = user.Id,
                     Username = user.Username,
-                    Email = user.Email_Address,
+                    Email_Address = user.Email_Address,
                     Registration_Confirmed = user.Registration_Confirmed,
                     First_Name = user.First_Name,
                     Last_Name = user.Last_Name,

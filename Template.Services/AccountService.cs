@@ -155,14 +155,39 @@ namespace Template.Services
 
         public async Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request)
         {
+            var response = new UpdateProfileResponse();
+
             var users = await _entityCache.Users();
             var user = users.FirstOrDefault(u => u.Id == request.UserId);
-            
-            //todo: do work
-            
-            return new UpdateProfileResponse();
-        }
 
+            user.Username = request.Username;
+            user.Email_Address = request.EmailAddress;
+            user.First_Name = request.FirstName;
+            user.Last_Name = request.LastName;
+            user.Mobile_Number = request.MobileNumber;
+
+            if (!string.IsNullOrEmpty(request.Password))
+            {
+                var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
+                if (!updatePasswordResponse.Succeeded)
+                {
+                    response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
+                    return response;
+                }
+            }
+            var updateResponse = await _userManager.UpdateAsync(user);
+            if (!updateResponse.Succeeded)
+            {
+                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
+                return response;
+            }
+
+            _entityCache.Remove(CacheConstants.Users);
+
+            response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
+            return response;
+        }
 
         //public async Task<ActivateAccountResponse> ActivateAccount(ActivateAccountRequest request, int userId)
         //{

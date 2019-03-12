@@ -1,35 +1,29 @@
 ﻿CREATE PROCEDURE [dbo].[sp_user_update]
-	@Id                 INT,
-	@Username           VARCHAR(256),
-	@UsernameNormalized VARCHAR(256),
-	@Email              VARCHAR(256),
-	@EmailNormalized    VARCHAR(256),
-	@EmailConfirmed     BIT,
-	@FirstName          VARCHAR(256),
-	@LastName           VARCHAR(256),
-	@GenderId           INT,
-	@Latitude           DECIMAL(9, 6),
-	@Longitude          DECIMAL(9, 6),
-	@Suburb             VARCHAR(200),
-	@MobileNumber       VARCHAR(30),
-	@PasswordHash       VARCHAR(MAX),
-	@Configuration      VARCHAR(500),
-	@IsLockedOut        BIT,
-	@LockoutEnd         DATETIME NULL,
-	@UpdatedBy          INT
+	@Id							INT,
+	@Username					VARCHAR(256),
+	@Email_Address				VARCHAR(256),
+	@Registration_Confirmed     BIT,
+	@First_Name					VARCHAR(256),
+	@Last_Name					VARCHAR(256),
+	@Mobile_Number				VARCHAR(30),
+	@Password_Hash				VARCHAR(MAX),
+	@Is_Locked_Out				BIT,
+	@Lockout_End					DATETIME NULL,
+	@Updated_By					INT
 AS
 BEGIN
    UPDATE [User]
    SET
 		[Username] = @Username,
-		[Email_Address] = @Email,
-		[First_Name] = @FirstName,
-		[Last_Name] = @LastName,
-		[Mobile_Number] = @MobileNumber,
-		[Password_Hash] = @PasswordHash,
-		[Is_Locked_Out] = @IsLockedOut,
-		[Lockout_End] = @LockoutEnd,
-		[Updated_By] = @UpdatedBy,
+		[Email_Address] = @Email_Address,
+		[Registration_Confirmed] = @Registration_Confirmed,
+		[First_Name] = @First_Name,
+		[Last_Name] = @Last_Name,
+		[Mobile_Number] = @Mobile_Number,
+		[Password_Hash] = @Password_Hash,
+		[Is_Locked_Out] = @Is_Locked_Out,
+		[Lockout_End] = @Lockout_End,
+		[Updated_By] = @Updated_By,
 		[Updated_Date] = GETDATE()
    WHERE
 		[Id] = @Id

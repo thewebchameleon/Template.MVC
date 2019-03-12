@@ -1,0 +1,70 @@
+﻿@model ProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h1>@ViewData["Title"].</h1>
+
+<form asp-controller="Account" asp-action="Profile" method="post" class="form-horizontal" role="form">
+    <h4>Update your profile.</h4>
+    <hr />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Request.Username" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Request.Username" class="form-control" />
+            <span asp-validation-for="Request.Username" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Request.EmailAddress" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Request.EmailAddress" class="form-control" />
+            <span asp-validation-for="Request.EmailAddress" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Request.FirstName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Request.FirstName" class="form-control" />
+            <span asp-validation-for="Request.FirstName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Request.LastName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Request.LastName" class="form-control" />
+            <span asp-validation-for="Request.LastName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Request.MobileNumber" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Request.MobileNumber" class="form-control" />
+            <span asp-validation-for="Request.MobileNumber" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Request.Password" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Request.Password" class="form-control" />
+            <span asp-validation-for="Request.Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Request.PasswordConfirm" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Request.PasswordConfirm" class="form-control" />
+            <span asp-validation-for="Request.PasswordConfirm" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">Update</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

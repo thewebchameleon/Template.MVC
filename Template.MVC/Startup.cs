@@ -85,14 +85,17 @@ namespace Template.MVC
                 options.Lockout.MaxFailedAccessAttempts = 10;
             });
 
-            services.ConfigureApplicationCookie(options => options.LoginPath = "/Account/Login");
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+            });
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policies.ViewAllUsersPolicy, policy => policy.RequireClaim(ClaimConstants.Permission, ApplicationPermissions.ViewUsers));
             });
 
             services.AddMemoryCache();
-
             services.AddMvc()
 #if DEBUG
                 // todo: this is causing routing to throw an exception - https://github.com/aspnet/AspNetCore/issues/7647
@@ -129,8 +132,9 @@ namespace Template.MVC
 
             app.UseCookiePolicy();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseMvc();
         }
     }
 }

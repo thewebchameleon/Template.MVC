@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,7 +33,7 @@ namespace Template.Common.Notifications
 
         #endregion
 
-        #region IEnumerable implimentation
+        #region IEnumerable implementation
 
         public IEnumerator<Notification> GetEnumerator()
         {
@@ -77,12 +76,12 @@ namespace Template.Common.Notifications
             _notifications.AddRange(notifications);
         }
 
-        public void Add(string message, NotificationTypeEnum severity)
+        public void Add(string message, NotificationTypeEnum type)
         {
             _notifications.Add(new Notification()
             {
                 Message = message,
-                Type = severity
+                Type = type
             });
         }
 

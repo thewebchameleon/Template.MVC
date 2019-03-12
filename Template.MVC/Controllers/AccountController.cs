@@ -9,7 +9,7 @@ using Template.Services.Contracts;
 
 namespace Template.MVC.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class AccountController : BaseController
     {
         #region Instance Fields
@@ -158,6 +158,8 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
+                request.UserId = User.UserId;
+
                 var response = await _accountService.UpdateProfile(request);
                 if (response.IsSuccessful)
                 {
@@ -166,8 +168,6 @@ namespace Template.MVC.Controllers
                 }
                 AddFormErrors(response);
             }
-
-            // If we got this far, something failed, redisplay form
             return View(new ProfileViewModel(request));
         }
 

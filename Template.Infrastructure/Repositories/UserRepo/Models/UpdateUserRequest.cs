@@ -8,7 +8,7 @@ namespace Template.Infrastructure.Repositories.UserRepo.Models
 
         public string Username { get; set; }
 
-        public string Email { get; set; }
+        public string Email_Address { get; set; }
 
         public bool Registration_Confirmed { get; set; }
 
