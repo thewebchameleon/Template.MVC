@@ -1,2 +1,2 @@
 # Template.MVC
-this is what I use when starting new ASP.NET Core MVC projects
+this is a template for ASP.NET Core 3.0 applications using MVC
