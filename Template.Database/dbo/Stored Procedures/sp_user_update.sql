@@ -8,8 +8,9 @@
 	@Mobile_Number				VARCHAR(30),
 	@Password_Hash				VARCHAR(MAX),
 	@Is_Locked_Out				BIT,
-	@Lockout_End					DATETIME NULL,
-	@Updated_By					INT
+	@Lockout_End				DATETIME NULL,
+	@Updated_By					INT,
+	@Is_Enabled					BIT
 AS
 BEGIN
    UPDATE [User]
@@ -23,6 +24,7 @@ BEGIN
 		[Password_Hash] = @Password_Hash,
 		[Is_Locked_Out] = @Is_Locked_Out,
 		[Lockout_End] = @Lockout_End,
+		[Is_Enabled] = @Is_Enabled,
 		[Updated_By] = @Updated_By,
 		[Updated_Date] = GETDATE()
    WHERE

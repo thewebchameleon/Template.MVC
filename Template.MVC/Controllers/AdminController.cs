@@ -50,7 +50,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(int id, CreateUserRequest request)
+        public async Task<IActionResult> CreateUser(CreateUserRequest request)
         {
             if (ModelState.IsValid)
             {
@@ -116,16 +116,24 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeactivateUser(DeactivateUserRequest request)
+        public async Task<IActionResult> DisableUser(DisableUserRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.DeactivateUser(request);
-                if (response.IsSuccessful)
-                {
-                    AddNotifications(response);
-                    return RedirectToHome();
-                }
+                var response = await _adminService.DisableUser(request);
+                // this redirects so we push notification to the redirect
+                // todo: maintain state of selected item
+                AddNotifications(response);
+            }
+            return RedirectToAction(nameof(AdminController.UserManagement));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EnableUser(EnableUserRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.EnableUser(request);
                 // this redirects so we push notification to the redirect
                 // todo: maintain state of selected item
                 AddNotifications(response);

@@ -7,11 +7,9 @@ namespace Template.Services.Contracts
     {
         Task<GetUserManagementResponse> GetUserManagement(GetUserManagementRequest request);
 
-        Task<CreateOrUpdateUserResponse> CreateOrUpdateUser(CreateOrUpdateUserRequest request);
+        Task<DisableUserResponse> DisableUser(DisableUserRequest request);
 
-        Task<DeactivateUserResponse> DeactivateUser(DeactivateUserRequest request);
-
-        Task<ActivateUserResponse> ActivateUser(ActivateUserRequest request);
+        Task<EnableUserResponse> EnableUser(EnableUserRequest request);
 
         Task<GetUserResponse> GetUser(GetUserRequest request);
 

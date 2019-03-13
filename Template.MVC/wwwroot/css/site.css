@@ -93,3 +93,7 @@ tr:hover {
 a.btn {
     color: white !important;
 }
+
+tr.disabled-user td {
+    color: grey;
+}

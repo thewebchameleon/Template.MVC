@@ -55,6 +55,7 @@ namespace Template.Infrastructure.Identity
                     Password_Hash = user.Password_Hash,
                     Lockout_End = user.Lockout_End,
                     Is_Locked_Out = user.Is_Locked_Out,
+                    Is_Enabled = user.Is_Enabled,
                     Created_By = user.Created_By,
                 });
                 user.Id = userId;
@@ -146,6 +147,7 @@ namespace Template.Infrastructure.Identity
                     Password_Hash = user.Password_Hash,
                     Lockout_End = user.Lockout_End,
                     Is_Locked_Out = user.Is_Locked_Out,
+                    Is_Enabled = user.Is_Enabled,
                     Updated_By = user.Updated_By
                 });
 

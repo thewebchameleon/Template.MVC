@@ -1,6 +1,6 @@
 ﻿namespace Template.Models.ServiceModels.Admin
 {
-    public class DeactivateUserResponse : ServiceResponse
+    public class DisableUserResponse : ServiceResponse
     {
     }
 }

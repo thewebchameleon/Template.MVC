@@ -8,6 +8,7 @@
 	@Password_Hash				VARCHAR(MAX),
 	@Is_Locked_Out				BIT,
 	@Lockout_End				DATETIME NULL,
+	@Is_Enabled					BIT,
 	@Created_By					INT
 AS
 BEGIN
@@ -22,6 +23,7 @@ BEGIN
 		[Password_Hash],
 		[Is_Locked_Out],
 		[Lockout_End],
+		[Is_Enabled],
 		[Created_By],
 		[Created_Date],
 		[Updated_By],
@@ -39,6 +41,7 @@ BEGIN
 		@Password_Hash,
 		@Is_Locked_Out,
 		@Lockout_End,
+		@Is_Enabled,
 		@Created_By,
 		GETDATE(),
 		@Created_By,

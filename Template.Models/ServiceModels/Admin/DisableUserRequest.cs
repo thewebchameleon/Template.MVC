@@ -1,6 +1,6 @@
 ﻿namespace Template.Models.ServiceModels.Admin
 {
-    public class DeactivateUserRequest
+    public class DisableUserRequest
     {
         public int UserId { get; set; }
     }

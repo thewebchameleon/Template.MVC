@@ -49,7 +49,6 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
-
         public async Task<List<RoleClaim>> RoleClaims()
         {
             var items = new List<RoleClaim>();
@@ -118,8 +117,6 @@ namespace Template.Infrastructure.Cache
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 items = await uow.UserRepo.GetUsers();
-                items = items.Where(u => u.Id != 1).ToList(); //filter out the system user
-
                 uow.Commit();
             }
             _cacheProvider.Set(CacheConstants.Users, items);

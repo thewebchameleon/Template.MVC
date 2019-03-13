@@ -81,6 +81,7 @@ namespace Template.Services
             {
                 Username = username,
                 Email_Address = request.EmailAddress,
+                Is_Enabled = true,
                 Created_By = ApplicationConstants.SystemUserId,
                 Created_Date = DateTime.Now,
                 Updated_By = ApplicationConstants.SystemUserId,
@@ -116,7 +117,7 @@ namespace Template.Services
             }
             if (result.IsNotAllowed)
             {
-                response.Notifications.AddError("Your account has been banned, please contact the website administor");
+                response.Notifications.AddError("Your account has been disabled, please contact the website administrator");
                 return response;
             }
             if (result.RequiresTwoFactor)
@@ -186,6 +187,72 @@ namespace Template.Services
             _entityCache.Remove(CacheConstants.Users);
 
             response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
+            return response;
+        }
+
+        public async Task<DuplicateCheckResponse> DuplicateCheck(DuplicateCheckRequest request)
+        {
+            var response = new DuplicateCheckResponse();
+            var emailAddress = request.EmailAddress.SafeTrim();
+            var mobileNumber = request.MobileNumber.SafeTrim();
+            var username = request.EmailAddress.SafeTrim();
+
+            var duplicateUserRequest = new Infrastructure.Repositories.UserRepo.Models.FetchDuplicateUserRequest()
+            {
+                Username = username,
+                Email_Address = emailAddress,
+                Mobile_Number = mobileNumber,
+            };
+
+            // this is for when the user wants to change their email / username or mobile number
+            if (request.UserId != null)
+            {
+                duplicateUserRequest.User_Id = request.UserId.Value;
+            }
+
+            int? duplicateUserId;
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                var duplicateUserResponse = await uow.UserRepo.FetchDuplicateUser(duplicateUserRequest);
+                duplicateUserId = duplicateUserResponse?.Id;
+
+                uow.Commit();
+            }
+
+            if (duplicateUserId == null)
+            {
+                // no duplicate found
+                return new DuplicateCheckResponse();
+            }
+
+            var users = await _entityCache.Users();
+            var user = users.FirstOrDefault(u => u.Id == duplicateUserId);
+
+            bool matchFound = false;
+            if (string.Equals(user.Email_Address, emailAddress, StringComparison.InvariantCultureIgnoreCase))
+            {
+                response.Notifications.AddError("A user is already registered with this email address");
+                matchFound = true;
+            }
+
+            if (string.Equals(user.Mobile_Number, mobileNumber, StringComparison.InvariantCultureIgnoreCase))
+            {
+                response.Notifications.AddError("A user is already registered with this mobile number");
+                matchFound = true;
+            }
+
+            if (string.Equals(user.Username, username, StringComparison.InvariantCultureIgnoreCase))
+            {
+                response.Notifications.AddError("A user is already registered with this username");
+                matchFound = true;
+            }
+
+            if (matchFound)
+            {
+                return response;
+            }
+            _logger.LogError("Duplicate user found but could not determine why", $"UserId: {duplicateUserId}", duplicateUserRequest);
+            response.Notifications.AddError("An error ocurred while performing a duplicate check");
             return response;
         }
 
@@ -685,76 +752,6 @@ namespace Template.Services
 
         //    return new UpdateUserPreferencesResponse() { Configuration = request.Configuration };
         //}
-
-        #endregion
-
-        #region Private Methods
-
-        private async Task<DuplicateCheckResponse> DuplicateCheck(DuplicateCheckRequest request)
-        {
-            var response = new DuplicateCheckResponse();
-            var emailAddress = request.EmailAddress.SafeTrim();
-            var mobileNumber = request.MobileNumber.SafeTrim();
-            var username = request.EmailAddress.SafeTrim();
-
-            var duplicateUserRequest = new Infrastructure.Repositories.UserRepo.Models.FetchDuplicateUserRequest()
-            {
-                Username = username,
-                Email_Address = emailAddress,
-                Mobile_Number = mobileNumber,
-            };
-
-            // this is for when the user wants to change their email / username or mobile number
-            if (request.UserId != null)
-            {
-                duplicateUserRequest.User_Id = request.UserId.Value;
-            }
-
-            int? duplicateUserId;
-            using (var uow = _uowFactory.GetUnitOfWork())
-            {
-                var duplicateUserResponse = await uow.UserRepo.FetchDuplicateUser(duplicateUserRequest);
-                duplicateUserId = duplicateUserResponse?.Id;
-
-                uow.Commit();
-            }
-
-            if (duplicateUserId == null)
-            {
-                // no duplicate found
-                return new DuplicateCheckResponse();
-            }
-
-            var users = await _entityCache.Users();
-            var user = users.FirstOrDefault(u => u.Id == duplicateUserId);
-
-            bool matchFound = false;
-            if (string.Equals(user.Email_Address, emailAddress, StringComparison.InvariantCultureIgnoreCase))
-            {
-                response.Notifications.AddError("A user is already registered with this email address");
-                matchFound = true;
-            }
-
-            if (string.Equals(user.Mobile_Number, mobileNumber, StringComparison.InvariantCultureIgnoreCase))
-            {
-                response.Notifications.AddError("A user is already registered with this mobile number");
-                matchFound = true;
-            }
-
-            if (string.Equals(user.Username, username, StringComparison.InvariantCultureIgnoreCase))
-            {
-                response.Notifications.AddError("A user is already registered with this username");
-                matchFound = true;
-            }
-
-            if (matchFound)
-            {
-                return response;
-            }
-            _logger.LogError("Duplicate user found but could not determine why", $"UserId: {duplicateUserId}", duplicateUserRequest);
-            response.Notifications.AddError("An error ocurred while performing a duplicate check");
-            return response;
-        }
 
         #endregion
     }

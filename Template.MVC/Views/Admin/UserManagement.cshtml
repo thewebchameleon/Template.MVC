@@ -15,12 +15,13 @@
             <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Create User</a>
             <div id="panelEditUserControls" style="display: none;">
                 <input id="hdnSelectedUserId" type="hidden" />
-                <button id="btnDeactivateUserModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalDeactivateUser">Deactivate</button>
+                <button id="btnDisableUserModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalDisableUser" style="display: none;">Disable</button>
+                <button id="btnEnableUserModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalEnableUser" style="display: none;">Enable</button>
                 <button id="btnEditUser" type="button" class="btn btn-secondary">Edit</button>
             </div>
         </div>
 
-        <table id="usermanagementTable" class="table table-striped table-bordered" style="        width: 100%">
+        <table id="usermanagementTable" class="table table-striped table-bordered" style="width: 100%">
             <thead>
                 <tr>
                     <th>Username</th>
@@ -34,9 +35,10 @@
             <tbody>
                 @foreach (var user in Model.Users)
                 {
-                    <tr>
+                    <tr class="@(user.Is_Enabled ? string.Empty: "disabled-user")">
                         <td class="user-identifier">
-                            <input id="#userId_@user.Id" type="hidden" value="@user.Id" />
+                            <input class="u-userId" type="hidden" value="@user.Id" />
+                            <input class="u-isEnabled" type="hidden" value="@user.Is_Enabled.ToString()" />
                             @user.Username
                         </td>
                         <td>@user.Email_Address</td>
@@ -63,22 +65,46 @@
 </div>
 
 @* deactivate modal *@
-<div class="modal fade" id="modalDeactivateUser" tabindex="-1" role="dialog" aria-labelledby="modalDeactivateUserLabel" aria-hidden="true">
+<div class="modal fade" id="modalDisableUser" tabindex="-1" role="dialog" aria-labelledby="modalDisableUserLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalDeactivateUserLabel">Deactivate User</h5>
+                <h5 class="modal-title" id="modalDisableUserLabel">Disable User</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Are you sure you want to deactivate this user?
+                Are you sure you want to disable this user?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                <form asp-controller="Admin" asp-action="DeactivateUser" method="post" role="form">
-                    <input id="hdnDeactivateUserId" name="UserId" type="hidden" />
+                <form asp-controller="Admin" asp-action="DisableUser" method="post" role="form">
+                    <input id="hdnDisableUserId" name="UserId" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* activate modal *@
+<div class="modal fade" id="modalEnableUser" tabindex="-1" role="dialog" aria-labelledby="modalEnableUserLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEnableUserLabel">Enable User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to enable this user?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <form asp-controller="Admin" asp-action="EnableUser" method="post" role="form">
+                    <input id="hdnEnableUserId" name="UserId" type="hidden" />
                     <button type="submit" class="btn btn-primary">Yes</button>
                 </form>
             </div>
@@ -98,13 +124,24 @@
 
             // select row feature
             $('#usermanagementTable tbody').on('click', 'tr', function (e) {
-                if ($(this).hasClass('selected')) {
+                if ($(this).hasClass('selected'))
+                {
                     $(this).removeClass('selected');
                     $('#panelEditUserControls').hide();
                     $("#hdnSelectedUserId").val('');
                 }
-                else {
-                    var userId = $(e.target.parentNode).children('.user-identifier').children('input').val();
+                else
+                {
+                    var userId = $(e.target.parentNode).children('.user-identifier').children('input.u-userId').val();
+                    var isEnabled = $(e.target.parentNode).children('.user-identifier').children('input.u-isEnabled').val();
+
+                    if (isEnabled == 'False') {
+                        $('#btnEnableUserModal').show();
+                        $('#btnDisableUserModal').hide();
+                    } else {
+                        $('#btnEnableUserModal').hide();
+                        $('#btnDisableUserModal').show();
+                    }
 
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
@@ -115,14 +152,16 @@
 
         });
 
-        @{
-             var baseUrl = @Url.Content("~/");
-        }
-
         // deactivate user
-        $('#btnDeactivateUserModal').click(function () {
+        $('#btnDisableUserModal').click(function () {
             var userId = GetSelectedUserId();
-            $("#hdnDeactivateUserId").val(userId);
+            $("#hdnDisableUserId").val(userId);
+        });
+
+        // activate user
+        $('#btnEnableUserModal').click(function () {
+            var userId = GetSelectedUserId();
+            $("#hdnEnableUserId").val(userId);
         });
 
         // edit user

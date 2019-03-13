@@ -17,5 +17,7 @@ namespace Template.Services.Contracts
         Task<GetProfileResponse> GetProfile(GetProfileRequest request);
 
         Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request);
+
+        Task<DuplicateCheckResponse> DuplicateCheck(DuplicateCheckRequest request);
     }
 }

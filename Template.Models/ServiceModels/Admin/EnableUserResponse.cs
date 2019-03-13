@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Template.Models.ServiceModels.Admin
 {
-    public class ActivateUserResponse : ServiceResponse
+    public class EnableUserResponse : ServiceResponse
     {
     }
 }

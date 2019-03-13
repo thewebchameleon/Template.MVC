@@ -25,12 +25,17 @@ namespace Template.Infrastructure.Identity
         public async override Task<ClaimsPrincipal> CreateUserPrincipalAsync(User user)
         {
             var principal = await base.CreateUserPrincipalAsync(user);
-            var identity = (ClaimsIdentity)principal.Identity;
+            //var identity = (ClaimsIdentity)principal.Identity;
 
             // todo: add custom claims here
             //identity.AddClaim(new System.Security.Claims.Claim("UserId", $"{user.Id}"));
 
             return principal;
+        }
+
+        public async override Task<bool> CanSignInAsync(User user)
+        {
+            return user.Is_Enabled;
         }
     }
 }

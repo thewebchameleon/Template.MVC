@@ -9,6 +9,7 @@
     [Password_Hash]					VARCHAR (MAX)  NULL,
     [Is_Locked_Out]					BIT            NOT NULL,
     [Lockout_End]					DATETIME       NULL,
+	[Is_Enabled]					BIT				NOT NULL,
     [Created_By]					INT            NULL,
     [Created_Date]					DATETIME       NOT NULL,
     [Updated_By]					INT            NULL,

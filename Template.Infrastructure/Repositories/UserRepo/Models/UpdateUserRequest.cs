@@ -24,6 +24,8 @@ namespace Template.Infrastructure.Repositories.UserRepo.Models
 
         public DateTime? Lockout_End { get; set; }
 
+        public bool Is_Enabled { get; set; }
+
         public int Updated_By { get; set; }
     }
 }
