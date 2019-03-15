@@ -291,7 +291,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -311,7 +311,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -376,6 +376,61 @@ namespace Template.Infrastructure.Repositories.UserRepo
                     dbtransaction: _transaction);
 
             return response.ToList();
+        }
+
+        public async Task<List<UserClaim>> GetUserClaims()
+        {
+            var sqlStoredProc = "sp_user_claims_get";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserClaim>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: new { },
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.ToList();
+        }
+
+        public async Task DeleteUserClaim(DeleteUserClaimRequest request)
+        {
+            var sqlStoredProc = "sp_user_claim_delete";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: new DynamicParameters(request),
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.FirstOrDefault() == 0)
+            {
+                throw new Exception("No items were deleted");
+            }
+        }
+
+        public async Task<int> CreateUserClaim(CreateUserClaimRequest request)
+        {
+            var sqlStoredProc = "sp_user_claim_create";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.First() == 0)
+            {
+                throw new Exception("No items have been created");
+            }
+            return response.First();
         }
 
         #endregion

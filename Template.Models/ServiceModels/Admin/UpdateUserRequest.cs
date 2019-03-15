@@ -35,15 +35,25 @@ namespace Template.Models.ServiceModels.Admin
         [DataType(DataType.Password)]
         public string PasswordConfirm { get; set; }
 
+        public List<int> Claims { get; set; }
+
+        public List<int> Roles { get; set; }
+
         public DateTime? Lockout_End { get; set; }
 
         public bool Is_Locked_Out { get; set; }
+
+        public UpdateUserRequest()
+        {
+            Claims = new List<int>();
+            Roles = new List<int>();
+        }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (Password != PasswordConfirm)
             {
-                yield return new ValidationResult("Passwords do not match");
+                yield return new ValidationResult("Password and confirm password do not match");
             }
         }
     }

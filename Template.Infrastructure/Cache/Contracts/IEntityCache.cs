@@ -12,6 +12,8 @@ namespace Template.Infrastructure.Cache.Contracts
 
         Task<List<UserRole>> UserRoles();
 
+        Task<List<UserClaim>> UserClaims();
+
         Task<List<RoleClaim>> RoleClaims();
 
         Task<List<Claim>> Claims();

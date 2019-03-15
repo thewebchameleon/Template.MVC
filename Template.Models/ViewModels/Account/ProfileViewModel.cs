@@ -8,7 +8,7 @@ namespace Template.Models.ViewModels.Account
 
         public ProfileViewModel(UpdateProfileRequest request) : base(request) { }
 
-        public ProfileViewModel() : base(new UpdateProfileRequest()) { }
+        public ProfileViewModel() : this(new UpdateProfileRequest()) { }
 
         #endregion
 

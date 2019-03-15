@@ -262,7 +262,7 @@ namespace Template.Infrastructure.Identity
             var roles = await _entityCache.Roles();
             var userRoles = await _entityCache.UserRoles();
 
-            var roleIds = userRoles.Where(ur => ur.UserId == user.Id).Select(ur => ur.RoleId);
+            var roleIds = userRoles.Where(ur => ur.User_Id == user.Id).Select(ur => ur.Role_Id);
             return roles.Where(r => roleIds.Contains(r.Id)).Select(r => r.Name).ToList();
         }
 
@@ -279,9 +279,9 @@ namespace Template.Infrastructure.Identity
             }
 
             var userRoles = await _entityCache.UserRoles();
-            userRoles = userRoles.Where(ur => ur.Is_Deleted && ur.UserId == user.Id).ToList();
+            userRoles = userRoles.Where(ur => ur.Is_Deleted && ur.User_Id == user.Id).ToList();
 
-            return userRoles.Any(ur => ur.RoleId == role.Id);
+            return userRoles.Any(ur => ur.Role_Id == role.Id);
         }
 
         public async Task<IList<User>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
@@ -297,9 +297,9 @@ namespace Template.Infrastructure.Identity
             }
 
             var userRoles = await _entityCache.UserRoles();
-            userRoles = userRoles.Where(ur => ur.RoleId == role.Id && ur.Is_Deleted).ToList();
+            userRoles = userRoles.Where(ur => ur.Role_Id == role.Id && ur.Is_Deleted).ToList();
 
-            var userIds = userRoles.Select(ur => ur.UserId);
+            var userIds = userRoles.Select(ur => ur.User_Id);
             var users = await _entityCache.Users();
 
             return users.Where(u => userIds.Contains(u.Id)).ToList();

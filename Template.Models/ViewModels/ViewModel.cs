@@ -8,11 +8,9 @@
         {
             Request = request;
         }
-
-        public ViewModel() : this(new TRequest()) { }
     }
 
-    public class BaseViewModel
+    public class ViewModel
     {
         
     }

@@ -2,8 +2,8 @@
 {
     public class RoleClaim : BaseEntity
     {
-        public int ClaimId { get; set; }
+        public int Claim_Id { get; set; }
 
-        public int RoleId { get; set; }
+        public int Role_Id { get; set; }
     }
 }

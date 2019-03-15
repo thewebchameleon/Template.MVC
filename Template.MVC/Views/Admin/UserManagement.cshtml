@@ -5,64 +5,51 @@
 }
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
 
 <h4>@ViewData["Title"]</h4>
 <hr />
-<div class="row">
-    <div class="col-12">
 
-        <div id="panelUserControls">
-            <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">Create User</a>
-            <div id="panelEditUserControls" style="display: none;">
-                <input id="hdnSelectedUserId" type="hidden" />
-                <button id="btnDisableUserModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalDisableUser" style="display: none;">Disable</button>
-                <button id="btnEnableUserModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalEnableUser" style="display: none;">Enable</button>
-                <button id="btnEditUser" type="button" class="btn btn-secondary">Edit</button>
-            </div>
-        </div>
 
-        <table id="usermanagementTable" class="table table-striped table-bordered" style="width: 100%">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Email Address</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Mobile Number</th>
-                    <th>Registered Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Model.Users)
-                {
-                    <tr class="@(user.Is_Enabled ? string.Empty: "disabled-user")">
-                        <td class="user-identifier">
-                            <input class="u-userId" type="hidden" value="@user.Id" />
-                            <input class="u-isEnabled" type="hidden" value="@user.Is_Enabled.ToString()" />
-                            @user.Username
-                        </td>
-                        <td>@user.Email_Address</td>
-                        <td>@user.First_Name</td>
-                        <td>@user.Last_Name</td>
-                        <td>@user.Mobile_Number</td>
-                        <td>@user.Created_Date.ToShortDateString()</td>
-                    </tr>
-                }
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Username</th>
-                    <th>Email Address</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Mobile Number</th>
-                    <th>Registered Date</th>
-                </tr>
-            </tfoot>
-        </table>
-
+<div id="panelUserControls">
+    <a href="@Url.Action("CreateUser", "Admin" )" class="btn btn-primary">Create User</a>
+    <div id="panelEditUserControls" style="display: none;">
+        <input id="hdnSelectedUserId" type="hidden" />
+        <button id="btnDisableUserModal" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalDisableUser" style="display: none;">Disable</button>
+        <button id="btnEnableUserModal" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalEnableUser" style="display: none;">Enable</button>
+        <button id="btnEditUser" type="button" class="btn btn-primary">Edit</button>
     </div>
 </div>
+
+<table id="usermanagementTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email Address</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Mobile Number</th>
+            <th>Registered Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr class="@(user.Is_Enabled ? string.Empty: " disabled-user")">
+                <td class="user-identifier">
+                    <input class="u-userId" type="hidden" value="@user.Id" />
+                    <input class="u-isEnabled" type="hidden" value="@user.Is_Enabled.ToString()" />
+                    @user.Username
+                </td>
+                <td>@user.Email_Address</td>
+                <td>@user.First_Name</td>
+                <td>@user.Last_Name</td>
+                <td>@user.Mobile_Number</td>
+                <td>@user.Created_Date.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @* deactivate modal *@
 <div class="modal fade" id="modalDisableUser" tabindex="-1" role="dialog" aria-labelledby="modalDisableUserLabel" aria-hidden="true">
@@ -78,7 +65,7 @@
                 Are you sure you want to disable this user?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
                 <form asp-controller="Admin" asp-action="DisableUser" method="post" role="form">
                     <input id="hdnDisableUserId" name="UserId" type="hidden" />
                     <button type="submit" class="btn btn-primary">Yes</button>
@@ -102,7 +89,7 @@
                 Are you sure you want to enable this user?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
                 <form asp-controller="Admin" asp-action="EnableUser" method="post" role="form">
                     <input id="hdnEnableUserId" name="UserId" type="hidden" />
                     <button type="submit" class="btn btn-primary">Yes</button>
@@ -116,14 +103,28 @@
 
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
     <script type="text/javascript">
 
         $(document).ready(function () {
 
-            var table = $('#usermanagementTable').DataTable();
+            var table = $('#usermanagementTable').DataTable({
+                responsive: {
+                    details: false
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },
+                ]
+            });
 
             // select row feature
             $('#usermanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('child'))
+                {
+                    return;
+                }
+
                 if ($(this).hasClass('selected'))
                 {
                     $(this).removeClass('selected');
@@ -132,8 +133,8 @@
                 }
                 else
                 {
-                    var userId = $(e.target.parentNode).children('.user-identifier').children('input.u-userId').val();
-                    var isEnabled = $(e.target.parentNode).children('.user-identifier').children('input.u-isEnabled').val();
+                    var userId = $(this).children('.user-identifier').children('input.u-userId').val();
+                    var isEnabled = $(this).children('.user-identifier').children('input.u-isEnabled').val();
 
                     if (isEnabled == 'False') {
                         $('#btnEnableUserModal').show();

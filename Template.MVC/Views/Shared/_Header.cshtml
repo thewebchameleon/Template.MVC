@@ -1,0 +1,55 @@
+﻿<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Template.MVC</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    @if (User.Identity.IsAuthenticated)
+                        {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="UserManagement">Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Log out</a>
+                    </li>
+                        }
+                        else
+                        {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                    </li>
+                        }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    @{
+            var rawNotifications = TempData["Notifications"] as string;
+            if (!string.IsNullOrEmpty(rawNotifications))
+            {
+                var notifications = JsonConvert.DeserializeObject<List<Notification>>(rawNotifications);
+                if (notifications.Any())
+                {
+        <div class="notifications-container">
+            @foreach (var notification in notifications)
+                        {
+            <div class="notification notification-type-@notification.Type.ToString().ToLower()">
+                @Html.Raw(notification.Message)
+            </div>
+                        }
+        </div>
+                }
+            }
+    }
+</header>

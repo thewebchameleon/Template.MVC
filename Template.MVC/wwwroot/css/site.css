@@ -83,7 +83,7 @@ body {
 }
 
 tr.selected td {
-    background-color: #d4e9ff;
+    background-color: #d4e9ff !important;
 }
 
 tr:hover {
@@ -95,5 +95,10 @@ a.btn {
 }
 
 tr.disabled-user td {
-    color: grey;
+    color: #bbbbbb;
+}
+
+input[type='checkbox'].form-control {
+    width: 40px;
+    cursor: pointer;
 }

@@ -8,7 +8,7 @@ namespace Template.Models.ViewModels.Account
 
         public RegisterViewModel(RegisterRequest request) : base(request) { }
 
-        public RegisterViewModel() : base(new RegisterRequest()) { }
+        public RegisterViewModel() : this(new RegisterRequest()) { }
 
         #endregion
     }

@@ -150,7 +150,7 @@ namespace Template.Infrastructure.Identity
         {
             var claims = await _entityCache.Claims();
             var roleClaims = await _entityCache.RoleClaims();
-            roleClaims = roleClaims.Where(rc => rc.RoleId == role.Id && rc.Is_Deleted).ToList();
+            roleClaims = roleClaims.Where(rc => rc.Role_Id == role.Id && rc.Is_Deleted).ToList();
 
             var result = new List<System.Security.Claims.Claim>();
             foreach (var claim in roleClaims)
@@ -164,7 +164,7 @@ namespace Template.Infrastructure.Identity
         public async Task AddClaimAsync(Role role, System.Security.Claims.Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             var roleClaims = await _entityCache.RoleClaims();
-            roleClaims = roleClaims.Where(rc => rc.RoleId == role.Id).ToList();
+            roleClaims = roleClaims.Where(rc => rc.Role_Id == role.Id).ToList();
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
@@ -183,7 +183,7 @@ namespace Template.Infrastructure.Identity
         public async Task RemoveClaimAsync(Role role, System.Security.Claims.Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             var roleClaims = await _entityCache.RoleClaims();
-            roleClaims = roleClaims.Where(rc => rc.RoleId == role.Id).ToList();
+            roleClaims = roleClaims.Where(rc => rc.Role_Id == role.Id).ToList();
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {

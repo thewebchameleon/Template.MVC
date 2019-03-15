@@ -162,6 +162,25 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
+        public async Task<List<UserClaim>> UserClaims()
+        {
+            var items = new List<UserClaim>();
+            if (_cacheProvider.TryGet(CacheConstants.UserClaims, out items))
+            {
+                return items;
+            }
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                items = await uow.UserRepo.GetUserClaims();
+
+                uow.Commit();
+            }
+            _cacheProvider.Set(CacheConstants.UserClaims, items);
+
+            return items;
+        }
+
         public void Remove(string key)
         {
             _cacheProvider.Remove(key);

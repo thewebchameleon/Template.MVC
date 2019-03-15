@@ -9,5 +9,6 @@
         public const string UserRoles = "UserRoles";
         public const string Tokens = "Tokens";
         public const string Claims = "Claims";
+        public const string UserClaims = "UserClaims";
     }
 }

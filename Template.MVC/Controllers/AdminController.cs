@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Threading.Tasks;
+using Template.Infrastructure.Cache.Contracts;
 using Template.Models.ServiceModels.Admin;
 using Template.Models.ViewModels.Admin;
 using Template.Services.Contracts;
@@ -14,6 +16,7 @@ namespace Template.MVC.Controllers
         #region Instance Fields
 
         private readonly IAdminService _adminService;
+        private readonly IEntityCache _entityCache;
         private readonly ILogger _logger;
 
         #endregion
@@ -22,9 +25,11 @@ namespace Template.MVC.Controllers
 
         public AdminController(
             IAdminService adminService,
+            IEntityCache entityCache,
             ILoggerFactory loggerFactory)
         {
             _adminService = adminService;
+            _entityCache = entityCache;
             _logger = loggerFactory.CreateLogger<AdminController>();
         }
 
@@ -44,9 +49,15 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateUser()
+        public async Task<IActionResult> CreateUser()
         {
-            return View(new CreateUserViewModel());
+            var viewModel = new CreateUserViewModel()
+            {
+                ClaimsLookup = await _entityCache.Claims(),
+                RolesLookup = await _entityCache.Roles()
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -54,7 +65,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.CreateUser(request);
+                var response = await _adminService.CreateUser(request, User.UserId);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
@@ -68,7 +79,11 @@ namespace Template.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> EditUser(int id)
         {
-            var viewModel = new EditUserViewModel();
+            var viewModel = new EditUserViewModel()
+            {
+                ClaimsLookup = await _entityCache.Claims(),
+                RolesLookup = await _entityCache.Roles()
+            };
 
             var response = await _adminService.GetUser(new GetUserRequest()
             {
@@ -91,7 +106,9 @@ namespace Template.MVC.Controllers
                 MobileNumber = response.User.Mobile_Number,
                 RegistrationConfirmed = response.User.Registration_Confirmed,
                 Is_Locked_Out = response.User.Is_Locked_Out,
-                Lockout_End = response.User.Lockout_End
+                Lockout_End = response.User.Lockout_End,
+                Claims = response.Claims.Select(c => c.Id).ToList(),
+                Roles = response.Roles.Select(r => r.Id).ToList()
             };
 
             return View(viewModel);
@@ -104,7 +121,7 @@ namespace Template.MVC.Controllers
             {
                 request.UserId = id;
 
-                var response = await _adminService.UpdateUser(request);
+                var response = await _adminService.UpdateUser(request, User.UserId);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
@@ -120,7 +137,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.DisableUser(request);
+                var response = await _adminService.DisableUser(request, User.UserId);
                 // this redirects so we push notification to the redirect
                 // todo: maintain state of selected item
                 AddNotifications(response);
@@ -133,7 +150,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.EnableUser(request);
+                var response = await _adminService.EnableUser(request, User.UserId);
                 // this redirects so we push notification to the redirect
                 // todo: maintain state of selected item
                 AddNotifications(response);

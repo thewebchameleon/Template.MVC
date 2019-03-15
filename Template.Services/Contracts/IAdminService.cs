@@ -7,14 +7,14 @@ namespace Template.Services.Contracts
     {
         Task<GetUserManagementResponse> GetUserManagement(GetUserManagementRequest request);
 
-        Task<DisableUserResponse> DisableUser(DisableUserRequest request);
+        Task<DisableUserResponse> DisableUser(DisableUserRequest request, int userId);
 
-        Task<EnableUserResponse> EnableUser(EnableUserRequest request);
+        Task<EnableUserResponse> EnableUser(EnableUserRequest request, int userId);
 
         Task<GetUserResponse> GetUser(GetUserRequest request);
 
-        Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request);
+        Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request, int userId);
 
-        Task<CreateUserResponse> CreateUser(CreateUserRequest request);
+        Task<CreateUserResponse> CreateUser(CreateUserRequest request, int userId);
     }
 }

@@ -8,7 +8,7 @@ namespace Template.Models.ViewModels.Account
 
         public ForgotPasswordViewModel(ForgotPasswordRequest request) : base(request) { }
 
-        public ForgotPasswordViewModel() { }
+        public ForgotPasswordViewModel() : this(new ForgotPasswordRequest()) { }
 
         #endregion
     }

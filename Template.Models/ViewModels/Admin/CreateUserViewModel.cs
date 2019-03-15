@@ -1,4 +1,6 @@
-﻿using Template.Models.ServiceModels.Admin;
+﻿using System.Collections.Generic;
+using Template.Models.DomainModels;
+using Template.Models.ServiceModels.Admin;
 
 namespace Template.Models.ViewModels.Admin
 {
@@ -8,8 +10,12 @@ namespace Template.Models.ViewModels.Admin
 
         public CreateUserViewModel(CreateUserRequest request) : base(request) { }
 
-        public CreateUserViewModel() : base(new CreateUserRequest()) { }
+        public CreateUserViewModel() : this(new CreateUserRequest()) { }
 
         #endregion
+
+        public List<Claim> ClaimsLookup { get; set; }
+
+        public List<Role> RolesLookup { get; set; }
     }
 }

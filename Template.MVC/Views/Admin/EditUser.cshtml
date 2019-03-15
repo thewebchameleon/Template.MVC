@@ -14,46 +14,103 @@
                 <input asp-for="Request.Username" class="form-control" />
                 <span asp-validation-for="Request.Username" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Request.EmailAddress" class="control-label"></label>
-                <input asp-for="Request.EmailAddress" class="form-control" />
-                <span asp-validation-for="Request.EmailAddress" class="text-danger"></span>
+            <div class="form-row">
+                <div class="form-group col-md-5">
+                    <label asp-for="Request.EmailAddress" class="control-label"></label>
+                    <input asp-for="Request.EmailAddress" class="form-control" />
+                    <span asp-validation-for="Request.EmailAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <div class="checkbox">
+                        <label asp-for="Request.RegistrationConfirmed" class="control-label"> </label>
+                        <input asp-for="Request.RegistrationConfirmed" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="Request.MobileNumber" class="control-label"></label>
+                    <input asp-for="Request.MobileNumber" class="form-control" />
+                    <span asp-validation-for="Request.MobileNumber" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label asp-for="Request.RegistrationConfirmed">
-                        <input asp-for="Request.RegistrationConfirmed" />
-                        @Html.DisplayNameFor(m => m.Request.RegistrationConfirmed)
-                    </label>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.FirstName" class="control-label"></label>
+                    <input asp-for="Request.FirstName" class="form-control" />
+                    <span asp-validation-for="Request.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.LastName" class="control-label"></label>
+                    <input asp-for="Request.LastName" class="form-control" />
+                    <span asp-validation-for="Request.LastName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.Password" class="control-label"></label>
+                    <input asp-for="Request.Password" class="form-control" />
+                    <span asp-validation-for="Request.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.PasswordConfirm" class="control-label"></label>
+                    <input asp-for="Request.PasswordConfirm" class="form-control" />
+                    <span asp-validation-for="Request.PasswordConfirm" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.Claims" class="control-label"></label>
+                    <select id="listClaims" class="selectpicker form-control" multiple>
+                        @foreach (var claimType in Model.ClaimsLookup.GroupBy(c => c.Type))
+                        {
+                            <optgroup label="@claimType.Key">
+                                @foreach (var claim in claimType)
+                                {
+                                    var isSelected = Model.Request.Claims.Any(c => c == claim.Id);
+                                    if (isSelected)
+                                    {
+                                        <option value="@claim.Id" selected>@claim.Value</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@claim.Id">@claim.Value</option>
+                                    }
+                                }
+                            </optgroup>
+                        }
+                    </select>
+                    <div id="listClaims-container">
+                        @foreach (var claimId in Model.Request.Claims)
+                        {
+                            <input type='hidden' name='Request.Claims' value="@claimId" />
+                        }
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.Roles" class="control-label"></label>
+                    <select id="listRoles" class="selectpicker form-control" multiple>
+                        @foreach (var role in Model.RolesLookup)
+                        {
+                            var isSelected = Model.Request.Roles.Any(c => c == role.Id);
+                            if (isSelected)
+                            {
+                                <option value="@role.Id" selected>@role.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@role.Id">@role.Name</option>
+                            }
+                        }
+                    </select>
+                    <div id="listRoles-container">
+                        @foreach (var roleId in Model.Request.Roles)
+                        {
+                            <input type='hidden' name='Request.Roles' value="@roleId" />
+                        }
+                    </div>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Request.FirstName" class="control-label"></label>
-                <input asp-for="Request.FirstName" class="form-control" />
-                <span asp-validation-for="Request.FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.LastName" class="control-label"></label>
-                <input asp-for="Request.LastName" class="form-control" />
-                <span asp-validation-for="Request.LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.MobileNumber" class="control-label"></label>
-                <input asp-for="Request.MobileNumber" class="form-control" />
-                <span asp-validation-for="Request.MobileNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.Password" class="control-label"></label>
-                <input asp-for="Request.Password" class="form-control" />
-                <span asp-validation-for="Request.Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.PasswordConfirm" class="control-label"></label>
-                <input asp-for="Request.PasswordConfirm" class="form-control" />
-                <span asp-validation-for="Request.PasswordConfirm" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-default">Update</button>
+                <button type="submit" class="btn btn-primary">Update</button>
             </div>
         </form>
     </div>
@@ -61,4 +118,24 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        $('#listClaims').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $('#listClaims-container').empty();
+
+            var selectedValues = $(this).val();
+            selectedValues.forEach(function (value, index) {
+                $('#listClaims-container').append("<input type='hidden' name='Request.Claims' value=" + value + "></div>");
+            });
+        });
+
+        $('#listRoles').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $('#listRoles-container').empty();
+
+            var selectedValues = $(this).val();
+            selectedValues.forEach(function (value, index) {
+                $('#listRoles-container').append("<input type='hidden' name='Request.Roles' value=" + value + "></div>");
+            });
+        });
+    </script>
 }

@@ -8,7 +8,7 @@ namespace Template.Models.ViewModels.Account
 
         public LoginViewModel(LoginRequest request) : base(request) { }
 
-        public LoginViewModel() : base(new LoginRequest()) { }
+        public LoginViewModel() : this(new LoginRequest()) { }
 
         #endregion
     }

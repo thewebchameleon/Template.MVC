@@ -1,4 +1,6 @@
-﻿using Template.Models.ServiceModels.Admin;
+﻿using System.Collections.Generic;
+using Template.Models.DomainModels;
+using Template.Models.ServiceModels.Admin;
 
 namespace Template.Models.ViewModels.Admin
 {
@@ -8,8 +10,16 @@ namespace Template.Models.ViewModels.Admin
 
         public EditUserViewModel(UpdateUserRequest request) : base(request) { }
 
-        public EditUserViewModel() : base(new UpdateUserRequest()) { }
+        public EditUserViewModel() : this(new UpdateUserRequest())
+        {
+            ClaimsLookup = new List<Claim>();
+            RolesLookup = new List<Role>();
+        }
 
         #endregion
+
+        public List<Claim> ClaimsLookup { get; set; }
+
+        public List<Role> RolesLookup { get; set; }
     }
 }

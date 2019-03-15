@@ -12,24 +12,24 @@ namespace Template.Models.ServiceModels.Account
 
         [Required]
         [DataType(DataType.EmailAddress)]
-        [Display(Name = "Email Address")]
+        [Display(Name = "Email address")]
         public string EmailAddress { get; set; }
 
-        [Display(Name = "First Name")]
+        [Display(Name = "First name")]
         public string FirstName { get; set; }
 
-        [Display(Name = "Last Name")]
+        [Display(Name = "Last name")]
         public string LastName { get; set; }
 
         [DataType(DataType.PhoneNumber)]
-        [Display(Name = "Mobile Number")]
+        [Display(Name = "Mobile number")]
         public string MobileNumber { get; set; }
 
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm Password")]
+        [Display(Name = "Confirm password")]
         public string PasswordConfirm { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -37,7 +37,7 @@ namespace Template.Models.ServiceModels.Account
             if (Password != PasswordConfirm)
             {
                 var members = new List<string>() { nameof(PasswordConfirm) };
-                yield return new ValidationResult("Passwords do not match", members);
+                yield return new ValidationResult("Password and confirm password do not match", members);
             }
         }
     }
