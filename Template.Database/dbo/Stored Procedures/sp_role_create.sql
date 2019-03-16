@@ -12,6 +12,7 @@ BEGIN
 		[Created_Date],
 		[Updated_By],
 		[Updated_Date],
+		Is_Enabled,
 		Is_Deleted
 	    )
    VALUES
@@ -22,6 +23,7 @@ BEGIN
 		GETDATE(),
 		@Created_By,
 		GETDATE(),
+		1,
 		0
 	    )
    SELECT

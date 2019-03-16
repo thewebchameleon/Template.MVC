@@ -15,7 +15,8 @@
     [Is_Deleted]	 BIT             NOT NULL,
     CONSTRAINT [PK_Configuration] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Configuration__User_Created_By] FOREIGN KEY ([Created_By]) REFERENCES [dbo].[User] ([Id]),
-    CONSTRAINT [FK_Configuration__User_Updated_By] FOREIGN KEY ([Updated_By]) REFERENCES [dbo].[User] ([Id])
+    CONSTRAINT [FK_Configuration__User_Updated_By] FOREIGN KEY ([Updated_By]) REFERENCES [dbo].[User] ([Id]),
+	CONSTRAINT [UC_Configuration__Key] UNIQUE ([Key])
 );
 GO
 

@@ -40,12 +40,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new
-                    {
-                        Guid = request.SessionGuid,
-                        UserId = request.UserId,
-                        UpdatedBy = request.UpdatedBy
-                    },
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -64,11 +59,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new
-                    {
-                        Guid = request.Guid,
-                        CreatedBy = request.CreatedBy
-                    },
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -87,11 +78,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new
-                    {
-                        Id = request.Id,
-                        UpdatedBy = request.UpdatedBy
-                    },
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -110,10 +97,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<Session>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new
-                    {
-                        Guid = request.Guid
-                    },
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -129,10 +113,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<Session>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new
-                    {
-                        UserId = request.UserId
-                    },
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,

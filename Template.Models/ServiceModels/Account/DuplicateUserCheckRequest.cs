@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Template.Models.ServiceModels
 {
-    public class DuplicateCheckRequest : IValidatableObject
+    public class DuplicateUserCheckRequest : IValidatableObject
     {
         /// <summary>
         /// UserID of the logged in user (optional)

@@ -9,6 +9,7 @@ BEGIN
 		[R].[Created_Date],
 		[R].[Updated_By],
 		[R].[Updated_Date],
+		[R].[Is_Enabled],
 		[R].Is_Deleted
    FROM   [Role] [R](NOLOCK)
    WHERE R.Is_Deleted = 0

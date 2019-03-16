@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Template.Infrastructure.Repositories.UserRepo.Models
+﻿namespace Template.Infrastructure.Repositories.UserRepo.Models
 {
     public class FetchDuplicateUserRequest
     {

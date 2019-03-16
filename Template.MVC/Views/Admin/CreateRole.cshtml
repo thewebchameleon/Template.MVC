@@ -1,0 +1,67 @@
+﻿@model CreateRoleViewModel
+@{
+    ViewData["Title"] = "Create Role";
+}
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+<div class="row">
+    <div class="col-12">
+        <form asp-controller="Admin" asp-action="CreateRole" method="post" class="form-horizontal" role="form">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Request.Name" class="control-label"></label>
+                <input asp-for="Request.Name" class="form-control" />
+                <span asp-validation-for="Request.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Description" class="control-label"></label>
+                <input asp-for="Request.Description" class="form-control" />
+                <span asp-validation-for="Request.Description" class="text-danger"></span>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.ClaimIds" class="control-label"></label>
+                    <select id="listClaims" class="selectpicker form-control" multiple>
+                        @foreach (var claimType in Model.ClaimsLookup.GroupBy(c => c.Type))
+                        {
+                            <optgroup label="@claimType.Key">
+                                @foreach (var claim in claimType)
+                                {
+                                    var isSelected = Model.Request.ClaimIds.Any(c => c == claim.Id);
+                                    if (isSelected)
+                                    {
+                                        <option value="@claim.Id" selected>@claim.Value</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@claim.Id">@claim.Value</option>
+                                    }
+                                }
+                            </optgroup>
+                        }
+                    </select>
+                    <div id="listClaims-container"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        $('#listClaims').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $('#listClaims-container').empty();
+
+            var selectedValues = $(this).val();
+            selectedValues.forEach(function (value, index) {
+                $('#listClaims-container').append("<input type='hidden' name='Request.ClaimIds' value=" + value + "></div>");
+            });
+        });
+    </script>
+}

@@ -52,34 +52,11 @@
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label asp-for="Request.Claims" class="control-label"></label>
-                    <select id="listClaims" class="selectpicker form-control" multiple>
-                        @foreach (var claimType in Model.ClaimsLookup.GroupBy(c => c.Type))
-                        {
-                            <optgroup label="@claimType.Key">
-                                @foreach (var claim in claimType)
-                                {
-                                    var isSelected = Model.Request.Claims.Any(c => c == claim.Id);
-                                    if (isSelected)
-                                    {
-                                        <option value="@claim.Id" selected>@claim.Value</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@claim.Id">@claim.Value</option>
-                                    }
-                                }
-                            </optgroup>
-                        }
-                    </select>
-                    <div id="listClaims-container"></div>
-                </div>
-                <div class="form-group col-md-6">
-                    <label asp-for="Request.Roles" class="control-label"></label>
+                    <label asp-for="Request.RoleIds" class="control-label"></label>
                     <select id="listRoles" class="selectpicker form-control" multiple>
                         @foreach (var role in Model.RolesLookup)
                         {
-                            var isSelected = Model.Request.Roles.Any(c => c == role.Id);
+                            var isSelected = Model.Request.RoleIds.Any(c => c == role.Id);
                             if (isSelected)
                             {
                                 <option value="@role.Id" selected>@role.Name</option>
@@ -104,21 +81,12 @@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script type="text/javascript">
-        $('#listClaims').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $('#listClaims-container').empty();
-
-            var selectedValues = $(this).val();
-            selectedValues.forEach(function (value, index) {
-                $('#listClaims-container').append("<input type='hidden' name='Request.Claims' value=" + value + "></div>");
-            });
-        });
-
         $('#listRoles').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $('#listRoles-container').empty();
 
             var selectedValues = $(this).val();
             selectedValues.forEach(function (value, index) {
-                $('#listRoles-container').append("<input type='hidden' name='Request.Roles' value=" + value + "></div>");
+                $('#listRoles-container').append("<input type='hidden' name='Request.RoleIds' value=" + value + "></div>");
             });
         });
     </script>

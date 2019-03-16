@@ -16,5 +16,18 @@ namespace Template.Services.Contracts
         Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request, int userId);
 
         Task<CreateUserResponse> CreateUser(CreateUserRequest request, int userId);
+
+
+        Task<GetRoleManagementResponse> GetRoleManagement(GetRoleManagementRequest request);
+
+        Task<DisableRoleResponse> DisableRole(DisableRoleRequest request, int userId);
+
+        Task<EnableRoleResponse> EnableRole(EnableRoleRequest request, int userId);
+
+        Task<GetRoleResponse> GetRole(GetRoleRequest request);
+
+        Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request, int userId);
+
+        Task<CreateRoleResponse> CreateRole(CreateRoleRequest request, int userId);
     }
 }

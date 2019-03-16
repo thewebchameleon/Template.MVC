@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Template.Infrastructure.Repositories.UserRepo.Models
+﻿namespace Template.Infrastructure.Repositories.UserRepo.Models
 {
     public class UpdateRoleRequest
     {
@@ -11,6 +7,8 @@ namespace Template.Infrastructure.Repositories.UserRepo.Models
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public bool Is_Enabled { get; set; }
 
         public int Updated_By { get; set; }
     }

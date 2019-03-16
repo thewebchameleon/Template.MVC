@@ -106,24 +106,6 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
-        public async Task<List<User>> Users()
-        {
-            var items = new List<User>();
-            if (_cacheProvider.TryGet(CacheConstants.Users, out items))
-            {
-                return items;
-            }
-
-            using (var uow = _uowFactory.GetUnitOfWork())
-            {
-                items = await uow.UserRepo.GetUsers();
-                uow.Commit();
-            }
-            _cacheProvider.Set(CacheConstants.Users, items);
-
-            return items;
-        }
-
         public async Task<List<UserRole>> UserRoles()
         {
             var items = new List<UserRole>();
@@ -158,25 +140,6 @@ namespace Template.Infrastructure.Cache
                 uow.Commit();
             }
             _cacheProvider.Set(CacheConstants.Claims, items);
-
-            return items;
-        }
-
-        public async Task<List<UserClaim>> UserClaims()
-        {
-            var items = new List<UserClaim>();
-            if (_cacheProvider.TryGet(CacheConstants.UserClaims, out items))
-            {
-                return items;
-            }
-
-            using (var uow = _uowFactory.GetUnitOfWork())
-            {
-                items = await uow.UserRepo.GetUserClaims();
-
-                uow.Commit();
-            }
-            _cacheProvider.Set(CacheConstants.UserClaims, items);
 
             return items;
         }

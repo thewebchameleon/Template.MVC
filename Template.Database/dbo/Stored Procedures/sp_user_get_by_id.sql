@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_user_get_by_id]
-	@UserId INT
+	@User_Id INT
 AS
 BEGIN
    SELECT
@@ -14,8 +14,9 @@ BEGIN
 		[U].[Created_Date],
 		[U].[Updated_By],
 		[U].[Updated_Date],
-		[U].Is_Deleted
+		[U].Is_Deleted,
+		[U].Is_Enabled
    FROM   [User] [U](NOLOCK)
-   WHERE  [U].[Id] = @UserId
+   WHERE  [U].[Id] = @User_Id
    AND U.Is_Deleted = 0
 END

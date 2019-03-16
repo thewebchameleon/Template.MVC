@@ -67,6 +67,7 @@ namespace Template.Infrastructure.Identity
                     Id = role.Id,
                     Name = role.Name,
                     Description = role.Description,
+                    Is_Enabled = role.Is_Enabled,
                     Updated_By = role.Updated_By
                 });
 
@@ -163,16 +164,15 @@ namespace Template.Infrastructure.Identity
 
         public async Task AddClaimAsync(Role role, System.Security.Claims.Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var roleClaims = await _entityCache.RoleClaims();
-            roleClaims = roleClaims.Where(rc => rc.Role_Id == role.Id).ToList();
-
+            var claims = await _entityCache.Claims();
+            var claimEntity = claims.FirstOrDefault(c => c.Type == claim.Type && c.Value == claim.Value);
+            
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 await uow.UserRepo.CreateRoleClaim(new CreateRoleClaimRequest()
                 {
                     Role_Id = role.Id,
-                    Claim_Type = claim.Type,
-                    Claim_Value = claim.Value,
+                    Claim_Id = claimEntity.Id,
                     Created_By = role.Updated_By
                 });
                 uow.Commit();
@@ -182,16 +182,15 @@ namespace Template.Infrastructure.Identity
 
         public async Task RemoveClaimAsync(Role role, System.Security.Claims.Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var roleClaims = await _entityCache.RoleClaims();
-            roleClaims = roleClaims.Where(rc => rc.Role_Id == role.Id).ToList();
+            var claims = await _entityCache.Claims();
+            var claimEntity = claims.FirstOrDefault(c => c.Type == claim.Type && c.Value == claim.Value);
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 await uow.UserRepo.DeleteRoleClaim(new DeleteRoleClaimRequest()
                 {
                     Role_Id = role.Id,
-                    Claim_Type = claim.Type,
-                    Claim_Value = claim.Value,
+                    Claim_Id = claimEntity.Id,
                     Updated_By = role.Updated_By
                 });
                 uow.Commit();

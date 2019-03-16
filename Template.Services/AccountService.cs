@@ -65,7 +65,7 @@ namespace Template.Services
             var response = new RegisterResponse();
             var username = request.EmailAddress;
 
-            var duplicateResponse = await DuplicateCheck(new DuplicateCheckRequest()
+            var duplicateResponse = await DuplicateUserCheck(new DuplicateUserCheckRequest()
             {
                 EmailAddress = request.EmailAddress,
                 Username = username
@@ -141,58 +141,68 @@ namespace Template.Services
 
         public async Task<GetProfileResponse> GetProfile(GetProfileRequest request)
         {
-            var users = await _entityCache.Users();
-            var user = users.FirstOrDefault(u => u.Id == request.UserId);
-
-            return new GetProfileResponse()
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                EmailAddress = user.Email_Address,
-                FirstName = user.First_Name,
-                LastName = user.Last_Name,
-                MobileNumber = user.Mobile_Number,
-                Username = user.Username
-            };
+                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                {
+                    User_Id = request.UserId
+                });
+
+                return new GetProfileResponse()
+                {
+                    EmailAddress = user.Email_Address,
+                    FirstName = user.First_Name,
+                    LastName = user.Last_Name,
+                    MobileNumber = user.Mobile_Number,
+                    Username = user.Username
+                };
+            }
         }
 
         public async Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request)
         {
             var response = new UpdateProfileResponse();
 
-            var users = await _entityCache.Users();
-            var user = users.FirstOrDefault(u => u.Id == request.UserId);
-
-            user.Username = request.Username;
-            user.Email_Address = request.EmailAddress;
-            user.First_Name = request.FirstName;
-            user.Last_Name = request.LastName;
-            user.Mobile_Number = request.MobileNumber;
-
-            if (!string.IsNullOrEmpty(request.Password))
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
-                if (!updatePasswordResponse.Succeeded)
+                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
+                    User_Id = request.UserId
+                });
+
+                user.Username = request.Username;
+                user.Email_Address = request.EmailAddress;
+                user.First_Name = request.FirstName;
+                user.Last_Name = request.LastName;
+                user.Mobile_Number = request.MobileNumber;
+
+                if (!string.IsNullOrEmpty(request.Password))
+                {
+                    var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
+                    if (!updatePasswordResponse.Succeeded)
+                    {
+                        response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
+                        return response;
+                    }
+                }
+                var updateResponse = await _userManager.UpdateAsync(user);
+                if (!updateResponse.Succeeded)
+                {
+                    response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
                     return response;
                 }
-            }
-            var updateResponse = await _userManager.UpdateAsync(user);
-            if (!updateResponse.Succeeded)
-            {
-                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
+
+                _entityCache.Remove(CacheConstants.Users);
+
+                response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
                 return response;
             }
-
-            _entityCache.Remove(CacheConstants.Users);
-
-            response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
-            return response;
         }
 
-        public async Task<DuplicateCheckResponse> DuplicateCheck(DuplicateCheckRequest request)
+        public async Task<DuplicateUserCheckResponse> DuplicateUserCheck(DuplicateUserCheckRequest request)
         {
-            var response = new DuplicateCheckResponse();
+            var response = new DuplicateUserCheckResponse();
             var emailAddress = request.EmailAddress.SafeTrim();
             var mobileNumber = request.MobileNumber.SafeTrim();
             var username = request.EmailAddress.SafeTrim();
@@ -217,42 +227,60 @@ namespace Template.Services
                 duplicateUserId = duplicateUserResponse?.Id;
 
                 uow.Commit();
-            }
 
-            if (duplicateUserId == null)
-            {
-                // no duplicate found
-                return new DuplicateCheckResponse();
-            }
 
-            var users = await _entityCache.Users();
-            var user = users.FirstOrDefault(u => u.Id == duplicateUserId);
+                if (duplicateUserId == null)
+                {
+                    // no duplicate found
+                    return new DuplicateUserCheckResponse();
+                }
 
-            bool matchFound = false;
-            if (string.Equals(user.Email_Address, emailAddress, StringComparison.InvariantCultureIgnoreCase))
-            {
-                response.Notifications.AddError("A user is already registered with this email address");
-                matchFound = true;
-            }
+                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                {
+                    User_Id = duplicateUserId.Value
+                });
 
-            if (string.Equals(user.Mobile_Number, mobileNumber, StringComparison.InvariantCultureIgnoreCase))
-            {
-                response.Notifications.AddError("A user is already registered with this mobile number");
-                matchFound = true;
-            }
+                bool matchFound = false;
+                if (string.Equals(user.Email_Address, emailAddress, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    response.Notifications.AddError("A user is already registered with this email address");
+                    matchFound = true;
+                }
 
-            if (string.Equals(user.Username, username, StringComparison.InvariantCultureIgnoreCase))
-            {
-                response.Notifications.AddError("A user is already registered with this username");
-                matchFound = true;
+                if (string.Equals(user.Mobile_Number, mobileNumber, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    response.Notifications.AddError("A user is already registered with this mobile number");
+                    matchFound = true;
+                }
+
+                if (string.Equals(user.Username, username, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    response.Notifications.AddError("A user is already registered with this username");
+                    matchFound = true;
+                }
+
+                if (matchFound)
+                {
+                    return response;
+                }
+                _logger.LogError("Duplicate user found but could not determine why", $"UserId: {duplicateUserId}", duplicateUserRequest);
+                response.Notifications.AddError("An error ocurred while performing a duplicate check");
+                return response;
             }
+        }
+
+        public async Task<DuplicateRoleCheckResponse> DuplicateRoleCheck(DuplicateRoleCheckRequest request)
+        {
+            var response = new DuplicateRoleCheckResponse();
+
+            var roles = await _entityCache.Roles();
+            var matchFound = roles.Any(u => string.Equals(u.Name, request.Name, StringComparison.InvariantCultureIgnoreCase));
 
             if (matchFound)
             {
+                response.Notifications.AddError($"There is already a role with the name {request.Name}");
                 return response;
             }
-            _logger.LogError("Duplicate user found but could not determine why", $"UserId: {duplicateUserId}", duplicateUserRequest);
-            response.Notifications.AddError("An error ocurred while performing a duplicate check");
             return response;
         }
 

@@ -90,16 +90,26 @@ namespace Template.Infrastructure.Identity
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var users = await _entityCache.Users();
-            return users.FirstOrDefault(u => u.Id == id);
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                return await uow.UserRepo.GetUserById(new GetUserByIdRequest()
+                {
+                    User_Id = int.Parse(userId)
+                });
+            }
         }
 
         public async Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var users = await _entityCache.Users();
-            return users.FirstOrDefault(u => u.Username == normalizedUserName);
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                return await uow.UserRepo.GetUserByUsername(new GetUserByUsernameRequest()
+                {
+                    Username = normalizedUserName
+                });
+            }
         }
 
         public Task<string> GetNormalizedUserNameAsync(User user, CancellationToken cancellationToken)
@@ -183,8 +193,13 @@ namespace Template.Infrastructure.Identity
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var users = await _entityCache.Users();
-            return users.FirstOrDefault(u => u.Email_Address == normalizedEmail);
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                return await uow.UserRepo.GetUserByEmail(new GetUserByEmailRequest()
+                {
+                    Email_Address = normalizedEmail
+                });
+            }
         }
 
         public Task<string> GetNormalizedEmailAsync(User user, CancellationToken cancellationToken)
@@ -288,21 +303,7 @@ namespace Template.Infrastructure.Identity
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var roles = await _entityCache.Roles();
-            var role = roles.FirstOrDefault(r => r.Name == roleName.ToUpper());
-
-            if (role == null)
-            {
-                throw new Exception("Role does not exist");
-            }
-
-            var userRoles = await _entityCache.UserRoles();
-            userRoles = userRoles.Where(ur => ur.Role_Id == role.Id && ur.Is_Deleted).ToList();
-
-            var userIds = userRoles.Select(ur => ur.User_Id);
-            var users = await _entityCache.Users();
-
-            return users.Where(u => userIds.Contains(u.Id)).ToList();
+            throw new NotImplementedException();
         }
 
         public async Task SetPasswordHashAsync(User user, string passwordHash, CancellationToken cancellationToken)

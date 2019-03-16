@@ -53,6 +53,8 @@ body {
     line-height: 60px;
 }
 
+/* #region notifications */
+
 .notification {
     padding: 5px 5px 5px 25px;
 }
@@ -73,13 +75,26 @@ body {
     background-color: #ffd9b2;
 }
 
-#panelUserControls {
+/* #endregion */
+
+/* #region admin pages */
+
+#panelUserControls, #panelRoleControls {
     margin-bottom: 20px;
 }
 
-#panelEditUserControls {
+#panelEditUserControls, #panelEditRoleControls {
     display: inline-block;
     float: right;
+}
+
+tr.disabled-user td, tr.disabled-role td {
+    color: #bbbbbb;
+}
+
+input[type='checkbox'].form-control {
+    width: 40px;
+    cursor: pointer;
 }
 
 tr.selected td {
@@ -94,11 +109,4 @@ a.btn {
     color: white !important;
 }
 
-tr.disabled-user td {
-    color: #bbbbbb;
-}
-
-input[type='checkbox'].form-control {
-    width: 40px;
-    cursor: pointer;
-}
+/* #endregion  */

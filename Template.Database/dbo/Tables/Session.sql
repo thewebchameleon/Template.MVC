@@ -10,7 +10,7 @@
     CONSTRAINT [PK_Session] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Session__User_Created_By] FOREIGN KEY ([Created_By]) REFERENCES [dbo].[User] ([Id]),
     CONSTRAINT [FK_Session__User_Updated_By] FOREIGN KEY ([Updated_By]) REFERENCES [dbo].[User] ([Id]),
-    CONSTRAINT [FK_Session__User_UserId] FOREIGN KEY ([User_Id]) REFERENCES [dbo].[User] ([Id])
+    CONSTRAINT [FK_Session__User_UserId] FOREIGN KEY ([User_Id]) REFERENCES [dbo].[User] ([Id]),
 );
 
 GO

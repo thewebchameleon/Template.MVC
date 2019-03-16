@@ -9,12 +9,9 @@ namespace Template.Models.ServiceModels.Admin
 
         public List<Role> Roles { get; set; }
 
-        public List<Claim> Claims { get; set; }
-
         public GetUserResponse()
         {
             Roles = new List<Role>();
-            Claims = new List<Claim>();
         }
     }
 }

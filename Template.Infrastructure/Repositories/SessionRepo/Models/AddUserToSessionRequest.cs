@@ -6,10 +6,10 @@ namespace Template.Infrastructure.Repositories.SessionRepo.Models
 {
     public class AddUserToSessionRequest
     {
-        public string SessionGuid { get; set; }
+        public string Guid { get; set; }
 
-        public int UserId { get; set; }
+        public int User_Id { get; set; }
 
-        public int UpdatedBy { get; set; }
+        public int Updated_By { get; set; }
     }
 }

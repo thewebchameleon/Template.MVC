@@ -35,9 +35,8 @@ namespace Template.Models.ServiceModels.Admin
         [DataType(DataType.Password)]
         public string PasswordConfirm { get; set; }
 
-        public List<int> Claims { get; set; }
-
-        public List<int> Roles { get; set; }
+        [Display(Name = "Roles")]
+        public List<int> RoleIds { get; set; }
 
         public DateTime? Lockout_End { get; set; }
 
@@ -45,8 +44,7 @@ namespace Template.Models.ServiceModels.Admin
 
         public UpdateUserRequest()
         {
-            Claims = new List<int>();
-            Roles = new List<int>();
+            RoleIds = new List<int>();
         }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

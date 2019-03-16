@@ -41,7 +41,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -60,7 +60,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -79,7 +79,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<FetchDuplicateUserResponse>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -175,7 +175,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -195,7 +195,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -214,7 +214,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -233,7 +233,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -253,7 +253,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -272,7 +272,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -330,7 +330,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -350,7 +350,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -378,46 +378,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.ToList();
         }
 
-        public async Task<List<UserClaim>> GetUserClaims()
+        public async Task<User> GetUserById(GetUserByIdRequest request)
         {
-            var sqlStoredProc = "sp_user_claims_get";
+            var sqlStoredProc = "sp_user_get_by_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<UserClaim>
-                (
-                    storedProcedureName: sqlStoredProc,
-                    parameters: new { },
-                    dbconnectionString: DefaultConnectionString,
-                    sqltimeout: DefaultTimeOut,
-                    dbconnection: _connection,
-                    dbtransaction: _transaction);
-
-            return response.ToList();
-        }
-
-        public async Task DeleteUserClaim(DeleteUserClaimRequest request)
-        {
-            var sqlStoredProc = "sp_user_claim_delete";
-
-            var response = await DapperAdapter.GetFromStoredProcAsync<int>
-                (
-                    storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
-                    dbconnectionString: DefaultConnectionString,
-                    sqltimeout: DefaultTimeOut,
-                    dbconnection: _connection,
-                    dbtransaction: _transaction);
-
-            if (response == null || response.FirstOrDefault() == 0)
-            {
-                throw new Exception("No items were deleted");
-            }
-        }
-
-        public async Task<int> CreateUserClaim(CreateUserClaimRequest request)
-        {
-            var sqlStoredProc = "sp_user_claim_create";
-
-            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+            var response = await DapperAdapter.GetFromStoredProcAsync<User>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -426,11 +391,39 @@ namespace Template.Infrastructure.Repositories.UserRepo
                     dbconnection: _connection,
                     dbtransaction: _transaction);
 
-            if (response == null || response.First() == 0)
-            {
-                throw new Exception("No items have been created");
-            }
-            return response.First();
+            return response.FirstOrDefault();
+        }
+
+        public async Task<User> GetUserByUsername(GetUserByUsernameRequest request)
+        {
+            var sqlStoredProc = "sp_user_get_by_username";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<User>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.FirstOrDefault();
+        }
+
+        public async Task<User> GetUserByEmail(GetUserByEmailRequest request)
+        {
+            var sqlStoredProc = "sp_user_get_by_email";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<User>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.FirstOrDefault();
         }
 
         #endregion

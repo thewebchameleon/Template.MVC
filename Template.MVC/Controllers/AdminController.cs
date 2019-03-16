@@ -37,6 +37,8 @@ namespace Template.MVC.Controllers
 
         #region Public Methods
 
+        #region User Management
+
         [HttpGet]
         public async Task<IActionResult> UserManagement()
         {
@@ -69,11 +71,16 @@ namespace Template.MVC.Controllers
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
-                    return RedirectToHome();
+                    return RedirectToAction(nameof(AdminController.UserManagement));
                 }
                 AddFormErrors(response);
             }
-            return View(new CreateUserViewModel(request));
+            var viewModel = new CreateUserViewModel(request)
+            {
+                ClaimsLookup = await _entityCache.Claims(),
+                RolesLookup = await _entityCache.Roles()
+            };
+            return View(viewModel);
         }
 
         [HttpGet]
@@ -107,8 +114,7 @@ namespace Template.MVC.Controllers
                 RegistrationConfirmed = response.User.Registration_Confirmed,
                 Is_Locked_Out = response.User.Is_Locked_Out,
                 Lockout_End = response.User.Lockout_End,
-                Claims = response.Claims.Select(c => c.Id).ToList(),
-                Roles = response.Roles.Select(r => r.Id).ToList()
+                RoleIds = response.Roles.Select(r => r.Id).ToList()
             };
 
             return View(viewModel);
@@ -125,11 +131,16 @@ namespace Template.MVC.Controllers
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
-                    return RedirectToHome();
+                    return RedirectToAction(nameof(AdminController.UserManagement));
                 }
                 AddFormErrors(response);
             }
-            return View(new EditUserViewModel(request));
+            var viewModel = new EditUserViewModel(request)
+            {
+                ClaimsLookup = await _entityCache.Claims(),
+                RolesLookup = await _entityCache.Roles()
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -157,6 +168,124 @@ namespace Template.MVC.Controllers
             }
             return RedirectToAction(nameof(AdminController.UserManagement));
         }
+
+        #endregion
+
+        #region Role Management
+
+        [HttpGet]
+        public async Task<IActionResult> RoleManagement()
+        {
+            var viewModel = new RoleManagementViewModel();
+
+            var response = await _adminService.GetRoleManagement(new GetRoleManagementRequest());
+            viewModel.Roles = response.Roles;
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateRole()
+        {
+            var viewModel = new CreateRoleViewModel()
+            {
+                ClaimsLookup = await _entityCache.Claims()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRole(CreateRoleRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.CreateRole(request, User.UserId);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToAction(nameof(AdminController.RoleManagement));
+                }
+                AddFormErrors(response);
+            }
+            return View(new CreateRoleViewModel(request));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditRole(int id)
+        {
+            var viewModel = new EditRoleViewModel()
+            {
+                ClaimsLookup = await _entityCache.Claims()
+            };
+
+            var response = await _adminService.GetRole(new GetRoleRequest()
+            {
+                RoleId = id
+            });
+
+            if (!response.IsSuccessful)
+            {
+                AddNotifications(response);
+                return View(viewModel);
+            }
+
+            viewModel.Request = new UpdateRoleRequest()
+            {
+                RoleId = id,
+                Name = response.Role.Name,
+                Description = response.Role.Description,
+                ClaimIds = response.Claims.Select(c => c.Id).ToList()
+            };
+
+            return View(viewModel);
+        }  
+
+        [HttpPost]
+        public async Task<IActionResult> EditRole(int id, UpdateRoleRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                request.RoleId = id;
+
+                var response = await _adminService.UpdateRole(request, User.UserId);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToAction(nameof(AdminController.RoleManagement));
+                }
+                AddFormErrors(response);
+            }
+            return View(new EditRoleViewModel(request));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DisableRole(DisableRoleRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.DisableRole(request, User.UserId);
+                // this redirects so we push notification to the redirect
+                // todo: maintain state of selected item
+                AddNotifications(response);
+            }
+            return RedirectToAction(nameof(AdminController.RoleManagement));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EnableRole(EnableRoleRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.EnableRole(request, User.UserId);
+                // this redirects so we push notification to the redirect
+                // todo: maintain state of selected item
+                AddNotifications(response);
+            }
+            return RedirectToAction(nameof(AdminController.RoleManagement));
+        }
+
+        #endregion
 
         #endregion
     }

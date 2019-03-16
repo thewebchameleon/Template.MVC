@@ -43,14 +43,14 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
 
         Task<List<Claim>> GetClaims();
 
-        Task<List<UserClaim>> GetUserClaims();
-
         Task<int> CreateRoleClaim(CreateRoleClaimRequest request);
-
-        Task<int> CreateUserClaim(CreateUserClaimRequest request);
 
         Task DeleteRoleClaim(DeleteRoleClaimRequest request);
 
-        Task DeleteUserClaim(DeleteUserClaimRequest request);
+        Task<User> GetUserById(GetUserByIdRequest request);
+
+        Task<User> GetUserByUsername(GetUserByUsernameRequest request);
+
+        Task<User> GetUserByEmail(GetUserByEmailRequest request);
     }
 }

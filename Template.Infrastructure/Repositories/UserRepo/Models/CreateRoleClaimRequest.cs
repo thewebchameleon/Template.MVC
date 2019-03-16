@@ -4,9 +4,7 @@
     {
         public int Role_Id { get; set; }
 
-        public string Claim_Type { get; set; }
-
-        public string Claim_Value { get; set; }
+        public int Claim_Id { get; set; }
 
         public int Created_By { get; set; }
     }

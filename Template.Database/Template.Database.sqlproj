@@ -103,11 +103,8 @@
     <Build Include="dbo\Tables\User_Role.sql" />
     <Build Include="dbo\Tables\User_Token.sql" />
     <Build Include="dbo\Tables\Claim.sql" />
-    <Build Include="dbo\Stored Procedures\sp_user_claims_get.sql" />
-    <Build Include="dbo\Tables\User_Claim.sql" />
-    <Build Include="dbo\Stored Procedures\sp_user_claim_delete.sql" />
-    <Build Include="dbo\Stored Procedures\sp_user_claim_create.sql" />
-    <Build Include="dbo\Stored Procedures\sp_user_claims_get_by_user_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_claims_get.sql" />
+    <Build Include="dbo\Stored Procedures\sp_user_get_by_username.sql" />
+    <Build Include="dbo\Stored Procedures\sp_user_get_by_email.sql" />
   </ItemGroup>
 </Project>

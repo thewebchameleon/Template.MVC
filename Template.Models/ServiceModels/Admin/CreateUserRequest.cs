@@ -31,9 +31,13 @@ namespace Template.Models.ServiceModels.Admin
         [Display(Name = "Confirm password")]
         public string PasswordConfirm { get; set; }
 
-        public List<int> Claims { get; set; }
+        [Display(Name = "Roles")]
+        public List<int> RoleIds { get; set; }
 
-        public List<int> Roles { get; set; }
+        public CreateUserRequest()
+        {
+            RoleIds = new List<int>();
+        }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

@@ -1,0 +1,173 @@
+﻿@model RoleManagementViewModel
+
+@{
+    ViewData["Title"] = "Role Management";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+
+<div id="panelRoleControls">
+    <a href="@Url.Action("CreateRole", "Admin" )" class="btn btn-primary">Create Role</a>
+    <div id="panelEditRoleControls" style="display: none;">
+        <input id="hdnSelectedRoleId" type="hidden" />
+        <button id="btnDisableRoleModal" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalDisableRole" style="display: none;">Disable</button>
+        <button id="btnEnableRoleModal" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalEnableRole" style="display: none;">Enable</button>
+        <button id="btnEditRole" type="button" class="btn btn-primary">Edit</button>
+    </div>
+</div>
+
+<table id="rolemanagementTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Created Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model.Roles)
+        {
+            <tr class="@(role.Is_Enabled ? string.Empty: " disabled-role")">
+                <td class="user-identifier">
+                    <input class="u-roleId" type="hidden" value="@role.Id" />
+                    <input class="u-isEnabled" type="hidden" value="@role.Is_Enabled.ToString()" />
+                    @role.Name
+                </td>
+                <td>@role.Description</td>
+                <td>@role.Created_Date.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* deactivate modal *@
+<div class="modal fade" id="modalDisableRole" tabindex="-1" role="dialog" aria-labelledby="modalDisableRoleLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDisableRoleLabel">Disable Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to disable this role?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
+                <form asp-controller="Admin" asp-action="DisableRole" method="post" role="form">
+                    <input id="hdnDisableRoleId" name="RoleId" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* activate modal *@
+<div class="modal fade" id="modalEnableRole" tabindex="-1" role="dialog" aria-labelledby="modalEnableRoleLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEnableRoleLabel">Enable Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to enable this role?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
+                <form asp-controller="Admin" asp-action="EnableRole" method="post" role="form">
+                    <input id="hdnEnableRoleId" name="RoleId" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts  {
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var table = $('#rolemanagementTable').DataTable({
+                responsive: {
+                    details: false
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },
+                ]
+            });
+
+            // select row feature
+            $('#rolemanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('child'))
+                {
+                    return;
+                }
+
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $('#panelEditRoleControls').hide();
+                    $("#hdnSelectedRoleId").val('');
+                }
+                else
+                {
+                    var roleId = $(this).children('.user-identifier').children('input.u-roleId').val();
+                    var isEnabled = $(this).children('.user-identifier').children('input.u-isEnabled').val();
+
+                    if (isEnabled == 'False') {
+                        $('#btnEnableRoleModal').show();
+                        $('#btnDisableRoleModal').hide();
+                    } else {
+                        $('#btnEnableRoleModal').hide();
+                        $('#btnDisableRoleModal').show();
+                    }
+
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('#panelEditRoleControls').show();
+                    $("#hdnSelectedRoleId").val(roleId);
+                }
+            });
+
+        });
+
+        // deactivate user
+        $('#btnDisableRoleModal').click(function () {
+            var userId = GetSelectedRoleId();
+            $("#hdnDisableRoleId").val(userId);
+        });
+
+        // activate user
+        $('#btnEnableRoleModal').click(function () {
+            var userId = GetSelectedRoleId();
+            $("#hdnEnableRoleId").val(userId);
+        });
+
+        // edit user
+        $('#btnEditRole').click(function () {
+            var userId = GetSelectedRoleId();
+            window.location.href = '@(Url.Action(nameof(AdminController.EditRole), "Admin"))/' + userId;
+        });
+
+        function GetSelectedRoleId() {
+            return $("#hdnSelectedRoleId").val();
+        }
+
+    </script>
+
+}

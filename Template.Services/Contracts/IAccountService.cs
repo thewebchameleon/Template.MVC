@@ -18,6 +18,8 @@ namespace Template.Services.Contracts
 
         Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request);
 
-        Task<DuplicateCheckResponse> DuplicateCheck(DuplicateCheckRequest request);
+        Task<DuplicateUserCheckResponse> DuplicateUserCheck(DuplicateUserCheckRequest request);
+
+        Task<DuplicateRoleCheckResponse> DuplicateRoleCheck(DuplicateRoleCheckRequest request);
     }
 }
