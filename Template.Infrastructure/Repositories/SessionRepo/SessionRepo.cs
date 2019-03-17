@@ -32,11 +32,11 @@ namespace Template.Infrastructure.Repositories.SessionRepo
 
         #region Public Methods
 
-        public async Task AddUserToSession(AddUserToSessionRequest request)
+        public async Task<Template.Models.DomainModels.Session> AddUserToSession(AddUserToSessionRequest request)
         {
             var sqlStoredProc = "sp_session_add_user_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.Session>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -45,10 +45,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
                     dbconnection: _connection,
                     dbtransaction: _transaction);
 
-            if (response == null || response.FirstOrDefault() == 0)
-            {
-                throw new Exception("No items were updated");
-            }
+            return response.FirstOrDefault();
         }
 
         public async Task<Template.Models.DomainModels.Session> CreateSession(CreateSessionRequest request)

@@ -7,6 +7,6 @@ namespace Template.Services.Contracts
     {
         Task<GetSessionResponse> GetSession();
 
-        Task<GetAuthenticatedSessionResponse> GetAuthenticatedSession();
+        Task<GetSessionResponse> GetAuthenticatedSession();
     }
 }

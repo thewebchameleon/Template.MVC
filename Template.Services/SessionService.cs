@@ -38,7 +38,7 @@ namespace Template.Services
 
         #region Public Methods
 
-        public async Task<GetAuthenticatedSessionResponse> GetAuthenticatedSession()
+        public async Task<GetSessionResponse> GetAuthenticatedSession()
         {
             var getSessionResponse = await GetSession();
             if (getSessionResponse.User == null)
@@ -46,7 +46,7 @@ namespace Template.Services
                 throw new Exception("Session is not authenticated");
             }
 
-            return getSessionResponse as GetAuthenticatedSessionResponse;
+            return getSessionResponse;
         }
 
         public async Task<GetSessionResponse> GetSession()

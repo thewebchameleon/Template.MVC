@@ -6,7 +6,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo.Contracts
 {
     public interface ISessionRepo
     {
-        Task AddUserToSession(AddUserToSessionRequest request);
+        Task<Template.Models.DomainModels.Session> AddUserToSession(AddUserToSessionRequest request);
 
         Task<Template.Models.DomainModels.Session> CreateSession(CreateSessionRequest request);
 

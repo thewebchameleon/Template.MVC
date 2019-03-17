@@ -78,7 +78,7 @@
     <Build Include="dbo\Stored Procedures\sp_roles_get.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_add_user_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_create.sql" />
-    <Build Include="dbo\Stored Procedures\sp_session_get_by_user_id.sql" />
+    <Build Include="dbo\Stored Procedures\sp_sessions_get_by_user_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_delete.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_duplicate_check.sql" />

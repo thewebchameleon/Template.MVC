@@ -45,13 +45,15 @@ namespace Template.Infrastructure.Identity
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                await uow.SessionRepo.AddUserToSession(new Repositories.SessionRepo.Models.AddUserToSessionRequest()
+                session = await uow.SessionRepo.AddUserToSession(new Repositories.SessionRepo.Models.AddUserToSessionRequest()
                 {
                     Id = session.Id,
                     User_Id = user.Id,
                     Updated_By = ApplicationConstants.SystemUserId
                 });
                 uow.Commit();
+
+                _sessionProvider.Set(SessionConstants.SessionEntity, session);
             }
 
             return principal;

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_session_get_by_user_id]
+﻿CREATE PROCEDURE [dbo].[sp_sessions_get_by_user_id]
 	@User_Id INT
 AS
 BEGIN

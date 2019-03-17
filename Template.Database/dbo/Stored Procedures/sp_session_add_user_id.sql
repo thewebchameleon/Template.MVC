@@ -12,5 +12,15 @@ BEGIN
    WHERE
 		[Id] = @Id
 
-   SELECT @Id AS [Id]
+   SELECT
+		[S].[Id],
+		[S].[User_Id],
+		[S].[Created_By],
+		[S].[Created_Date],
+		[S].[Updated_By],
+		[S].[Updated_Date],
+		[S].Is_Deleted
+   FROM   [Session] [S](NOLOCK)
+   WHERE  [Id] = @Id
+   AND S.Is_Deleted = 0
 END
