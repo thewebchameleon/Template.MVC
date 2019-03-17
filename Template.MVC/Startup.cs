@@ -1,24 +1,23 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Configuration.Models;
 using Template.Infrastructure.Identity;
+using Template.Infrastructure.Session;
+using Template.Infrastructure.Session.Contracts;
 using Template.Infrastructure.UnitOfWork;
 using Template.Infrastructure.UnitOfWork.Contracts;
-using Template.Models;
 using Template.Models.DomainModels;
+using Template.MVC.Middleware;
 using Template.Services;
 using Template.Services.Contracts;
 
@@ -50,20 +49,20 @@ namespace Template.MVC
             services.AddTransient<IUserStore<User>, UserManager>();
             services.AddTransient<IRoleStore<Role>, RoleManager>();
 
+            services.AddTransient<ISessionProvider, SessionProvider>();
             services.AddTransient<ICacheProvider, MemoryCacheProvider>();
             services.AddTransient<IEntityCache, EntityCache>();
             services.AddTransient<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
-            //services.AddTransient<IUserServiceManager, UserSerivceManager>();
-
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IAdminService, AdminService>();
+            services.AddTransient<ISessionService, SessionService>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+                options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
@@ -73,34 +72,20 @@ namespace Template.MVC
                 .AddDefaultTokenProviders();
 
             // Configure Identity options and password complexity here
-            services.Configure<IdentityOptions>(options =>
+            services.Configure<IdentityOptions>(options => { options = ApplicationConstants.IdentityOptions; });
+            services.ConfigureApplicationCookie(options => { options = ApplicationConstants.CookieAuthenticationOptions; });
+
+            services.AddAuthorization(options => { options = ApplicationConstants.AuthorizationOptions; });
+
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
             {
-                // User settings
-                options.User.RequireUniqueEmail = true;
+                options = new SessionOptions();
 
-                // Password settings
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-
-                // Lockout settings
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-                options.Lockout.MaxFailedAccessAttempts = 10;
+                options.IdleTimeout = TimeSpan.FromSeconds(ApplicationConstants.SessionTimeoutSeconds);
+                options.Cookie.HttpOnly = true;
             });
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/Account/Login";
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(Policies.ViewAllUsersPolicy, policy => policy.RequireClaim(ClaimConstants.Permission, ApplicationPermissions.ViewUsers));
-            });
-
-            services.AddMemoryCache();
             services.AddMvc()
 #if DEBUG
                 // todo: this is causing routing to throw an exception - https://github.com/aspnet/AspNetCore/issues/7647
@@ -138,7 +123,8 @@ namespace Template.MVC
             });
 
             app.UseCookiePolicy();
-
+            app.UseSession();
+            app.UseSessionLogging();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMvc();

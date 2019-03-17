@@ -15,6 +15,7 @@ namespace Template.MVC.Controllers
         #region Instance Fields
 
         private readonly IAccountService _accountService;
+        private readonly ISessionService _sessionService;
         private readonly ILogger _logger;
 
         #endregion
@@ -23,9 +24,11 @@ namespace Template.MVC.Controllers
 
         public AccountController(
             IAccountService accountService,
+            ISessionService sessionService,
             ILoggerFactory loggerFactory)
         {
             _accountService = accountService;
+            _sessionService = sessionService;
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
@@ -135,10 +138,7 @@ namespace Template.MVC.Controllers
         public async Task<IActionResult> Profile()
         {
             var viewModel = new ProfileViewModel();
-            var response = await _accountService.GetProfile(new GetProfileRequest()
-            {
-                UserId = User.UserId
-            });
+            var response = await _accountService.GetProfile();
 
             viewModel.Request = new UpdateProfileRequest()
             {
@@ -159,8 +159,6 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                request.UserId = User.UserId;
-
                 var response = await _accountService.UpdateProfile(request);
                 if (response.IsSuccessful)
                 {
@@ -172,10 +170,7 @@ namespace Template.MVC.Controllers
 
             // todo: viewmodels should be stored in session to avoid making extra calls to the service
             var viewModel = new ProfileViewModel();
-            var profileResponse = await _accountService.GetProfile(new GetProfileRequest()
-            {
-                UserId = User.UserId
-            });
+            var profileResponse = await _accountService.GetProfile();
             viewModel.Roles = profileResponse.Roles;
             return View(viewModel);
         }

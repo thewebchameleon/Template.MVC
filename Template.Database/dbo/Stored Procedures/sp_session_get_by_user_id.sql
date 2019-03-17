@@ -4,7 +4,6 @@ AS
 BEGIN
    SELECT
 		[S].[Id],
-		[S].[Guid],
 		[S].[User_Id],
 		[S].[Created_By],
 		[S].[Created_Date],

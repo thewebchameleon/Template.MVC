@@ -3,22 +3,19 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Template.Common.Notifications;
-using Template.Models;
 using Template.Models.ServiceModels;
+using Template.Services.Contracts;
 
 namespace Template.MVC.Controllers
 {
     public class BaseController : Controller
     {
-        #region Properties
+        #region Instance Fields
 
-        public new ApplicationUser User
-        {
-            get
-            {
-                return new ApplicationUser(base.User);
-            }
-        }
+        #endregion
+
+        #region Constructors
+
 
         #endregion
 

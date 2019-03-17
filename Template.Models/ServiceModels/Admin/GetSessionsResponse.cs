@@ -5,11 +5,11 @@ namespace Template.Models.ServiceModels.Admin
 {
     public class GetSessionsResponse : ServiceResponse
     {
-        public List<Session> Sessions { get; set; }
+        public List<DomainModels.Session> Sessions { get; set; }
 
         public GetSessionsResponse()
         {
-            Sessions = new List<Session>();
+            Sessions = new List<DomainModels.Session>();
         }
     }
 }

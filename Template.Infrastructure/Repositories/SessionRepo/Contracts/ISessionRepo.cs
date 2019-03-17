@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Template.Infrastructure.Repositories.SessionRepo.Models;
-using Template.Models.DomainModels;
 
 namespace Template.Infrastructure.Repositories.SessionRepo.Contracts
 {
@@ -9,12 +8,10 @@ namespace Template.Infrastructure.Repositories.SessionRepo.Contracts
     {
         Task AddUserToSession(AddUserToSessionRequest request);
 
-        Task CreateSession(CreateSessionRequest request);
+        Task<Template.Models.DomainModels.Session> CreateSession(CreateSessionRequest request);
 
-        Task<Session> GetSessionByGuid(GetSessionByGuidRequest request);
+        Task<List<Template.Models.DomainModels.Session>> GetSessionsByUserId(GetSessionsByUserIdRequest request);
 
-        Task DeleteSession(DeleteSessionRequest request);
-
-        Task<List<Session>> GetSessionsByUserId(GetSessionsByUserIdRequest request);
+        Task<List<Template.Models.DomainModels.Session>> GetSessionsByStartDate(GetSessionsByStartDateRequest request);
     }
 }

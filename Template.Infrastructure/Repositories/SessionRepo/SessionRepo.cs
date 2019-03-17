@@ -7,7 +7,6 @@ using Template.Infrastructure.Adapters;
 using Template.Infrastructure.Configuration.Models;
 using Template.Infrastructure.Repositories.SessionRepo.Contracts;
 using Template.Infrastructure.Repositories.SessionRepo.Models;
-using Template.Models.DomainModels;
 
 namespace Template.Infrastructure.Repositories.SessionRepo
 {
@@ -35,7 +34,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
 
         public async Task AddUserToSession(AddUserToSessionRequest request)
         {
-            var sqlStoredProc = "sp_session_add_user_by_guid";
+            var sqlStoredProc = "sp_session_add_user_id";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
@@ -48,53 +47,15 @@ namespace Template.Infrastructure.Repositories.SessionRepo
 
             if (response == null || response.FirstOrDefault() == 0)
             {
-                throw new Exception("No items were created");
+                throw new Exception("No items were updated");
             }
         }
 
-        public async Task CreateSession(CreateSessionRequest request)
+        public async Task<Template.Models.DomainModels.Session> CreateSession(CreateSessionRequest request)
         {
             var sqlStoredProc = "sp_session_create";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<int>
-                (
-                    storedProcedureName: sqlStoredProc,
-                    parameters: request,
-                    dbconnectionString: DefaultConnectionString,
-                    sqltimeout: DefaultTimeOut,
-                    dbconnection: _connection,
-                    dbtransaction: _transaction);
-
-            if (response == null || response.FirstOrDefault() == 0)
-            {
-                throw new Exception("No items were created");
-            }
-        }
-
-        public async Task DeleteSession(DeleteSessionRequest request)
-        {
-            var sqlStoredProc = "sp_session_delete";
-
-            var response = await DapperAdapter.GetFromStoredProcAsync<int>
-                (
-                    storedProcedureName: sqlStoredProc,
-                    parameters: request,
-                    dbconnectionString: DefaultConnectionString,
-                    sqltimeout: DefaultTimeOut,
-                    dbconnection: _connection,
-                    dbtransaction: _transaction);
-
-            if (response == null || response.FirstOrDefault() == 0)
-            {
-                throw new Exception("No items were deleted");
-            }
-        }
-
-        public async Task<Session> GetSessionByGuid(GetSessionByGuidRequest request)
-        {
-            var sqlStoredProc = "sp_session_get_by_guid";
-
-            var response = await DapperAdapter.GetFromStoredProcAsync<Session>
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.Session>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -106,11 +67,27 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             return response.FirstOrDefault();
         }
 
-        public async Task<List<Session>> GetSessionsByUserId(GetSessionsByUserIdRequest request)
+        public async Task<List<Template.Models.DomainModels.Session>> GetSessionsByStartDate(GetSessionsByStartDateRequest request)
+        {
+            var sqlStoredProc = "sp_sessions_get_by_start_date";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.Session>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.ToList();
+        }
+
+        public async Task<List<Template.Models.DomainModels.Session>> GetSessionsByUserId(GetSessionsByUserIdRequest request)
         {
             var sqlStoredProc = "sp_sessions_get_by_user_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Session>
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.Session>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,

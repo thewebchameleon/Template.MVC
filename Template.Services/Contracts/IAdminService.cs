@@ -7,40 +7,40 @@ namespace Template.Services.Contracts
     {
         Task<GetUserManagementResponse> GetUserManagement();
 
-        Task<DisableUserResponse> DisableUser(DisableUserRequest request, int userId);
+        Task<DisableUserResponse> DisableUser(DisableUserRequest request);
 
-        Task<EnableUserResponse> EnableUser(EnableUserRequest request, int userId);
+        Task<EnableUserResponse> EnableUser(EnableUserRequest request);
 
         Task<GetUserResponse> GetUser(GetUserRequest request);
 
-        Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request, int userId);
+        Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request);
 
-        Task<CreateUserResponse> CreateUser(CreateUserRequest request, int userId);
+        Task<CreateUserResponse> CreateUser(CreateUserRequest request);
 
 
         Task<GetRoleManagementResponse> GetRoleManagement();
 
-        Task<DisableRoleResponse> DisableRole(DisableRoleRequest request, int userId);
+        Task<DisableRoleResponse> DisableRole(DisableRoleRequest request);
 
-        Task<EnableRoleResponse> EnableRole(EnableRoleRequest request, int userId);
+        Task<EnableRoleResponse> EnableRole(EnableRoleRequest request);
 
         Task<GetRoleResponse> GetRole(GetRoleRequest request);
 
-        Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request, int userId);
+        Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request);
 
-        Task<CreateRoleResponse> CreateRole(CreateRoleRequest request, int userId);
+        Task<CreateRoleResponse> CreateRole(CreateRoleRequest request);
 
 
         Task<GetConfigurationManagementResponse> GetConfigurationManagement();
 
         Task<GetConfigurationItemResponse> GetConfigurationItem(GetConfigurationItemRequest request);
 
-        Task<UpdateConfigurationItemResponse> UpdateConfigurationItem(UpdateConfigurationItemRequest request, int userId);
+        Task<UpdateConfigurationItemResponse> UpdateConfigurationItem(UpdateConfigurationItemRequest request);
 
-        Task<CreateConfigurationItemResponse> CreateConfigurationItem(CreateConfigurationItemRequest request, int userId);
+        Task<CreateConfigurationItemResponse> CreateConfigurationItem(CreateConfigurationItemRequest request);
 
 
-        Task<GetSessionsResponse> GetSessions();
+        Task<GetSessionsResponse> GetSessions(GetSessionsRequest request);
 
         Task<GetSessionResponse> GetSession(GetSessionRequest request);
     }

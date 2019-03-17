@@ -1,7 +1,7 @@
 ﻿namespace Template.Infrastructure.Identity
 {
-    public class ClaimConstants
+    public static class ClaimConstants
     {
-        public const string Permission = "permission";
+        public const string SessionId = "SessionId";
     }
 }

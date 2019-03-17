@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
 using Template.Models.DomainModels;
+using Template.Models.ServiceModels.Admin;
 
 namespace Template.Models.ViewModels.Admin
 {
-    public class SessionsViewModel : ViewModel
+    public class SessionsViewModel : ViewModel<GetSessionsRequest>
     {
-        public List<Session> Sessions { get; set; }
+        #region Constructors
 
-        public SessionsViewModel()
-        {
+        public SessionsViewModel(GetSessionsRequest request) : base(request) {
             Sessions = new List<Session>();
         }
+
+        public SessionsViewModel() : this(new GetSessionsRequest()) { }
+
+        #endregion
+
+        public List<Session> Sessions { get; set; }
     }
 }

@@ -76,10 +76,8 @@
     <Build Include="dbo\Stored Procedures\sp_role_delete.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_update.sql" />
     <Build Include="dbo\Stored Procedures\sp_roles_get.sql" />
-    <Build Include="dbo\Stored Procedures\sp_session_add_user_by_guid.sql" />
+    <Build Include="dbo\Stored Procedures\sp_session_add_user_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_create.sql" />
-    <Build Include="dbo\Stored Procedures\sp_session_delete.sql" />
-    <Build Include="dbo\Stored Procedures\sp_session_get_by_guid.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_get_by_user_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_delete.sql" />
@@ -108,5 +106,6 @@
     <Build Include="dbo\Stored Procedures\sp_user_get_by_email.sql" />
     <Build Include="dbo\Stored Procedures\sp_configuration_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_configuration_update.sql" />
+    <Build Include="dbo\Stored Procedures\sp_sessions_get_by_start_date.sql" />
   </ItemGroup>
 </Project>

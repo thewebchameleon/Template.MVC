@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Template.Infrastructure.Cache.Contracts;
@@ -67,7 +68,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.CreateUser(request, User.UserId);
+                var response = await _adminService.CreateUser(request);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
@@ -127,7 +128,7 @@ namespace Template.MVC.Controllers
             {
                 request.UserId = id;
 
-                var response = await _adminService.UpdateUser(request, User.UserId);
+                var response = await _adminService.UpdateUser(request);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
@@ -148,7 +149,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.DisableUser(request, User.UserId);
+                var response = await _adminService.DisableUser(request);
                 // this redirects so we push notification to the redirect
                 // todo: maintain state of selected item
                 AddNotifications(response);
@@ -161,7 +162,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.EnableUser(request, User.UserId);
+                var response = await _adminService.EnableUser(request);
                 // this redirects so we push notification to the redirect
                 // todo: maintain state of selected item
                 AddNotifications(response);
@@ -200,7 +201,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.CreateRole(request, User.UserId);
+                var response = await _adminService.CreateRole(request);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
@@ -248,7 +249,7 @@ namespace Template.MVC.Controllers
             {
                 request.RoleId = id;
 
-                var response = await _adminService.UpdateRole(request, User.UserId);
+                var response = await _adminService.UpdateRole(request);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
@@ -264,7 +265,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.DisableRole(request, User.UserId);
+                var response = await _adminService.DisableRole(request);
                 // this redirects so we push notification to the redirect
                 // todo: maintain state of selected item
                 AddNotifications(response);
@@ -277,7 +278,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.EnableRole(request, User.UserId);
+                var response = await _adminService.EnableRole(request);
                 // this redirects so we push notification to the redirect
                 // todo: maintain state of selected item
                 AddNotifications(response);
@@ -312,7 +313,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.CreateConfigurationItem(request, User.UserId);
+                var response = await _adminService.CreateConfigurationItem(request);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
@@ -361,7 +362,7 @@ namespace Template.MVC.Controllers
             request.Id = id;
             if (ModelState.IsValid)
             {
-                var response = await _adminService.UpdateConfigurationItem(request, User.UserId);
+                var response = await _adminService.UpdateConfigurationItem(request);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
@@ -382,9 +383,26 @@ namespace Template.MVC.Controllers
         {
             var viewModel = new SessionsViewModel();
 
-            var response = await _adminService.GetSessions();
+            var response = await _adminService.GetSessions(new GetSessionsRequest());
             viewModel.Sessions = response.Sessions;
 
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Sessions(GetSessionsRequest request)
+        {
+            var viewModel = new SessionsViewModel(request);
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.GetSessions(request);
+                if (response.IsSuccessful)
+                {
+                    viewModel.Sessions = response.Sessions;
+                    return View(viewModel);
+                }
+                AddFormErrors(response);
+            }
             return View(viewModel);
         }
 

@@ -2,8 +2,6 @@
 {
     public class CreateSessionRequest
     {
-        public string Guid { get; set; }
-
-        public int CreatedBy { get; set; }
+        public int Created_By { get; set; }
     }
 }

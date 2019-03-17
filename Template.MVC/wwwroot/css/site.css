@@ -79,7 +79,7 @@ body {
 
 /* #region admin pages */
 
-#panelUserControls, #panelRoleControls, #panelConfigurationItemControls {
+#panelUserControls, #panelRoleControls, #panelConfigurationItemControls, #panelSessionControls {
     margin-bottom: 20px;
 }
 

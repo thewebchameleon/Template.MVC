@@ -27,6 +27,7 @@ namespace Template.Services
         private readonly SignInManager<User> _signInManager;
 
         private readonly IEmailService _emailService;
+        private readonly ISessionService _sessionService;
 
         private readonly IUnitOfWorkFactory _uowFactory;
         private readonly IEntityCache _entityCache;
@@ -41,6 +42,7 @@ namespace Template.Services
             RoleManager<Role> roleManager,
             SignInManager<User> signInManager,
             IEmailService emailService,
+            ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
             IEntityCache entityCache)
         {
@@ -54,6 +56,7 @@ namespace Template.Services
 
             _entityCache = entityCache;
             _emailService = emailService;
+            _sessionService = sessionService;
         }
 
         #endregion
@@ -139,20 +142,22 @@ namespace Template.Services
             throw new NotImplementedException();
         }
 
-        public async Task<GetProfileResponse> GetProfile(GetProfileRequest request)
+        public async Task<GetProfileResponse> GetProfile()
         {
+            var session = await _sessionService.GetAuthenticatedSession();
+
             User user;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    User_Id = request.UserId
+                    User_Id = session.User.Id
                 });
             }
 
             var roles = await _entityCache.Roles();
             var userRoles = await _entityCache.UserRoles();
-            var usersRoles = userRoles.Where(ur => ur.User_Id == request.UserId).Select(ur => ur.Role_Id);
+            var usersRoles = userRoles.Where(ur => ur.User_Id == session.User.Id).Select(ur => ur.Role_Id);
 
             return new GetProfileResponse()
             {

@@ -14,7 +14,7 @@ namespace Template.Services.Contracts
 
         Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request);
 
-        Task<GetProfileResponse> GetProfile(GetProfileRequest request);
+        Task<GetProfileResponse> GetProfile();
 
         Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request);
 

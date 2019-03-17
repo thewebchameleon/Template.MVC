@@ -10,10 +10,14 @@
 <h4>@ViewData["Title"]</h4>
 <hr />
 
+<div id="panelSessionControls">
+    <button id="btnChangeStartDateModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalChangeStartDateModal">Change start date</button>
+</div>
+
 <table id="sessionsTable" class="table table-bordered" style="width: 100%;">
     <thead>
         <tr>
-            <th>Guid</th>
+            <th>Id</th>
             <th>User Id</th>
             <th>Created Date </th>
         </tr>
@@ -24,14 +28,41 @@
             <tr>
                 <td class="session-identifier">
                     <input class="u-sessionId" type="hidden" value="@session.Id" />
-                    @session.Guid
+                    @session.Id
                 </td>
                 <td>@session.User_Id</td>
-                <td>@session.Created_Date.ToShortDateString()</td>
+                <td>@session.Created_Date.ToShortDateTimeString()</td>
             </tr>
         }
     </tbody>
 </table>
+
+@* change start date modal *@
+<div class="modal fade" id="modalChangeStartDateModal" tabindex="-1" role="dialog" aria-labelledby="modalChangeStartDateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalChangeStartDateModalLabel">Change start date</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                When do you want to look for sessions from?
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Admin" asp-action="ChangeSessionsStartDate" method="post" role="form">
+                    <div class="form-group">
+                        <label asp-for="Request.StartDate" class="control-label"></label>
+                        <input asp-for="Request.StartDate" class="form-control" />
+                        <span asp-validation-for="Request.StartDate" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts  {
 
@@ -53,13 +84,11 @@
             });
 
             // select row feature
-            $('#sessionmanagementTable tbody').on('click', 'tr', function (e) {
-                if ($(this).hasClass('selected'))
-                {
+            $('#sessionsTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
                 }
-                else
-                {
+                else {
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
                 }

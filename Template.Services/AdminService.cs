@@ -27,10 +27,10 @@ namespace Template.Services
 
         private readonly IEmailService _emailService;
         private readonly IAccountService _accountService;
+        private readonly ISessionService _sessionService;
 
         private readonly IUnitOfWorkFactory _uowFactory;
         private readonly IEntityCache _entityCache;
-        private IEnumerable<object> newClaims;
 
         #endregion
 
@@ -43,6 +43,7 @@ namespace Template.Services
             SignInManager<User> signInManager,
             IEmailService emailService,
             IAccountService accountService,
+            ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
             IEntityCache entityCache)
         {
@@ -57,6 +58,7 @@ namespace Template.Services
             _entityCache = entityCache;
             _emailService = emailService;
             _accountService = accountService;
+            _sessionService = sessionService;
         }
 
         #endregion
@@ -78,8 +80,9 @@ namespace Template.Services
             }
         }
 
-        public async Task<EnableUserResponse> EnableUser(EnableUserRequest request, int userId)
+        public async Task<EnableUserResponse> EnableUser(EnableUserRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new EnableUserResponse();
 
             User user;
@@ -92,7 +95,7 @@ namespace Template.Services
                 uow.Commit();
             }
             user.Is_Enabled = true;
-            user.Updated_By = userId;
+            user.Updated_By = session.User.Id;
 
             var updateResponse = await _userManager.UpdateAsync(user);
             if (!updateResponse.Succeeded)
@@ -107,8 +110,9 @@ namespace Template.Services
             return response;
         }
 
-        public async Task<DisableUserResponse> DisableUser(DisableUserRequest request, int userId)
+        public async Task<DisableUserResponse> DisableUser(DisableUserRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new DisableUserResponse();
 
             User user;
@@ -122,7 +126,7 @@ namespace Template.Services
             }
 
             user.Is_Enabled = false;
-            user.Updated_By = userId;
+            user.Updated_By = session.User.Id;
 
             var updateResponse = await _userManager.UpdateAsync(user);
             if (!updateResponse.Succeeded)
@@ -167,8 +171,9 @@ namespace Template.Services
             }
         }
 
-        public async Task<CreateUserResponse> CreateUser(CreateUserRequest request, int userId)
+        public async Task<CreateUserResponse> CreateUser(CreateUserRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new CreateUserResponse();
             var username = request.EmailAddress;
 
@@ -191,22 +196,23 @@ namespace Template.Services
                 Last_Name = request.LastName,
                 Mobile_Number = request.MobileNumber,
                 Email_Address = request.EmailAddress,
-                Created_By = userId,
-                Updated_By = userId,
+                Created_By = session.User.Id,
+                Updated_By = session.User.Id,
                 Is_Enabled = true
             };
 
             await _userManager.CreateAsync(user, request.Password);
             _entityCache.Remove(CacheConstants.Users);
 
-            await CreateOrDeleteUserRoles(request.RoleIds, user.Id, userId);
+            await CreateOrDeleteUserRoles(request.RoleIds, user.Id, session.User.Id);
 
             response.Notifications.Add($"User {request.Username} has been created", NotificationTypeEnum.Success);
             return response;
         }
 
-        public async Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request, int userId)
+        public async Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new UpdateUserResponse();
 
             User user;
@@ -227,9 +233,9 @@ namespace Template.Services
             user.Registration_Confirmed = request.RegistrationConfirmed;
             user.Lockout_End = request.Lockout_End;
             user.Is_Locked_Out = request.Is_Locked_Out;
-            user.Updated_By = userId;
+            user.Updated_By = session.User.Id;
 
-            await CreateOrDeleteUserRoles(request.RoleIds, request.UserId, userId);
+            await CreateOrDeleteUserRoles(request.RoleIds, request.UserId, session.User.Id);
 
             if (!string.IsNullOrEmpty(request.Password))
             {
@@ -306,15 +312,16 @@ namespace Template.Services
             return response;
         }
 
-        public async Task<EnableRoleResponse> EnableRole(EnableRoleRequest request, int userId)
+        public async Task<EnableRoleResponse> EnableRole(EnableRoleRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new EnableRoleResponse();
 
             var roles = await _entityCache.Roles();
             var role = roles.FirstOrDefault(u => u.Id == request.RoleId);
 
             role.Is_Enabled = true;
-            role.Updated_By = userId;
+            role.Updated_By = session.User.Id;
 
             var updateResponse = await _roleManager.UpdateAsync(role);
             if (!updateResponse.Succeeded)
@@ -329,15 +336,16 @@ namespace Template.Services
             return response;
         }
 
-        public async Task<DisableRoleResponse> DisableRole(DisableRoleRequest request, int roleId)
+        public async Task<DisableRoleResponse> DisableRole(DisableRoleRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new DisableRoleResponse();
 
             var roles = await _entityCache.Roles();
             var role = roles.FirstOrDefault(u => u.Id == request.Id);
 
             role.Is_Enabled = false;
-            role.Updated_By = roleId;
+            role.Updated_By = session.User.Id;
 
             var updateResponse = await _roleManager.UpdateAsync(role);
             if (!updateResponse.Succeeded)
@@ -376,8 +384,9 @@ namespace Template.Services
             return response;
         }
 
-        public async Task<CreateRoleResponse> CreateRole(CreateRoleRequest request, int userId)
+        public async Task<CreateRoleResponse> CreateRole(CreateRoleRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new CreateRoleResponse();
 
             var duplicateResponse = await _accountService.DuplicateRoleCheck(new DuplicateRoleCheckRequest()
@@ -395,22 +404,23 @@ namespace Template.Services
             {
                 Name = request.Name,
                 Description = request.Description,
-                Created_By = userId,
-                Updated_By = userId,
+                Created_By = session.User.Id,
+                Updated_By = session.User.Id,
                 Is_Enabled = true
             };
 
             await _roleManager.CreateAsync(role);
             _entityCache.Remove(CacheConstants.Roles);
 
-            await CreateOrDeleteRoleClaims(request.ClaimIds, role.Id, userId);
+            await CreateOrDeleteRoleClaims(request.ClaimIds, role.Id, session.User.Id);
 
             response.Notifications.Add($"Role '{request.Name}' has been created", NotificationTypeEnum.Success);
             return response;
         }
 
-        public async Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request, int userId)
+        public async Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new UpdateRoleResponse();
 
             var roles = await _entityCache.Roles();
@@ -418,9 +428,9 @@ namespace Template.Services
 
             role.Name = request.Name;
             role.Description = request.Description;
-            role.Updated_By = userId;
+            role.Updated_By = session.User.Id;
 
-            await CreateOrDeleteRoleClaims(request.ClaimIds, request.RoleId, userId);
+            await CreateOrDeleteRoleClaims(request.ClaimIds, request.RoleId, session.User.Id);
 
             var updateResponse = await _roleManager.UpdateAsync(role);
             if (!updateResponse.Succeeded)
@@ -499,8 +509,9 @@ namespace Template.Services
             return response;
         }
 
-        public async Task<UpdateConfigurationItemResponse> UpdateConfigurationItem(UpdateConfigurationItemRequest request, int userId)
+        public async Task<UpdateConfigurationItemResponse> UpdateConfigurationItem(UpdateConfigurationItemRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new UpdateConfigurationItemResponse();
 
             using (var uow = _uowFactory.GetUnitOfWork())
@@ -515,7 +526,7 @@ namespace Template.Services
                     Int_Value = request.IntValue,
                     Money_Value = request.MoneyValue,
                     String_Value = request.StringValue,
-                    Updated_By = userId
+                    Updated_By = session.User.Id
                 });
                 uow.Commit();
             }
@@ -529,8 +540,9 @@ namespace Template.Services
             return response;
         }
 
-        public async Task<CreateConfigurationItemResponse> CreateConfigurationItem(CreateConfigurationItemRequest request, int userId)
+        public async Task<CreateConfigurationItemResponse> CreateConfigurationItem(CreateConfigurationItemRequest request)
         {
+            var session = await _sessionService.GetAuthenticatedSession();
             var response = new CreateConfigurationItemResponse();
 
             int id;
@@ -546,7 +558,7 @@ namespace Template.Services
                     Int_Value = request.IntValue,
                     Money_Value = request.MoneyValue,
                     String_Value = request.StringValue,
-                    Created_By = userId
+                    Created_By = session.User.Id
                 });
                 uow.Commit();
             }
@@ -564,14 +576,31 @@ namespace Template.Services
 
         #region Sessions
 
-        public async Task<GetSessionsResponse> GetSessions()
-        {
-            return new GetSessionsResponse(); 
-        }
-
         public async Task<GetSessionResponse> GetSession(GetSessionRequest request)
         {
             return new GetSessionResponse();
+        }
+
+        public async Task<GetSessionsResponse> GetSessions(GetSessionsRequest request)
+        {
+            var startDate = DateTime.Now.AddDays(-7);
+            if (request.StartDate.HasValue)
+            {
+                startDate = request.StartDate.Value;
+            }
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                var sessions = await uow.SessionRepo.GetSessionsByStartDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByStartDateRequest()
+                {
+                    Start_Date = startDate
+                });
+
+                return new GetSessionsResponse()
+                {
+                    Sessions = sessions
+                };
+            }
         }
 
         #endregion
