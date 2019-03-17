@@ -1,0 +1,72 @@
+﻿@model SessionsViewModel
+
+@{
+    ViewData["Title"] = "Sessions";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+
+<table id="sessionsTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Guid</th>
+            <th>User Id</th>
+            <th>Created Date </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var session in Model.Sessions)
+        {
+            <tr>
+                <td class="session-identifier">
+                    <input class="u-sessionId" type="hidden" value="@session.Id" />
+                    @session.Guid
+                </td>
+                <td>@session.User_Id</td>
+                <td>@session.Created_Date.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts  {
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var table = $('#sessionsTable').DataTable({
+                responsive: {
+                    details: false
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },
+                ]
+            });
+
+            // select row feature
+            $('#sessionmanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                }
+                else
+                {
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                }
+            });
+
+        });
+
+    </script>
+
+}

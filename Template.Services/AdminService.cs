@@ -562,6 +562,20 @@ namespace Template.Services
 
         #endregion
 
+        #region Sessions
+
+        public async Task<GetSessionsResponse> GetSessions()
+        {
+            return new GetSessionsResponse(); 
+        }
+
+        public async Task<GetSessionResponse> GetSession(GetSessionRequest request)
+        {
+            return new GetSessionResponse();
+        }
+
+        #endregion
+
         #endregion
     }
 }

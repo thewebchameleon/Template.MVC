@@ -63,11 +63,6 @@
 
             // select row feature
             $('#configurationItemmanagementTable tbody').on('click', 'tr', function (e) {
-                if ($(this).hasClass('child'))
-                {
-                    return;
-                }
-
                 if ($(this).hasClass('selected'))
                 {
                     $(this).removeClass('selected');

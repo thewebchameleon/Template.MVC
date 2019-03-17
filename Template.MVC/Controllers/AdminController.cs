@@ -375,6 +375,37 @@ namespace Template.MVC.Controllers
 
         #endregion
 
+        #region Sessions
+
+        [HttpGet]
+        public async Task<IActionResult> Sessions()
+        {
+            var viewModel = new SessionsViewModel();
+
+            var response = await _adminService.GetSessions();
+            viewModel.Sessions = response.Sessions;
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Session(int id)
+        {
+            var response = await _adminService.GetSession(new GetSessionRequest()
+            {
+                Id = id
+            });
+
+            var viewModel = new SessionViewModel()
+            {
+
+            };
+
+            return View(viewModel);
+        }
+
+        #endregion
+
         #endregion
     }
 }

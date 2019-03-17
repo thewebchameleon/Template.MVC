@@ -38,5 +38,10 @@ namespace Template.Services.Contracts
         Task<UpdateConfigurationItemResponse> UpdateConfigurationItem(UpdateConfigurationItemRequest request, int userId);
 
         Task<CreateConfigurationItemResponse> CreateConfigurationItem(CreateConfigurationItemRequest request, int userId);
+
+
+        Task<GetSessionsResponse> GetSessions();
+
+        Task<GetSessionResponse> GetSession(GetSessionRequest request);
     }
 }
