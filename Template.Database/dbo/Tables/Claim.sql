@@ -2,7 +2,6 @@
     [Id]				INT IDENTITY (1, 1) NOT NULL,
     [Type]				VARCHAR (256)		NOT NULL,
     [Value]				VARCHAR (256)		NULL,
-	[Description]		VARCHAR (256)		NULL,
     [Created_By]		INT					NOT NULL,
     [Created_Date]		DATETIME			NOT NULL,
     [Updated_By]		INT					NOT NULL,

@@ -148,6 +148,7 @@ namespace Template.MVC.Controllers
                 MobileNumber = response.MobileNumber,
                 Username = response.Username
             };
+            viewModel.Roles = response.Roles;
 
             return View(viewModel);
         }
@@ -168,7 +169,15 @@ namespace Template.MVC.Controllers
                 }
                 AddFormErrors(response);
             }
-            return View(new ProfileViewModel(request));
+
+            // todo: viewmodels should be stored in session to avoid making extra calls to the service
+            var viewModel = new ProfileViewModel();
+            var profileResponse = await _accountService.GetProfile(new GetProfileRequest()
+            {
+                UserId = User.UserId
+            });
+            viewModel.Roles = profileResponse.Roles;
+            return View(viewModel);
         }
 
         #region External Login

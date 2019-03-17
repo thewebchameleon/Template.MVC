@@ -141,22 +141,28 @@ namespace Template.Services
 
         public async Task<GetProfileResponse> GetProfile(GetProfileRequest request)
         {
+            User user;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
                     User_Id = request.UserId
                 });
-
-                return new GetProfileResponse()
-                {
-                    EmailAddress = user.Email_Address,
-                    FirstName = user.First_Name,
-                    LastName = user.Last_Name,
-                    MobileNumber = user.Mobile_Number,
-                    Username = user.Username
-                };
             }
+
+            var roles = await _entityCache.Roles();
+            var userRoles = await _entityCache.UserRoles();
+            var usersRoles = userRoles.Where(ur => ur.User_Id == request.UserId).Select(ur => ur.Role_Id);
+
+            return new GetProfileResponse()
+            {
+                EmailAddress = user.Email_Address,
+                FirstName = user.First_Name,
+                LastName = user.Last_Name,
+                MobileNumber = user.Mobile_Number,
+                Username = user.Username,
+                Roles = roles.Where(r => usersRoles.Contains(r.Id)).ToList()
+            };
         }
 
         public async Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request)

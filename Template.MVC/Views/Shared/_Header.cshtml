@@ -1,4 +1,23 @@
 ﻿<header>
+    @{
+        var rawNotifications = TempData["Notifications"] as string;
+        if (!string.IsNullOrEmpty(rawNotifications))
+        {
+            var notifications = JsonConvert.DeserializeObject<List<Notification>>(rawNotifications);
+            if (notifications.Any())
+            {
+                <div class="notifications-container">
+                    @foreach (var notification in notifications)
+                    {
+                        <div class="notification notification-type-@notification.Type.ToString().ToLower()">
+                            @Html.Raw(notification.Message)
+                        </div>
+                    }
+                </div>
+            }
+        }
+    }
+
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Template.MVC</a>
@@ -40,23 +59,4 @@
             </div>
         </div>
     </nav>
-
-    @{
-            var rawNotifications = TempData["Notifications"] as string;
-            if (!string.IsNullOrEmpty(rawNotifications))
-            {
-                var notifications = JsonConvert.DeserializeObject<List<Notification>>(rawNotifications);
-                if (notifications.Any())
-                {
-        <div class="notifications-container">
-            @foreach (var notification in notifications)
-                        {
-            <div class="notification notification-type-@notification.Type.ToString().ToLower()">
-                @Html.Raw(notification.Message)
-            </div>
-                        }
-        </div>
-                }
-            }
-    }
 </header>

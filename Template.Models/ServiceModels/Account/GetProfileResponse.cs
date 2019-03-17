@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Template.Models.DomainModels;
 
 namespace Template.Models.ServiceModels.Account
 {
@@ -15,5 +16,12 @@ namespace Template.Models.ServiceModels.Account
         public string LastName { get; set; }
 
         public string MobileNumber { get; set; }
+
+        public List<Role> Roles { get; set; }
+
+        public GetProfileResponse()
+        {
+            Roles = new List<Role>();
+        }
     }
 }

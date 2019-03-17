@@ -34,7 +34,7 @@ namespace Template.Models.DomainModels
             if (item.DateTime_Value != null)
             {
                 // Friday, 29 May 2015 5:50 AM
-                return item.DateTime_Value.Value.ToString("dddd, dd MMMM yyyy");
+                return item.DateTime_Value.Value.ToString("dddd, dd MMMM yyyy hh:mm tt");
             }
 
             if (item.Decimal_Value != null)

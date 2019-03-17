@@ -358,10 +358,9 @@ namespace Template.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> EditConfigurationItem(int id, UpdateConfigurationItemRequest request)
         {
+            request.Id = id;
             if (ModelState.IsValid)
             {
-                request.Id = id;
-
                 var response = await _adminService.UpdateConfigurationItem(request, User.UserId);
                 if (response.IsSuccessful)
                 {

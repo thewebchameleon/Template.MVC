@@ -10,7 +10,7 @@
         <form asp-controller="Admin" asp-action="CreateConfigurationItem" method="post" class="form-horizontal" role="form">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Request.Key" class="control-label"></label> (this should be uppercase with no spaces)
+                <label asp-for="Request.Key" class="control-label"></label>
                 <input asp-for="Request.Key" class="form-control" />
                 <span asp-validation-for="Request.Key" class="text-danger"></span>
             </div>
@@ -25,13 +25,13 @@
                     <div class="form-check form-check-inline">
                         <label class="control-label">
                             <input asp-for="Request.BooleanValue" type="radio" class="form-check-input" value="@false" />
-                            No
+                            False
                         </label>
                     </div>
                     <div class="form-check form-check-inline">
                         <label class="control-label">
                             <input asp-for="Request.BooleanValue" type="radio" class="form-check-input" value="@true" />
-                            Yes
+                            True
                         </label>
                     </div>
                     <button id="btnBoolean_Value" type="button" class="btn btn-primary btn-sm">Clear</button>
