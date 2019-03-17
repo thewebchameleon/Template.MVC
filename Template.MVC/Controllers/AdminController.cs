@@ -44,7 +44,7 @@ namespace Template.MVC.Controllers
         {
             var viewModel = new UserManagementViewModel();
 
-            var response = await _adminService.GetUserManagement(new GetUserManagementRequest());
+            var response = await _adminService.GetUserManagement();
             viewModel.Users = response.Users;
 
             return View(viewModel);
@@ -178,7 +178,7 @@ namespace Template.MVC.Controllers
         {
             var viewModel = new RoleManagementViewModel();
 
-            var response = await _adminService.GetRoleManagement(new GetRoleManagementRequest());
+            var response = await _adminService.GetRoleManagement();
             viewModel.Roles = response.Roles;
 
             return View(viewModel);
@@ -283,6 +283,95 @@ namespace Template.MVC.Controllers
                 AddNotifications(response);
             }
             return RedirectToAction(nameof(AdminController.RoleManagement));
+        }
+
+        #endregion
+
+        #region Configuration Management
+
+        [HttpGet]
+        public async Task<IActionResult> ConfigurationManagement()
+        {
+            var viewModel = new ConfigurationManagementViewModel();
+
+            var response = await _adminService.GetConfigurationManagement();
+            viewModel.ConfigurationItems = response.ConfigurationItems;
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult CreateConfigurationItem()
+        {
+            var viewModel = new CreateConfigurationItemViewModel();
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateConfigurationItem(CreateConfigurationItemRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.CreateConfigurationItem(request, User.UserId);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToAction(nameof(AdminController.ConfigurationManagement));
+                }
+                AddFormErrors(response);
+            }
+            var viewModel = new CreateConfigurationItemViewModel(request);
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditConfigurationItem(int id)
+        {
+            var viewModel = new EditConfigurationItemViewModel();
+
+            var response = await _adminService.GetConfigurationItem(new GetConfigurationItemRequest()
+            {
+                Id = id
+            });
+
+            if (!response.IsSuccessful)
+            {
+                AddNotifications(response);
+                return View(viewModel);
+            }
+
+            viewModel.Key = response.ConfigurationItem.Key;
+            viewModel.Request = new UpdateConfigurationItemRequest()
+            {
+                Description = response.ConfigurationItem.Description,
+                BooleanValue = response.ConfigurationItem.Boolean_Value,
+                DateTimeValue = response.ConfigurationItem.DateTime_Value,
+                DecimalValue = response.ConfigurationItem.Decimal_Value,
+                IntValue = response.ConfigurationItem.Int_Value,
+                MoneyValue = response.ConfigurationItem.Money_Value,
+                StringValue = response.ConfigurationItem.String_Value,
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditConfigurationItem(int id, UpdateConfigurationItemRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                request.Id = id;
+
+                var response = await _adminService.UpdateConfigurationItem(request, User.UserId);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToAction(nameof(AdminController.ConfigurationManagement));
+                }
+                AddFormErrors(response);
+            }
+            var viewModel = new EditConfigurationItemViewModel(request);
+            return View(viewModel);
         }
 
         #endregion

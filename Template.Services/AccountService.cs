@@ -220,25 +220,16 @@ namespace Template.Services
                 duplicateUserRequest.User_Id = request.UserId.Value;
             }
 
-            int? duplicateUserId;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                var duplicateUserResponse = await uow.UserRepo.FetchDuplicateUser(duplicateUserRequest);
-                duplicateUserId = duplicateUserResponse?.Id;
-
+                var user = await uow.UserRepo.FetchDuplicateUser(duplicateUserRequest);
                 uow.Commit();
 
-
-                if (duplicateUserId == null)
+                if (user == null)
                 {
                     // no duplicate found
                     return new DuplicateUserCheckResponse();
                 }
-
-                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
-                {
-                    User_Id = duplicateUserId.Value
-                });
 
                 bool matchFound = false;
                 if (string.Equals(user.Email_Address, emailAddress, StringComparison.InvariantCultureIgnoreCase))
@@ -259,11 +250,17 @@ namespace Template.Services
                     matchFound = true;
                 }
 
+                if (user.Is_Deleted || !user.Is_Enabled)
+                {
+                    response.Notifications.AddError("This user has been removed / disabled");
+                    matchFound = true;
+                }
+
                 if (matchFound)
                 {
                     return response;
                 }
-                _logger.LogError("Duplicate user found but could not determine why", $"UserId: {duplicateUserId}", duplicateUserRequest);
+                _logger.LogError("Duplicate user found but could not determine why", $"UserId: {user.Id}", duplicateUserRequest);
                 response.Notifications.AddError("An error ocurred while performing a duplicate check");
                 return response;
             }

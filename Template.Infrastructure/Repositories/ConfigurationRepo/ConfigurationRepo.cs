@@ -36,7 +36,7 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo
 
         public async Task<List<ConfigurationItem>> GetConfigurationItems()
         {
-            var sqlStoredProc = "sp_configuration_items_get";
+            var sqlStoredProc = "sp_configuration_get";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<ConfigurationItem>
                 (
@@ -55,7 +55,7 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo
 
         public async Task UpdateConfigurationItem(UpdateConfigurationItemRequest request)
         {
-            var sqlStoredProc = "sp_configuration_item_update";
+            var sqlStoredProc = "sp_configuration_update";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
@@ -70,6 +70,26 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo
             {
                 throw new Exception("No items have been updated");
             }
+        }
+
+        public async Task<int> CreateConfigurationItem(CreateConfigurationItemRequest request)
+        {
+            var sqlStoredProc = "sp_configuration_create";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: new DynamicParameters(request),
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.FirstOrDefault() == 0)
+            {
+                throw new Exception("No items have been created");
+            }
+            return response.FirstOrDefault();
         }
 
         #endregion

@@ -72,11 +72,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task<FetchDuplicateUserResponse> FetchDuplicateUser(FetchDuplicateUserRequest request)
+        public async Task<User> FetchDuplicateUser(FetchDuplicateUserRequest request)
         {
             var sqlStoredProc = "sp_user_duplicate_check";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<FetchDuplicateUserResponse>
+            var response = await DapperAdapter.GetFromStoredProcAsync<User>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,

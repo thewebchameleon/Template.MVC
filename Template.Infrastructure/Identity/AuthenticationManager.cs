@@ -35,7 +35,7 @@ namespace Template.Infrastructure.Identity
 
         public async override Task<bool> CanSignInAsync(User user)
         {
-            return user.Is_Enabled;
+            return user.Is_Enabled && !user.Is_Deleted;
         }
     }
 }

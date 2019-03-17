@@ -17,6 +17,5 @@ BEGIN
 		[U].Is_Deleted,
 		[U].Is_Enabled
    FROM   [User] [U](NOLOCK)
-   WHERE  [U].[Email_Address] = @Email_Address
-   AND U.Is_Deleted = 0
+   WHERE  [U].[Email_Address] = @Email_Address;
 END

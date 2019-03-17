@@ -65,13 +65,15 @@ namespace Template.Services
 
         #region User Management
 
-        public async Task<GetUserManagementResponse> GetUserManagement(GetUserManagementRequest request)
+        public async Task<GetUserManagementResponse> GetUserManagement()
         {
             var response = new GetUserManagementResponse();
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 response.Users = await uow.UserRepo.GetUsers();
+                uow.Commit();
+
                 return response;
             }
         }
@@ -79,56 +81,60 @@ namespace Template.Services
         public async Task<EnableUserResponse> EnableUser(EnableUserRequest request, int userId)
         {
             var response = new EnableUserResponse();
+
+            User user;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
                     User_Id = request.UserId
                 });
+                uow.Commit();
+            }
+            user.Is_Enabled = true;
+            user.Updated_By = userId;
 
-                user.Is_Enabled = true;
-                user.Updated_By = userId;
-
-                var updateResponse = await _userManager.UpdateAsync(user);
-                if (!updateResponse.Succeeded)
-                {
-                    response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                    return response;
-                }
-
-                _entityCache.Remove(CacheConstants.Users);
-
-                response.Notifications.Add($"User '{user.Username}' has been enabled", NotificationTypeEnum.Success);
+            var updateResponse = await _userManager.UpdateAsync(user);
+            if (!updateResponse.Succeeded)
+            {
+                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
                 return response;
             }
+
+            _entityCache.Remove(CacheConstants.Users);
+
+            response.Notifications.Add($"User '{user.Username}' has been enabled", NotificationTypeEnum.Success);
+            return response;
         }
 
         public async Task<DisableUserResponse> DisableUser(DisableUserRequest request, int userId)
         {
             var response = new DisableUserResponse();
 
+            User user;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    User_Id = request.UserId
+                    User_Id = request.Id
                 });
+                uow.Commit();
+            }
 
-                user.Is_Enabled = false;
-                user.Updated_By = userId;
+            user.Is_Enabled = false;
+            user.Updated_By = userId;
 
-                var updateResponse = await _userManager.UpdateAsync(user);
-                if (!updateResponse.Succeeded)
-                {
-                    response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                    return response;
-                }
-
-                _entityCache.Remove(CacheConstants.Users);
-
-                response.Notifications.Add($"User '{user.Username}' has been disabled", NotificationTypeEnum.Success);
+            var updateResponse = await _userManager.UpdateAsync(user);
+            if (!updateResponse.Succeeded)
+            {
+                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
                 return response;
             }
+
+            _entityCache.Remove(CacheConstants.Users);
+
+            response.Notifications.Add($"User '{user.Username}' has been disabled", NotificationTypeEnum.Success);
+            return response;
         }
 
         public async Task<GetUserResponse> GetUser(GetUserRequest request)
@@ -145,6 +151,8 @@ namespace Template.Services
                 {
                     User_Id = request.UserId
                 });
+                uow.Commit();
+
                 var usersRoles = userRoles.Where(ur => ur.User_Id == request.UserId).Select(ur => ur.Role_Id);
 
                 response.Roles = roles.Where(r => usersRoles.Contains(r.Id)).ToList();
@@ -201,47 +209,49 @@ namespace Template.Services
         {
             var response = new UpdateUserResponse();
 
+            User user;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
                     User_Id = request.UserId
                 });
+                uow.Commit();
+            }
 
-                user.Username = request.Username;
-                user.Email_Address = request.EmailAddress;
-                user.First_Name = request.FirstName;
-                user.Last_Name = request.LastName;
-                user.Mobile_Number = request.MobileNumber;
-                user.Registration_Confirmed = request.RegistrationConfirmed;
-                user.Lockout_End = request.Lockout_End;
-                user.Is_Locked_Out = request.Is_Locked_Out;
-                user.Updated_By = userId;
+            user.Username = request.Username;
+            user.Email_Address = request.EmailAddress;
+            user.First_Name = request.FirstName;
+            user.Last_Name = request.LastName;
+            user.Mobile_Number = request.MobileNumber;
+            user.Registration_Confirmed = request.RegistrationConfirmed;
+            user.Lockout_End = request.Lockout_End;
+            user.Is_Locked_Out = request.Is_Locked_Out;
+            user.Updated_By = userId;
 
-                await CreateOrDeleteUserRoles(request.RoleIds, request.UserId, userId);
+            await CreateOrDeleteUserRoles(request.RoleIds, request.UserId, userId);
 
-                if (!string.IsNullOrEmpty(request.Password))
+            if (!string.IsNullOrEmpty(request.Password))
+            {
+                var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
+                if (!updatePasswordResponse.Succeeded)
                 {
-                    var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
-                    if (!updatePasswordResponse.Succeeded)
-                    {
-                        response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
-                        return response;
-                    }
-                }
-                var updateResponse = await _userManager.UpdateAsync(user);
-                if (!updateResponse.Succeeded)
-                {
-                    response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
+                    response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
                     return response;
                 }
-
-                _entityCache.Remove(CacheConstants.Users);
-
-                response.Notifications.Add($"User {user.Username} has been updated", NotificationTypeEnum.Success);
+            }
+            var updateResponse = await _userManager.UpdateAsync(user);
+            if (!updateResponse.Succeeded)
+            {
+                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
                 return response;
             }
+
+            _entityCache.Remove(CacheConstants.Users);
+
+            response.Notifications.Add($"User {user.Username} has been updated", NotificationTypeEnum.Success);
+            return response;
         }
 
         private async Task CreateOrDeleteUserRoles(List<int> newRoles, int userId, int loggedInUserId)
@@ -287,7 +297,7 @@ namespace Template.Services
 
         #region Role Management
 
-        public async Task<GetRoleManagementResponse> GetRoleManagement(GetRoleManagementRequest request)
+        public async Task<GetRoleManagementResponse> GetRoleManagement()
         {
             var response = new GetRoleManagementResponse();
 
@@ -324,7 +334,7 @@ namespace Template.Services
             var response = new DisableRoleResponse();
 
             var roles = await _entityCache.Roles();
-            var role = roles.FirstOrDefault(u => u.Id == request.RoleId);
+            var role = roles.FirstOrDefault(u => u.Id == request.Id);
 
             role.Is_Enabled = false;
             role.Updated_By = roleId;
@@ -395,7 +405,7 @@ namespace Template.Services
 
             await CreateOrDeleteRoleClaims(request.ClaimIds, role.Id, userId);
 
-            response.Notifications.Add($"Role {request.Name} has been created", NotificationTypeEnum.Success);
+            response.Notifications.Add($"Role '{request.Name}' has been created", NotificationTypeEnum.Success);
             return response;
         }
 
@@ -421,7 +431,7 @@ namespace Template.Services
 
             _entityCache.Remove(CacheConstants.Roles);
 
-            response.Notifications.Add($"Role {role.Name} has been updated", NotificationTypeEnum.Success);
+            response.Notifications.Add($"Role '{role.Name}' has been updated", NotificationTypeEnum.Success);
             return response;
         }
 
@@ -462,6 +472,92 @@ namespace Template.Services
                 }
                 _entityCache.Remove(CacheConstants.RoleClaims);
             }
+        }
+
+        #endregion
+
+        #region Configuration Management
+
+        public async Task<GetConfigurationManagementResponse> GetConfigurationManagement()
+        {
+            var response = new GetConfigurationManagementResponse();
+
+            response.ConfigurationItems = await _entityCache.ConfigurationItems();
+
+            return response;
+        }
+
+        public async Task<GetConfigurationItemResponse> GetConfigurationItem(GetConfigurationItemRequest request)
+        {
+            var response = new GetConfigurationItemResponse();
+
+            var configItems = await _entityCache.ConfigurationItems();
+            var configItem = configItems.FirstOrDefault(c => c.Id == request.Id);
+
+            response.ConfigurationItem = configItem;
+
+            return response;
+        }
+
+        public async Task<UpdateConfigurationItemResponse> UpdateConfigurationItem(UpdateConfigurationItemRequest request, int userId)
+        {
+            var response = new UpdateConfigurationItemResponse();
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                await uow.ConfigurationRepo.UpdateConfigurationItem(new Infrastructure.Repositories.ConfigurationRepo.Models.UpdateConfigurationItemRequest()
+                {
+                    Id = request.Id,
+                    Description = request.Description,
+                    Boolean_Value = request.BooleanValue,
+                    DateTime_Value = request.DateTimeValue,
+                    Decimal_Value = request.DecimalValue,
+                    Int_Value = request.IntValue,
+                    Money_Value = request.MoneyValue,
+                    String_Value = request.StringValue,
+                    Updated_By = userId
+                });
+                uow.Commit();
+            }
+
+            _entityCache.Remove(CacheConstants.ConfigurationItems);
+
+            var configItems = await _entityCache.ConfigurationItems();
+            var configItem = configItems.FirstOrDefault(c => c.Id == request.Id);
+
+            response.Notifications.Add($"Configuration item '{configItem.Key}' has been updated", NotificationTypeEnum.Success);
+            return response;
+        }
+
+        public async Task<CreateConfigurationItemResponse> CreateConfigurationItem(CreateConfigurationItemRequest request, int userId)
+        {
+            var response = new CreateConfigurationItemResponse();
+
+            int id;
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                id = await uow.ConfigurationRepo.CreateConfigurationItem(new Infrastructure.Repositories.ConfigurationRepo.Models.CreateConfigurationItemRequest()
+                {
+                    Key = request.Key,
+                    Description = request.Description,
+                    Boolean_Value = request.BooleanValue,
+                    DateTime_Value = request.DateTimeValue,
+                    Decimal_Value = request.DecimalValue,
+                    Int_Value = request.IntValue,
+                    Money_Value = request.MoneyValue,
+                    String_Value = request.StringValue,
+                    Created_By = userId
+                });
+                uow.Commit();
+            }
+
+            _entityCache.Remove(CacheConstants.ConfigurationItems);
+
+            var configItems = await _entityCache.ConfigurationItems();
+            var configItem = configItems.FirstOrDefault(c => c.Id == id);
+
+            response.Notifications.Add($"Configuration item '{configItem.Key}' has been created", NotificationTypeEnum.Success);
+            return response;
         }
 
         #endregion

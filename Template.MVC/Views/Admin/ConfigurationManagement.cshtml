@@ -1,0 +1,102 @@
+﻿@model ConfigurationManagementViewModel
+
+@{
+    ViewData["Title"] = "Configuration Management";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+
+
+<div id="panelConfigurationItemControls">
+    <a href="@Url.Action("CreateConfigurationItem", "Admin" )" class="btn btn-primary">Create Item</a>
+    <div id="panelEditConfigurationItemControls" style="display: none;">
+        <input id="hdnSelectedConfigurationItemId" type="hidden" />
+        <button id="btnEditConfigurationItem" type="button" class="btn btn-primary">Edit</button>
+    </div>
+</div>
+
+<table id="configurationItemmanagementTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Description</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var configurationItem in Model.ConfigurationItems)
+        {
+            <tr>
+                <td class="configurationItem-identifier">
+                    <input class="u-configurationItemId" type="hidden" value="@configurationItem.Id" />
+                    @configurationItem.Key
+                </td>
+                <td>@configurationItem.Description</td>
+                <td>@configurationItem.GetDisplayValue()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts  {
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var table = $('#configurationItemmanagementTable').DataTable({
+                responsive: {
+                    details: false
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },
+                ]
+            });
+
+            // select row feature
+            $('#configurationItemmanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('child'))
+                {
+                    return;
+                }
+
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $('#panelEditConfigurationItemControls').hide();
+                    $("#hdnSelectedConfigurationItemId").val('');
+                }
+                else
+                {
+                    var configurationItemId = $(this).children('.configurationItem-identifier').children('input.u-configurationItemId').val();
+
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('#panelEditConfigurationItemControls').show();
+                    $("#hdnSelectedConfigurationItemId").val(configurationItemId);
+                }
+            });
+
+        });
+
+        // edit configurationItem
+        $('#btnEditConfigurationItem').click(function () {
+            var configurationItemId = GetSelectedConfigurationItemId();
+            window.location.href = '@(Url.Action(nameof(AdminController.EditConfigurationItem), "Admin"))/' + configurationItemId;
+        });
+
+        function GetSelectedConfigurationItemId() {
+            return $("#hdnSelectedConfigurationItemId").val();
+        }
+
+    </script>
+
+}

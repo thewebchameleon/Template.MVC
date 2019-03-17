@@ -2,13 +2,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
+using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Configuration.Models;
 using Template.Infrastructure.Identity;
 using Template.Infrastructure.UnitOfWork;
@@ -109,6 +113,8 @@ namespace Template.MVC
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseRequestLocalization(ApplicationConstants.CultureInfo);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

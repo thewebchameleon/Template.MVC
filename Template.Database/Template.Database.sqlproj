@@ -106,5 +106,7 @@
     <Build Include="dbo\Stored Procedures\sp_claims_get.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_get_by_username.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_get_by_email.sql" />
+    <Build Include="dbo\Stored Procedures\sp_configuration_create.sql" />
+    <Build Include="dbo\Stored Procedures\sp_configuration_update.sql" />
   </ItemGroup>
 </Project>

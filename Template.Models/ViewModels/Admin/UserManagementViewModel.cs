@@ -3,7 +3,7 @@ using Template.Models.DomainModels;
 
 namespace Template.Models.ViewModels.Admin
 {
-    public class UserManagementViewModel
+    public class UserManagementViewModel : ViewModel
     {
         public List<User> Users { get; set; }
 

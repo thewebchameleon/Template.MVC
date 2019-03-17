@@ -5,7 +5,7 @@ namespace Template.Services.Contracts
 {
     public interface IAdminService
     {
-        Task<GetUserManagementResponse> GetUserManagement(GetUserManagementRequest request);
+        Task<GetUserManagementResponse> GetUserManagement();
 
         Task<DisableUserResponse> DisableUser(DisableUserRequest request, int userId);
 
@@ -18,7 +18,7 @@ namespace Template.Services.Contracts
         Task<CreateUserResponse> CreateUser(CreateUserRequest request, int userId);
 
 
-        Task<GetRoleManagementResponse> GetRoleManagement(GetRoleManagementRequest request);
+        Task<GetRoleManagementResponse> GetRoleManagement();
 
         Task<DisableRoleResponse> DisableRole(DisableRoleRequest request, int userId);
 
@@ -29,5 +29,14 @@ namespace Template.Services.Contracts
         Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request, int userId);
 
         Task<CreateRoleResponse> CreateRole(CreateRoleRequest request, int userId);
+
+
+        Task<GetConfigurationManagementResponse> GetConfigurationManagement();
+
+        Task<GetConfigurationItemResponse> GetConfigurationItem(GetConfigurationItemRequest request);
+
+        Task<UpdateConfigurationItemResponse> UpdateConfigurationItem(UpdateConfigurationItemRequest request, int userId);
+
+        Task<CreateConfigurationItemResponse> CreateConfigurationItem(CreateConfigurationItemRequest request, int userId);
     }
 }

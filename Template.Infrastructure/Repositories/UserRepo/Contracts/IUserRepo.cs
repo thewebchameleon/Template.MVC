@@ -29,7 +29,7 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
 
         Task CreateToken(CreateTokenRequest request);
 
-        Task<FetchDuplicateUserResponse> FetchDuplicateUser(FetchDuplicateUserRequest request);
+        Task<User> FetchDuplicateUser(FetchDuplicateUserRequest request);
 
         Task<List<User>> GetUsers();
 

@@ -1,0 +1,94 @@
+﻿@model EditConfigurationItemViewModel
+@{
+    ViewData["Title"] = "Edit Configuration Item";
+}
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+<div class="row">
+    <div class="col-12">
+        <form asp-controller="Admin" asp-action="EditConfigurationItem" method="post" class="form-horizontal" role="form">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Key" class="control-label"></label>
+                <input asp-for="Key" class="form-control" readonly />
+                <span asp-validation-for="Key" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Description" class="control-label"></label>
+                <input asp-for="Request.Description" class="form-control" />
+                <span asp-validation-for="Request.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.BooleanValue" class="control-label"></label>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <label class="control-label">
+                            <input asp-for="Request.BooleanValue" type="radio" class="form-check-input" value="@false" />
+                            No
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="control-label">
+                            <input asp-for="Request.BooleanValue" type="radio" class="form-check-input" value="@true" />
+                            Yes
+                        </label>
+                    </div>
+                    <button id="btnBoolean_Value" type="button" class="btn btn-primary btn-sm">Clear</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.IntValue" class="control-label"></label>
+                <input asp-for="Request.IntValue" class="form-control" />
+                <span asp-validation-for="Request.IntValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.DecimalValue" class="control-label"></label>
+                <input asp-for="Request.DecimalValue" class="form-control" />
+                <span asp-validation-for="Request.DecimalValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.MoneyValue" class="control-label"></label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">R</div>
+                    </div>
+                    <input asp-for="Request.MoneyValue" class="form-control" />
+                </div>
+                <span asp-validation-for="Request.MoneyValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.DateTimeValue" class="control-label"></label>
+                <input asp-for="Request.DateTimeValue" class="form-control" />
+                <span asp-validation-for="Request.DateTimeValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.StringValue" class="control-label"></label>
+                <input asp-for="Request.StringValue" class="form-control" />
+                <span asp-validation-for="Request.StringValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script type="text/javascript">
+        $("input[name='Request.BooleanValue']").change(function () {
+            $("#btnBoolean_Value").show();
+        });
+
+        $("#btnBoolean_Value").click(function () {
+            $("input[name='Request.BooleanValue']").prop('checked', false);
+            $("#btnBoolean_Value").hide();
+        })
+
+        if ($("input[name='Request.BooleanValue']:checked").length == 0) {
+             $("#btnBoolean_Value").hide();
+        }
+    </script>
+}

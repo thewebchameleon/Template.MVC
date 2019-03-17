@@ -2,6 +2,6 @@
 {
     public class DisableRoleRequest
     {
-        public int RoleId { get; set; }
+        public int Id { get; set; }
     }
 }

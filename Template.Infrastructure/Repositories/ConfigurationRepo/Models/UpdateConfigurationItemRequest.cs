@@ -14,10 +14,12 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo.Models
 
         public decimal? Decimal_Value { get; set; }
 
-        public int Int_Value { get; set; }
+        public int? Int_Value { get; set; }
 
         public decimal? Money_Value { get; set; }
 
         public string String_Value { get; set; }
+
+        public int Updated_By { get; set; }
     }
 }

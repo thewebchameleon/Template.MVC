@@ -3,7 +3,7 @@ using Template.Models.DomainModels;
 
 namespace Template.Models.ViewModels.Admin
 {
-    public class RoleManagementViewModel
+    public class RoleManagementViewModel : ViewModel
     {
         public List<Role> Roles { get; set; }
 
