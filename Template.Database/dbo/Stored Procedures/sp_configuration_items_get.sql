@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_configuration_get]
+﻿CREATE PROCEDURE [dbo].[sp_configuration_items_get]
 AS
      BEGIN
          SELECT [Id],

@@ -1,6 +1,6 @@
 ﻿namespace Template.Models.DomainModels
 {
-    public class UserRole : BaseEntity
+    public class UserRoleEntity : BaseEntity
     {
         public int User_Id { get; set; }
 

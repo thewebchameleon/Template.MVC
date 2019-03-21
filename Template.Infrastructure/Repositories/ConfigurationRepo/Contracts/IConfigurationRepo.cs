@@ -7,7 +7,7 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo.Contracts
 {
     public interface IConfigurationRepo
     {
-        Task<List<ConfigurationItem>> GetConfigurationItems();
+        Task<List<ConfigurationEntity>> GetConfigurationItems();
 
         Task UpdateConfigurationItem(UpdateConfigurationItemRequest request);
 

@@ -10,11 +10,11 @@ namespace Template.Models.ViewModels.Admin
 
         public ConfigurationManagementViewModel()
         {
-            ConfigurationItems = new List<ConfigurationItem>();
+            ConfigurationItems = new List<ConfigurationEntity>();
         }
 
         #endregion
 
-        public List<ConfigurationItem> ConfigurationItems { get; set; }
+        public List<ConfigurationEntity> ConfigurationItems { get; set; }
     }
 }

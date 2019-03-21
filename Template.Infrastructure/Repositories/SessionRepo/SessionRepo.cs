@@ -7,6 +7,7 @@ using Template.Infrastructure.Adapters;
 using Template.Infrastructure.Configuration.Models;
 using Template.Infrastructure.Repositories.SessionRepo.Contracts;
 using Template.Infrastructure.Repositories.SessionRepo.Models;
+using Template.Models.DomainModels;
 
 namespace Template.Infrastructure.Repositories.SessionRepo
 {
@@ -32,11 +33,11 @@ namespace Template.Infrastructure.Repositories.SessionRepo
 
         #region Public Methods
 
-        public async Task<Template.Models.DomainModels.Session> AddUserToSession(AddUserToSessionRequest request)
+        public async Task<SessionEntity> AddUserToSession(AddUserToSessionRequest request)
         {
             var sqlStoredProc = "sp_session_add_user_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.Session>
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -48,11 +49,11 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             return response.FirstOrDefault();
         }
 
-        public async Task<Template.Models.DomainModels.Session> CreateSession(CreateSessionRequest request)
+        public async Task<SessionEntity> CreateSession(CreateSessionRequest request)
         {
             var sqlStoredProc = "sp_session_create";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.Session>
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -64,11 +65,27 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             return response.FirstOrDefault();
         }
 
-        public async Task<List<Template.Models.DomainModels.Session>> GetSessionsByStartDate(GetSessionsByStartDateRequest request)
+        public async Task<List<SessionEntity>> GetSessionsByDate(GetSessionsByDateRequest request)
+        {
+            var sqlStoredProc = "sp_sessions_get_by_date";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.ToList();
+        }
+
+        public async Task<List<SessionEntity>> GetSessionsByStartDate(GetSessionsByStartDateRequest request)
         {
             var sqlStoredProc = "sp_sessions_get_by_start_date";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.Session>
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -80,11 +97,11 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             return response.ToList();
         }
 
-        public async Task<List<Template.Models.DomainModels.Session>> GetSessionsByUserId(GetSessionsByUserIdRequest request)
+        public async Task<List<SessionEntity>> GetSessionsByUserId(GetSessionsByUserIdRequest request)
         {
             var sqlStoredProc = "sp_sessions_get_by_user_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.Session>
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -95,6 +112,96 @@ namespace Template.Infrastructure.Repositories.SessionRepo
 
             return response.ToList();
         }
+
+
+        public async Task<List<SessionLogEntity>> GetSessionLogsBySessionId(GetSessionLogsBySessionIdRequest request)
+        {
+            var sqlStoredProc = "sp_session_logs_get_by_session_id";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionLogEntity>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.ToList();
+        }
+
+        public async Task<List<SessionLogEventEntity>> GetSessionLogEventsBySessionId(GetSessionLogEventsBySessionIdRequest request)
+        {
+            var sqlStoredProc = "sp_session_log_evetns_get_by_session_id";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionLogEventEntity>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.ToList();
+        }
+
+
+        public async Task<List<SessionEventEntity>> GetSessionEvents()
+        {
+            var sqlStoredProc = "sp_session_events_get";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEventEntity>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: new { },
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.ToList();
+        }
+
+        public async Task UpdateSessionEvent(UpdateSessionEventRequest request)
+        {
+            var sqlStoredProc = "sp_session_events";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.FirstOrDefault() == 0)
+            {
+                throw new Exception("No items have been updated");
+            }
+        }
+
+        public async Task<int> CreateSessionEvent(CreateSessionEventRequest request)
+        {
+            var sqlStoredProc = "sp_session_event_create";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.FirstOrDefault() == 0)
+            {
+                throw new Exception("No items have been created");
+            }
+            return response.FirstOrDefault();
+        }
+
 
         #endregion
     }

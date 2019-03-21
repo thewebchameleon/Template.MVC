@@ -17,11 +17,11 @@ namespace Template.Models.ServiceModels.Account
 
         public string MobileNumber { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public List<RoleEntity> Roles { get; set; }
 
         public GetProfileResponse()
         {
-            Roles = new List<Role>();
+            Roles = new List<RoleEntity>();
         }
     }
 }

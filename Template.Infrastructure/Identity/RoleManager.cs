@@ -13,8 +13,8 @@ using Template.Models.DomainModels;
 namespace Template.Infrastructure.Identity
 {
     public class RoleManager : IRoleManager,
-        IRoleStore<Role>,
-        IRoleClaimStore<Role>
+        IRoleStore<RoleEntity>,
+        IRoleClaimStore<RoleEntity>
     {
         #region Instance Fields
 
@@ -35,7 +35,7 @@ namespace Template.Infrastructure.Identity
 
         #region Public Methods
 
-        public async Task<IdentityResult> CreateAsync(Role role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> CreateAsync(RoleEntity role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -56,7 +56,7 @@ namespace Template.Infrastructure.Identity
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> UpdateAsync(Role role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(RoleEntity role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -78,7 +78,7 @@ namespace Template.Infrastructure.Identity
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> DeleteAsync(Role role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteAsync(RoleEntity role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -97,34 +97,34 @@ namespace Template.Infrastructure.Identity
             return IdentityResult.Success;
         }
 
-        public Task<string> GetRoleIdAsync(Role role, CancellationToken cancellationToken)
+        public Task<string> GetRoleIdAsync(RoleEntity role, CancellationToken cancellationToken)
         {
             return Task.FromResult(role.Id.ToString());
         }
 
-        public Task<string> GetRoleNameAsync(Role role, CancellationToken cancellationToken)
+        public Task<string> GetRoleNameAsync(RoleEntity role, CancellationToken cancellationToken)
         {
             return Task.FromResult(role.Name);
         }
 
-        public Task SetRoleNameAsync(Role role, string roleName, CancellationToken cancellationToken)
+        public Task SetRoleNameAsync(RoleEntity role, string roleName, CancellationToken cancellationToken)
         {
             role.Name = roleName;
             return Task.FromResult(0);
         }
 
-        public Task<string> GetNormalizedRoleNameAsync(Role role, CancellationToken cancellationToken)
+        public Task<string> GetNormalizedRoleNameAsync(RoleEntity role, CancellationToken cancellationToken)
         {
             return Task.FromResult(role.Name);
         }
 
-        public Task SetNormalizedRoleNameAsync(Role role, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedRoleNameAsync(RoleEntity role, string normalizedName, CancellationToken cancellationToken)
         {
             role.Name = normalizedName;
             return Task.FromResult(0);
         }
 
-        public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        public async Task<RoleEntity> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
             int.TryParse(roleId, out int id);
 
@@ -134,7 +134,7 @@ namespace Template.Infrastructure.Identity
             return roles.FirstOrDefault(r => r.Id == id);
         }
 
-        public async Task<Role> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public async Task<RoleEntity> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -147,7 +147,7 @@ namespace Template.Infrastructure.Identity
             // Nothing to dispose.
         }
 
-        public async Task<IList<System.Security.Claims.Claim>> GetClaimsAsync(Role role, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IList<System.Security.Claims.Claim>> GetClaimsAsync(RoleEntity role, CancellationToken cancellationToken = default(CancellationToken))
         {
             var claims = await _entityCache.Claims();
             var roleClaims = await _entityCache.RoleClaims();
@@ -162,7 +162,7 @@ namespace Template.Infrastructure.Identity
             return result;
         }
 
-        public async Task AddClaimAsync(Role role, System.Security.Claims.Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task AddClaimAsync(RoleEntity role, System.Security.Claims.Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             var claims = await _entityCache.Claims();
             var claimEntity = claims.FirstOrDefault(c => c.Type == claim.Type && c.Value == claim.Value);
@@ -180,7 +180,7 @@ namespace Template.Infrastructure.Identity
             _entityCache.Remove(CacheConstants.RoleClaims);
         }
 
-        public async Task RemoveClaimAsync(Role role, System.Security.Claims.Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task RemoveClaimAsync(RoleEntity role, System.Security.Claims.Claim claim, CancellationToken cancellationToken = default(CancellationToken))
         {
             var claims = await _entityCache.Claims();
             var claimEntity = claims.FirstOrDefault(c => c.Type == claim.Type && c.Value == claim.Value);

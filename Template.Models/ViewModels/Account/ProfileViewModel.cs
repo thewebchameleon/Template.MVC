@@ -10,13 +10,13 @@ namespace Template.Models.ViewModels.Account
 
         public ProfileViewModel(UpdateProfileRequest request) : base(request)
         {
-            Roles = new List<Role>();
+            Roles = new List<RoleEntity>();
         }
 
         public ProfileViewModel() : this(new UpdateProfileRequest()) { }
 
         #endregion
 
-        public List<Role> Roles { get; set; }
+        public List<RoleEntity> Roles { get; set; }
     }
 }

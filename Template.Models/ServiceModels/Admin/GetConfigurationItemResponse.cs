@@ -4,6 +4,6 @@ namespace Template.Models.ServiceModels.Admin
 {
     public class GetConfigurationItemResponse : ServiceResponse
     {
-        public ConfigurationItem ConfigurationItem { get; set; }
+        public ConfigurationEntity ConfigurationItem { get; set; }
     }
 }

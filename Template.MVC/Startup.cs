@@ -46,8 +46,8 @@ namespace Template.MVC
             services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<CacheSettings>>().Value);
 
             // Configure services
-            services.AddTransient<IUserStore<User>, UserManager>();
-            services.AddTransient<IRoleStore<Role>, RoleManager>();
+            services.AddTransient<IUserStore<UserEntity>, UserManager>();
+            services.AddTransient<IRoleStore<RoleEntity>, RoleManager>();
 
             services.AddTransient<ISessionProvider, SessionProvider>();
             services.AddTransient<ICacheProvider, MemoryCacheProvider>();
@@ -67,7 +67,7 @@ namespace Template.MVC
             });
 
             // add identity
-            services.AddIdentity<User, Role>()
+            services.AddIdentity<UserEntity, RoleEntity>()
                 .AddSignInManager<AuthenticationManager>()
                 .AddDefaultTokenProviders();
 

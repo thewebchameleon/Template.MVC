@@ -14,17 +14,17 @@ using Template.Models.DomainModels;
 
 namespace Template.Infrastructure.Identity
 {
-    public class AuthenticationManager : SignInManager<User>
+    public class AuthenticationManager : SignInManager<UserEntity>
     {
         private readonly IUnitOfWorkFactory _uowFactory;
         private readonly ISessionProvider _sessionProvider;
 
         public AuthenticationManager(
-            UserManager<User> userManager,
+            UserManager<UserEntity> userManager,
             IHttpContextAccessor contextAccessor,
-            IUserClaimsPrincipalFactory<User> claimsFactory,
+            IUserClaimsPrincipalFactory<UserEntity> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor,
-            ILogger<SignInManager<User>> logger,
+            ILogger<SignInManager<UserEntity>> logger,
             IUnitOfWorkFactory uowFactory,
             ISessionProvider sessionProvider,
             IAuthenticationSchemeProvider schemes)
@@ -34,11 +34,11 @@ namespace Template.Infrastructure.Identity
             _sessionProvider = sessionProvider;
         }
 
-        public async override Task<ClaimsPrincipal> CreateUserPrincipalAsync(User user)
+        public async override Task<ClaimsPrincipal> CreateUserPrincipalAsync(UserEntity user)
         {
             var principal = await base.CreateUserPrincipalAsync(user);
 
-            if (!_sessionProvider.TryGet(SessionConstants.SessionEntity, out Models.DomainModels.Session session))
+            if (!_sessionProvider.TryGet(SessionConstants.SessionEntity, out Models.DomainModels.SessionEntity session))
             {
                 throw new Exception("Session has not been initialised");
             }
@@ -59,7 +59,7 @@ namespace Template.Infrastructure.Identity
             return principal;
         }
 
-        public async override Task<bool> CanSignInAsync(User user)
+        public async override Task<bool> CanSignInAsync(UserEntity user)
         {
             return user.Is_Enabled && !user.Is_Deleted;
         }

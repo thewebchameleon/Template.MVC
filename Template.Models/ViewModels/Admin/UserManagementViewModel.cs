@@ -5,11 +5,11 @@ namespace Template.Models.ViewModels.Admin
 {
     public class UserManagementViewModel : ViewModel
     {
-        public List<User> Users { get; set; }
+        public List<UserEntity> Users { get; set; }
 
         public UserManagementViewModel()
         {
-            Users = new List<User>();
+            Users = new List<UserEntity>();
         }
     }
 }

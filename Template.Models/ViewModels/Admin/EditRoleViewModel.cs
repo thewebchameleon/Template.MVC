@@ -14,6 +14,6 @@ namespace Template.Models.ViewModels.Admin
 
         #endregion
 
-        public List<Claim> ClaimsLookup { get; set; }
+        public List<ClaimEntity> ClaimsLookup { get; set; }
     }
 }

@@ -5,11 +5,11 @@ namespace Template.Models.ViewModels.Admin
 {
     public class RoleManagementViewModel : ViewModel
     {
-        public List<Role> Roles { get; set; }
+        public List<RoleEntity> Roles { get; set; }
 
         public RoleManagementViewModel()
         {
-            Roles = new List<Role>();
+            Roles = new List<RoleEntity>();
         }
     }
 }

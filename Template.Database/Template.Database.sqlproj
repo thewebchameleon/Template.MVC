@@ -68,7 +68,7 @@
     <None Include="Scripts\V1.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Stored Procedures\sp_configuration_get.sql" />
+    <Build Include="dbo\Stored Procedures\sp_configuration_items_get.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_claim_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_claim_delete.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_claims_get.sql" />
@@ -104,8 +104,21 @@
     <Build Include="dbo\Stored Procedures\sp_claims_get.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_get_by_username.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_get_by_email.sql" />
-    <Build Include="dbo\Stored Procedures\sp_configuration_create.sql" />
-    <Build Include="dbo\Stored Procedures\sp_configuration_update.sql" />
+    <Build Include="dbo\Stored Procedures\sp_configuration_item_create.sql" />
+    <Build Include="dbo\Stored Procedures\sp_configuration_item_update.sql" />
     <Build Include="dbo\Stored Procedures\sp_sessions_get_by_start_date.sql" />
+    <Build Include="dbo\Stored Procedures\sp_sessions_get_by_date.sql" />
+    <Build Include="dbo\Stored Procedures\sp_user_get_by_mobile_number.sql" />
+    <Build Include="dbo\Tables\Session_Log.sql" />
+    <Build Include="dbo\Tables\Session_Log_Event.sql" />
+    <Build Include="dbo\Tables\Session_Event.sql" />
+    <Build Include="dbo\Stored Procedures\sp_session_event_create.sql" />
+    <Build Include="dbo\Stored Procedures\sp_session_events_get.sql" />
+    <Build Include="dbo\Stored Procedures\sp_session_event_update.sql" />
+    <Build Include="dbo\Stored Procedures\sp_session_logs_get_by_session_id.sql" />
+    <Build Include="dbo\Stored Procedures\sp_session_log_events_get_by_session_id.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Template.Database.refactorlog" />
   </ItemGroup>
 </Project>

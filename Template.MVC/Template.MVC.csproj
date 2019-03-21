@@ -17,4 +17,9 @@
     <ProjectReference Include="..\Template.Services\Template.Services.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\jquery-datatables\" />
+  </ItemGroup>
+
 </Project>

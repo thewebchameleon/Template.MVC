@@ -29,28 +29,30 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
 
         Task CreateToken(CreateTokenRequest request);
 
-        Task<User> FetchDuplicateUser(FetchDuplicateUserRequest request);
+        Task<UserEntity> FetchDuplicateUser(FetchDuplicateUserRequest request);
 
-        Task<List<User>> GetUsers();
+        Task<List<UserEntity>> GetUsers();
 
-        Task<List<Role>> GetRoles();
+        Task<List<RoleEntity>> GetRoles();
 
         Task<List<RoleClaim>> GetRoleClaims();
 
-        Task<List<Token>> GetTokens();
+        Task<List<TokenEntity>> GetTokens();
 
-        Task<List<UserRole>> GetUserRoles();
+        Task<List<UserRoleEntity>> GetUserRoles();
 
-        Task<List<Claim>> GetClaims();
+        Task<List<ClaimEntity>> GetClaims();
 
         Task<int> CreateRoleClaim(CreateRoleClaimRequest request);
 
         Task DeleteRoleClaim(DeleteRoleClaimRequest request);
 
-        Task<User> GetUserById(GetUserByIdRequest request);
+        Task<UserEntity> GetUserById(GetUserByIdRequest request);
 
-        Task<User> GetUserByUsername(GetUserByUsernameRequest request);
+        Task<UserEntity> GetUserByUsername(GetUserByUsernameRequest request);
 
-        Task<User> GetUserByEmail(GetUserByEmailRequest request);
+        Task<UserEntity> GetUserByEmail(GetUserByEmailRequest request);
+
+        Task<UserEntity> GetUserByMobileNumber(GetUserByMobileNumberRequest request);
     }
 }

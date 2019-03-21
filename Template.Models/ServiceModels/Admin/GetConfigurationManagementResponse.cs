@@ -5,11 +5,11 @@ namespace Template.Models.ServiceModels.Admin
 {
     public class GetConfigurationManagementResponse
     {
-        public List<ConfigurationItem> ConfigurationItems { get; set; }
+        public List<ConfigurationEntity> ConfigurationItems { get; set; }
 
         public GetConfigurationManagementResponse()
         {
-            ConfigurationItems = new List<ConfigurationItem>();
+            ConfigurationItems = new List<ConfigurationEntity>();
         }
     }
 }

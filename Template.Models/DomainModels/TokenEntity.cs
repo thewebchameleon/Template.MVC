@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Template.Models.DomainModels
 {
-    public class Token : BaseEntity
+    public class TokenEntity : BaseEntity
     {
         public int User_Id { get; set; }
 

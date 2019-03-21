@@ -3,7 +3,7 @@ using Template.Common.Constants;
 
 namespace Template.Models.DomainModels
 {
-    public class ConfigurationItem : BaseEntity
+    public class ConfigurationEntity : BaseEntity
     {
         public string Key { get; set; }
 
@@ -22,9 +22,9 @@ namespace Template.Models.DomainModels
         public string String_Value { get; set; }
     }
 
-    public static class ConfigurationItemExtensions
+    public static class ConfigurationEntityExtensions
     {
-        public static string GetDisplayValue(this ConfigurationItem item)
+        public static string GetDisplayValue(this ConfigurationEntity item)
         {
             if (item.Boolean_Value != null)
             {

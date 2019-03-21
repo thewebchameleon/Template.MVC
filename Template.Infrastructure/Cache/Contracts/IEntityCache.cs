@@ -6,17 +6,17 @@ namespace Template.Infrastructure.Cache.Contracts
 {
     public interface IEntityCache
     {
-        Task<List<ConfigurationItem>> ConfigurationItems();
+        Task<List<ConfigurationEntity>> ConfigurationItems();
 
-        Task<List<Role>> Roles();
+        Task<List<RoleEntity>> Roles();
 
-        Task<List<UserRole>> UserRoles();
+        Task<List<UserRoleEntity>> UserRoles();
 
         Task<List<RoleClaim>> RoleClaims();
 
-        Task<List<Claim>> Claims();
+        Task<List<ClaimEntity>> Claims();
 
-        Task<List<Token>> Tokens();
+        Task<List<TokenEntity>> Tokens();
 
         void Remove(string key);
     }

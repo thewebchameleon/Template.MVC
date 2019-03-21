@@ -54,7 +54,7 @@ namespace Template.Services
             var response = new GetSessionResponse();
 
             // get or create a new session
-            if (!_sessionProvider.TryGet(SessionConstants.SessionEntity, out Session session))
+            if (!_sessionProvider.TryGet(SessionConstants.SessionEntity, out SessionEntity session))
             {
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
@@ -70,7 +70,7 @@ namespace Template.Services
             response.Id = session.Id;
 
             // get / rehydrate user from session if authenticated
-            if (!_sessionProvider.TryGet(SessionConstants.UserEntity, out User user)
+            if (!_sessionProvider.TryGet(SessionConstants.UserEntity, out UserEntity user)
                 && session.User_Id.HasValue)
             {
                 using (var uow = _uowFactory.GetUnitOfWork())

@@ -2,22 +2,33 @@
 
 @{
     ViewData["Title"] = "Sessions";
+    var filterDisplayText = string.IsNullOrEmpty(Model.SelectedFilter) ? string.Empty : $"- {Model.SelectedFilter}";
 }
 
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
+<!--<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />-->
 
-<h4>@ViewData["Title"]</h4>
+<link href="~/lib/jquery-datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<link href="~/lib/jquery-datatables/css/responsive.dataTables.min.css" rel="stylesheet" />
+
+<h4>@ViewData["Title"] @filterDisplayText</h4>
 <hr />
 
 <div id="panelSessionControls">
-    <button id="btnChangeStartDateModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalChangeStartDateModal">Change start date</button>
+    <button id="btnLast24Hours" type="button" class="btn btn-primary">Last 24 hours</button>
+    <button id="btnLastXDaysModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalLastXDays">Last x days</button>
+    <button id="btnFilterByDayModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFilterByDay">Filter by day</button>
+    <button id="btnFilterByUserModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFilterByUser">Filter by user</button>
+
+    <div id="panelViewSessionControls" style="display: none;">
+        <input id="hdnSelectedSessionId" type="hidden" />
+        <button id="btnViewSession" type="button" class="btn btn-primary">View</button>
+    </div>
 </div>
 
 <table id="sessionsTable" class="table table-bordered" style="width: 100%;">
     <thead>
         <tr>
-            <th>Id</th>
             <th>User Id</th>
             <th>Created Date </th>
         </tr>
@@ -28,36 +39,109 @@
             <tr>
                 <td class="session-identifier">
                     <input class="u-sessionId" type="hidden" value="@session.Id" />
-                    @session.Id
+                    @session.User_Id
                 </td>
-                <td>@session.User_Id</td>
                 <td>@session.Created_Date.ToShortDateTimeString()</td>
             </tr>
         }
     </tbody>
 </table>
 
-@* change start date modal *@
-<div class="modal fade" id="modalChangeStartDateModal" tabindex="-1" role="dialog" aria-labelledby="modalChangeStartDateModalLabel" aria-hidden="true">
+@* filter by last 24 hours *@
+<form id="formLast24Hours" asp-controller="Admin" asp-action="Sessions" method="post" role="form" style="display: none;">
+    <input id="hdnLast24Hours" name="Last24Hours" type="hidden" />
+</form>
+
+@* filter by last x days *@
+<div class="modal fade" id="modalLastXDays" tabindex="-1" role="dialog" aria-labelledby="modalLastXDaysLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalChangeStartDateModalLabel">Change start date</h5>
+                <h5 class="modal-title" id="modalLastXDaysLabel">Filter by past x days</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                When do you want to look for sessions from?
+                How far back do you want to view session history?
             </div>
             <div class="modal-footer">
-                <form asp-controller="Admin" asp-action="ChangeSessionsStartDate" method="post" role="form">
+                <form asp-controller="Admin" asp-action="Sessions" method="post" role="form">
                     <div class="form-group">
-                        <label asp-for="Request.StartDate" class="control-label"></label>
-                        <input asp-for="Request.StartDate" class="form-control" />
-                        <span asp-validation-for="Request.StartDate" class="text-danger"></span>
+                        <label asp-for="Request.LastXDays" class="control-label"></label>
+                        <input asp-for="Request.LastXDays" class="form-control" />
+                        <span asp-validation-for="Request.LastXDays" class="text-danger"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* filter by day *@
+<div class="modal fade" id="modalFilterByDay" tabindex="-1" role="dialog" aria-labelledby="modalFilterByDayLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalFilterByDayLabel">Filter by day</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Which day do you want to view sessions for?
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Admin" asp-action="Sessions" method="post" role="form">
+                    <div class="form-group">
+                        <label asp-for="Request.Day" class="control-label"></label>
+                        <input asp-for="Request.Day" class="form-control" />
+                        <span asp-validation-for="Request.Day" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* filter by user *@
+<div class="modal fade" id="modalFilterByUser" tabindex="-1" role="dialog" aria-labelledby="modalFilterByUserLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalFilterByUserLabel">Filter by user</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Fill in 1 field to search for a user
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Admin" asp-action="Sessions" method="post" role="form">
+                    <div class="form-group">
+                        <label asp-for="Request.UserId" class="control-label"></label>
+                        <input asp-for="Request.UserId" class="form-control" />
+                        <span asp-validation-for="Request.UserId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Request.Username" class="control-label"></label>
+                        <input asp-for="Request.Username" class="form-control" />
+                        <span asp-validation-for="Request.Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Request.EmailAddress" class="control-label"></label>
+                        <input asp-for="Request.EmailAddress" class="form-control" />
+                        <span asp-validation-for="Request.EmailAddress" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Request.MobileNumber" class="control-label"></label>
+                        <input asp-for="Request.MobileNumber" class="form-control" />
+                        <span asp-validation-for="Request.MobileNumber" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
                 </form>
             </div>
         </div>
@@ -66,9 +150,13 @@
 
 @section Scripts  {
 
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    @*<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>*@
+
+    <script src="~/lib/jquery-datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/jquery-datatables/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/lib/jquery-datatables/js/dataTables.responsive.min.js"></script>
 
     <script type="text/javascript">
 
@@ -87,14 +175,37 @@
             $('#sessionsTable tbody').on('click', 'tr', function (e) {
                 if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
+
+                    $('#panelViewSessionControls').show();
                 }
                 else {
+                    var sessionId = $(this).children('.session-identifier').children('input.u-sessionId').val();
+                    $("#hdnSelectedSessionId").val(sessionId);
+
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
+
+                    $('#panelViewSessionControls').show();
                 }
             });
 
         });
+
+        // view last 24 hours
+        $("#btnLast24Hours").click(function () {
+            $("#hdnLast24Hours").val("True");
+            $('#formLast24Hours').submit();
+        })
+
+        // view session
+        $('#btnViewSession').click(function () {
+            var sessionId = GetSelectedSessionId();
+            window.location.href = '@(Url.Action(nameof(AdminController.Session), "Admin"))/' + sessionId;
+        });
+
+        function GetSelectedSessionId() {
+            return $("#hdnSelectedSessionId").val();
+        }
 
     </script>
 

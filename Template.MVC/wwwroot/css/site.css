@@ -83,7 +83,7 @@ body {
     margin-bottom: 20px;
 }
 
-#panelEditUserControls, #panelEditRoleControls, #panelEditConfigurationItemControls {
+#panelEditUserControls, #panelEditRoleControls, #panelEditConfigurationItemControls, #panelViewSessionControls {
     display: inline-block;
     float: right;
 }

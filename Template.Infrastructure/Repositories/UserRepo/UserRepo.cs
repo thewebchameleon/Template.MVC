@@ -72,11 +72,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task<User> FetchDuplicateUser(FetchDuplicateUserRequest request)
+        public async Task<UserEntity> FetchDuplicateUser(FetchDuplicateUserRequest request)
         {
             var sqlStoredProc = "sp_user_duplicate_check";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<User>
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -88,11 +88,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.FirstOrDefault();
         }
 
-        public async Task<List<User>> GetUsers()
+        public async Task<List<UserEntity>> GetUsers()
         {
             var sqlStoredProc = "sp_users_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<User>
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: new { },
@@ -104,11 +104,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.ToList();
         }
 
-        public async Task<List<Role>> GetRoles()
+        public async Task<List<RoleEntity>> GetRoles()
         {
             var sqlStoredProc = "sp_roles_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Role>
+            var response = await DapperAdapter.GetFromStoredProcAsync<RoleEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: new { },
@@ -136,11 +136,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.ToList();
         }
 
-        public async Task<List<Token>> GetTokens()
+        public async Task<List<TokenEntity>> GetTokens()
         {
             var sqlStoredProc = "sp_user_tokens_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Token>
+            var response = await DapperAdapter.GetFromStoredProcAsync<TokenEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: new { },
@@ -152,11 +152,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.ToList();
         }
 
-        public async Task<List<UserRole>> GetUserRoles()
+        public async Task<List<UserRoleEntity>> GetUserRoles()
         {
             var sqlStoredProc = "sp_user_roles_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<UserRole>
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserRoleEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: new { },
@@ -362,11 +362,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task<List<Claim>> GetClaims()
+        public async Task<List<ClaimEntity>> GetClaims()
         {
             var sqlStoredProc = "sp_claims_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Claim>
+            var response = await DapperAdapter.GetFromStoredProcAsync<ClaimEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: new { },
@@ -378,11 +378,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.ToList();
         }
 
-        public async Task<User> GetUserById(GetUserByIdRequest request)
+        public async Task<UserEntity> GetUserById(GetUserByIdRequest request)
         {
             var sqlStoredProc = "sp_user_get_by_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<User>
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -394,11 +394,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.FirstOrDefault();
         }
 
-        public async Task<User> GetUserByUsername(GetUserByUsernameRequest request)
+        public async Task<UserEntity> GetUserByUsername(GetUserByUsernameRequest request)
         {
             var sqlStoredProc = "sp_user_get_by_username";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<User>
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -410,11 +410,27 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.FirstOrDefault();
         }
 
-        public async Task<User> GetUserByEmail(GetUserByEmailRequest request)
+        public async Task<UserEntity> GetUserByEmail(GetUserByEmailRequest request)
         {
             var sqlStoredProc = "sp_user_get_by_email";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<User>
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserEntity>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            return response.FirstOrDefault();
+        }
+
+        public async Task<UserEntity> GetUserByMobileNumber(GetUserByMobileNumberRequest request)
+        {
+            var sqlStoredProc = "sp_user_get_by_mobile_number";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,

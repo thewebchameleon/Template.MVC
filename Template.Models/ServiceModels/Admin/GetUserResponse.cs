@@ -5,13 +5,13 @@ namespace Template.Models.ServiceModels.Admin
 {
     public class GetUserResponse : ServiceResponse
     {
-        public User User { get; set; }
+        public UserEntity User { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public List<RoleEntity> Roles { get; set; }
 
         public GetUserResponse()
         {
-            Roles = new List<Role>();
+            Roles = new List<RoleEntity>();
         }
     }
 }

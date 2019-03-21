@@ -1,17 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Template.Infrastructure.Repositories.SessionRepo.Models;
+using Template.Models.DomainModels;
 
 namespace Template.Infrastructure.Repositories.SessionRepo.Contracts
 {
     public interface ISessionRepo
     {
-        Task<Template.Models.DomainModels.Session> AddUserToSession(AddUserToSessionRequest request);
+        Task<SessionEntity> AddUserToSession(AddUserToSessionRequest request);
 
-        Task<Template.Models.DomainModels.Session> CreateSession(CreateSessionRequest request);
+        Task<SessionEntity> CreateSession(CreateSessionRequest request);
 
-        Task<List<Template.Models.DomainModels.Session>> GetSessionsByUserId(GetSessionsByUserIdRequest request);
+        Task<List<SessionEntity>> GetSessionsByUserId(GetSessionsByUserIdRequest request);
 
-        Task<List<Template.Models.DomainModels.Session>> GetSessionsByStartDate(GetSessionsByStartDateRequest request);
+        Task<List<SessionEntity>> GetSessionsByStartDate(GetSessionsByStartDateRequest request);
+
+        Task<List<SessionEntity>> GetSessionsByDate(GetSessionsByDateRequest request);
+
+        Task<int> CreateSessionEvent(CreateSessionEventRequest request);
+
+        Task UpdateSessionEvent(UpdateSessionEventRequest request);
+
+        Task<List<SessionEventEntity>> GetSessionEvents();
+
+        Task<List<SessionLogEventEntity>> GetSessionLogEventsBySessionId(GetSessionLogEventsBySessionIdRequest request);
+
+        Task<List<SessionLogEntity>> GetSessionLogsBySessionId(GetSessionLogsBySessionIdRequest request);
     }
 }

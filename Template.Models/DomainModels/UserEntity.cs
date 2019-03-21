@@ -2,7 +2,7 @@
 
 namespace Template.Models.DomainModels
 {
-    public class User : BaseEntity
+    public class UserEntity : BaseEntity
     {
         public string Username { get; set; }
 

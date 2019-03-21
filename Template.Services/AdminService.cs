@@ -21,9 +21,9 @@ namespace Template.Services
 
         private readonly ILogger<AdminService> _logger;
 
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> _roleManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<UserEntity> _userManager;
+        private readonly RoleManager<RoleEntity> _roleManager;
+        private readonly SignInManager<UserEntity> _signInManager;
 
         private readonly IEmailService _emailService;
         private readonly IAccountService _accountService;
@@ -38,9 +38,9 @@ namespace Template.Services
 
         public AdminService(
             ILogger<AdminService> logger,
-            UserManager<User> userManager,
-            RoleManager<Role> roleManager,
-            SignInManager<User> signInManager,
+            UserManager<UserEntity> userManager,
+            RoleManager<RoleEntity> roleManager,
+            SignInManager<UserEntity> signInManager,
             IEmailService emailService,
             IAccountService accountService,
             ISessionService sessionService,
@@ -85,7 +85,7 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new EnableUserResponse();
 
-            User user;
+            UserEntity user;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
@@ -104,8 +104,6 @@ namespace Template.Services
                 return response;
             }
 
-            _entityCache.Remove(CacheConstants.Users);
-
             response.Notifications.Add($"User '{user.Username}' has been enabled", NotificationTypeEnum.Success);
             return response;
         }
@@ -115,7 +113,7 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new DisableUserResponse();
 
-            User user;
+            UserEntity user;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
@@ -134,8 +132,6 @@ namespace Template.Services
                 response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
                 return response;
             }
-
-            _entityCache.Remove(CacheConstants.Users);
 
             response.Notifications.Add($"User '{user.Username}' has been disabled", NotificationTypeEnum.Success);
             return response;
@@ -189,7 +185,7 @@ namespace Template.Services
                 return response;
             }
 
-            var user = new User()
+            var user = new UserEntity()
             {
                 Username = username,
                 First_Name = request.FirstName,
@@ -202,7 +198,6 @@ namespace Template.Services
             };
 
             await _userManager.CreateAsync(user, request.Password);
-            _entityCache.Remove(CacheConstants.Users);
 
             await CreateOrDeleteUserRoles(request.RoleIds, user.Id, session.User.Id);
 
@@ -215,7 +210,7 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new UpdateUserResponse();
 
-            User user;
+            UserEntity user;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
@@ -253,8 +248,6 @@ namespace Template.Services
                 response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
                 return response;
             }
-
-            _entityCache.Remove(CacheConstants.Users);
 
             response.Notifications.Add($"User {user.Username} has been updated", NotificationTypeEnum.Success);
             return response;
@@ -400,7 +393,7 @@ namespace Template.Services
                 return response;
             }
 
-            var role = new Role()
+            var role = new RoleEntity()
             {
                 Name = request.Name,
                 Description = request.Description,
@@ -583,24 +576,127 @@ namespace Template.Services
 
         public async Task<GetSessionsResponse> GetSessions(GetSessionsRequest request)
         {
-            var startDate = DateTime.Now.AddDays(-7);
-            if (request.StartDate.HasValue)
+            var response = new GetSessionsResponse();
+
+            if (request.Last24Hours.HasValue && request.Last24Hours.Value)
             {
-                startDate = request.StartDate.Value;
+                using (var uow = _uowFactory.GetUnitOfWork())
+                {
+                    response.Sessions = await uow.SessionRepo.GetSessionsByStartDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByStartDateRequest()
+                    {
+                        Start_Date = DateTime.Now.AddDays(-1)
+                    });
+                }
+                response.SelectedFilter = "Last 24 Hours";
             }
 
-            using (var uow = _uowFactory.GetUnitOfWork())
+            if (request.LastXDays.HasValue)
             {
-                var sessions = await uow.SessionRepo.GetSessionsByStartDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByStartDateRequest()
+                using (var uow = _uowFactory.GetUnitOfWork())
                 {
-                    Start_Date = startDate
-                });
-
-                return new GetSessionsResponse()
-                {
-                    Sessions = sessions
-                };
+                    response.Sessions = await uow.SessionRepo.GetSessionsByStartDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByStartDateRequest()
+                    {
+                        Start_Date = DateTime.Today.AddDays(request.LastXDays.Value * -1)
+                    });
+                }
+                response.SelectedFilter = $"Last {request.LastXDays} days";
             }
+
+            if (request.Day.HasValue)
+            {
+                using (var uow = _uowFactory.GetUnitOfWork())
+                {
+                    response.Sessions = await uow.SessionRepo.GetSessionsByDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByDateRequest()
+                    {
+                        Date = request.Day.Value
+                    });
+                }
+                response.SelectedFilter = request.Day.Value.ToLongDateString();
+            }
+
+            if (request.UserId.HasValue)
+            {
+                using (var uow = _uowFactory.GetUnitOfWork())
+                {
+                    response.Sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
+                    {
+                        User_Id = request.UserId.Value
+                    });
+                }
+                response.SelectedFilter = $"User ID: {request.UserId}";
+            }
+
+            if (!string.IsNullOrEmpty(request.Username))
+            {
+                using (var uow = _uowFactory.GetUnitOfWork())
+                {
+                    var user = await uow.UserRepo.GetUserByUsername(new Infrastructure.Repositories.UserRepo.Models.GetUserByUsernameRequest()
+                    {
+                        Username = request.Username
+                    });
+
+                    if (user == null)
+                    {
+                        response.Notifications.AddError($"Could not find user with username {request.Username}");
+                        return response;
+                    }
+
+                    response.Sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
+                    {
+                        User_Id = user.Id
+                    });
+                }
+                response.SelectedFilter = $"Username: {request.Username}";
+            }
+
+            if (!string.IsNullOrEmpty(request.MobileNumber))
+            {
+                using (var uow = _uowFactory.GetUnitOfWork())
+                {
+                    var user = await uow.UserRepo.GetUserByMobileNumber(new Infrastructure.Repositories.UserRepo.Models.GetUserByMobileNumberRequest()
+                    {
+                        Mobile_Number = request.MobileNumber
+                    });
+
+                    if (user == null)
+                    {
+                        response.Notifications.AddError($"Could not find user with mobile number {request.MobileNumber}");
+                        return response;
+                    }
+
+                    response.Sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
+                    {
+                        User_Id = user.Id
+                    });
+                }
+                response.SelectedFilter = $"Mobile Number: {request.MobileNumber}";
+            }
+
+            if (!string.IsNullOrEmpty(request.EmailAddress))
+            {
+                using (var uow = _uowFactory.GetUnitOfWork())
+                {
+                    var user = await uow.UserRepo.GetUserByEmail(new Infrastructure.Repositories.UserRepo.Models.GetUserByEmailRequest()
+                    {
+                        Email_Address = request.EmailAddress
+                    });
+
+                    if (user == null)
+                    {
+                        response.Notifications.AddError($"Could not find user with email address {request.EmailAddress}");
+                        return response;
+                    }
+
+                    response.Sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
+                    {
+                        User_Id = user.Id
+                    });
+                }
+                response.SelectedFilter = $"Email Address: {request.EmailAddress}";
+            }
+
+            response.Sessions = response.Sessions.OrderByDescending(s => s.Created_Date).ToList();
+            return response;
         }
 
         #endregion

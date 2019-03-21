@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_configuration_create]
+﻿CREATE PROCEDURE [dbo].[sp_configuration_item_create]
 	@Key				VARCHAR(256),
 	@Description		VARCHAR(256),
 	@Boolean_Value		BIT,

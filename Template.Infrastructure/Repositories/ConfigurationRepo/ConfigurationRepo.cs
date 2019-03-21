@@ -34,17 +34,14 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo
 
         #region Public Methods
 
-        public async Task<List<ConfigurationItem>> GetConfigurationItems()
+        public async Task<List<ConfigurationEntity>> GetConfigurationItems()
         {
-            var sqlStoredProc = "sp_configuration_get";
+            var sqlStoredProc = "sp_configuration_items_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<ConfigurationItem>
+            var response = await DapperAdapter.GetFromStoredProcAsync<ConfigurationEntity>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new
-                    {
-
-                    },
+                    parameters: new { },
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -55,12 +52,12 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo
 
         public async Task UpdateConfigurationItem(UpdateConfigurationItemRequest request)
         {
-            var sqlStoredProc = "sp_configuration_update";
+            var sqlStoredProc = "sp_configuration_item_update";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
@@ -74,12 +71,12 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo
 
         public async Task<int> CreateConfigurationItem(CreateConfigurationItemRequest request)
         {
-            var sqlStoredProc = "sp_configuration_create";
+            var sqlStoredProc = "sp_configuration_item_create";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new DynamicParameters(request),
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,

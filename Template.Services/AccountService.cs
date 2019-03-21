@@ -22,9 +22,9 @@ namespace Template.Services
 
         private readonly ILogger<AccountService> _logger;
 
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> _roleManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<UserEntity> _userManager;
+        private readonly RoleManager<RoleEntity> _roleManager;
+        private readonly SignInManager<UserEntity> _signInManager;
 
         private readonly IEmailService _emailService;
         private readonly ISessionService _sessionService;
@@ -38,9 +38,9 @@ namespace Template.Services
 
         public AccountService(
             ILogger<AccountService> logger,
-            UserManager<User> userManager,
-            RoleManager<Role> roleManager,
-            SignInManager<User> signInManager,
+            UserManager<UserEntity> userManager,
+            RoleManager<RoleEntity> roleManager,
+            SignInManager<UserEntity> signInManager,
             IEmailService emailService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
@@ -80,7 +80,7 @@ namespace Template.Services
                 return response;
             }
 
-            var user = new User()
+            var user = new UserEntity()
             {
                 Username = username,
                 Email_Address = request.EmailAddress,
@@ -97,7 +97,6 @@ namespace Template.Services
                 UserID = user.Id
             });
 
-            _entityCache.Remove(CacheConstants.Users);
             _entityCache.Remove(CacheConstants.UserRoles);
 
             response.Notifications.Add($"You have been successfully registered, please check {user.Email_Address} for an activation link", NotificationTypeEnum.Success);
@@ -146,15 +145,7 @@ namespace Template.Services
         {
             var session = await _sessionService.GetAuthenticatedSession();
 
-            User user;
-            using (var uow = _uowFactory.GetUnitOfWork())
-            {
-                user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
-                {
-                    User_Id = session.User.Id
-                });
-            }
-
+            var user = session.User;
             var roles = await _entityCache.Roles();
             var userRoles = await _entityCache.UserRoles();
             var usersRoles = userRoles.Where(ur => ur.User_Id == session.User.Id).Select(ur => ur.Role_Id);
@@ -173,42 +164,35 @@ namespace Template.Services
         public async Task<UpdateProfileResponse> UpdateProfile(UpdateProfileRequest request)
         {
             var response = new UpdateProfileResponse();
+            var session = await _sessionService.GetAuthenticatedSession();
 
-            using (var uow = _uowFactory.GetUnitOfWork())
+            var user = session.User;
+
+            user.Username = request.Username;
+            user.Email_Address = request.EmailAddress;
+            user.First_Name = request.FirstName;
+            user.Last_Name = request.LastName;
+            user.Mobile_Number = request.MobileNumber;
+
+            if (!string.IsNullOrEmpty(request.Password))
             {
-                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
+                if (!updatePasswordResponse.Succeeded)
                 {
-                    User_Id = request.UserId
-                });
-
-                user.Username = request.Username;
-                user.Email_Address = request.EmailAddress;
-                user.First_Name = request.FirstName;
-                user.Last_Name = request.LastName;
-                user.Mobile_Number = request.MobileNumber;
-
-                if (!string.IsNullOrEmpty(request.Password))
-                {
-                    var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
-                    if (!updatePasswordResponse.Succeeded)
-                    {
-                        response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
-                        return response;
-                    }
-                }
-                var updateResponse = await _userManager.UpdateAsync(user);
-                if (!updateResponse.Succeeded)
-                {
-                    response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
+                    response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
                     return response;
                 }
-
-                _entityCache.Remove(CacheConstants.Users);
-
-                response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
+            }
+            var updateResponse = await _userManager.UpdateAsync(user);
+            if (!updateResponse.Succeeded)
+            {
+                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
                 return response;
             }
+
+            response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
+            return response;
         }
 
         public async Task<DuplicateUserCheckResponse> DuplicateUserCheck(DuplicateUserCheckRequest request)

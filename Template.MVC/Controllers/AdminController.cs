@@ -240,7 +240,7 @@ namespace Template.MVC.Controllers
             };
 
             return View(viewModel);
-        }  
+        }
 
         [HttpPost]
         public async Task<IActionResult> EditRole(int id, UpdateRoleRequest request)
@@ -399,26 +399,29 @@ namespace Template.MVC.Controllers
                 if (response.IsSuccessful)
                 {
                     viewModel.Sessions = response.Sessions;
+                    viewModel.SelectedFilter = response.SelectedFilter;
                     return View(viewModel);
                 }
-                AddFormErrors(response);
             }
+            AddNotifications(request);
             return View(viewModel);
         }
 
         [HttpGet]
         public async Task<IActionResult> Session(int id)
         {
+            var viewModel = new SessionViewModel();
             var response = await _adminService.GetSession(new GetSessionRequest()
             {
                 Id = id
             });
 
-            var viewModel = new SessionViewModel()
+            if (response.IsSuccessful)
             {
-
+                viewModel.Session = response.Session;
+                viewModel.Logs = response.Logs;
             };
-
+            AddNotifications(response);
             return View(viewModel);
         }
 
@@ -427,3 +430,4 @@ namespace Template.MVC.Controllers
         #endregion
     }
 }
+

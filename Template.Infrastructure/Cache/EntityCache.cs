@@ -30,9 +30,9 @@ namespace Template.Infrastructure.Cache
 
         #region Public Methods
 
-        public async Task<List<ConfigurationItem>> ConfigurationItems()
+        public async Task<List<ConfigurationEntity>> ConfigurationItems()
         {
-            var items = new List<ConfigurationItem>();
+            var items = new List<ConfigurationEntity>();
             if (_cacheProvider.TryGet(CacheConstants.ConfigurationItems, out items))
             {
                 return items;
@@ -68,9 +68,9 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
-        public async Task<List<Role>> Roles()
+        public async Task<List<RoleEntity>> Roles()
         {
-            var items = new List<Role>();
+            var items = new List<RoleEntity>();
             if (_cacheProvider.TryGet(CacheConstants.Roles, out items))
             {
                 return items;
@@ -87,9 +87,9 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
-        public async Task<List<Token>> Tokens()
+        public async Task<List<TokenEntity>> Tokens()
         {
-            var items = new List<Token>();
+            var items = new List<TokenEntity>();
             if (_cacheProvider.TryGet(CacheConstants.Tokens, out items))
             {
                 return items;
@@ -106,9 +106,9 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
-        public async Task<List<UserRole>> UserRoles()
+        public async Task<List<UserRoleEntity>> UserRoles()
         {
-            var items = new List<UserRole>();
+            var items = new List<UserRoleEntity>();
             if (_cacheProvider.TryGet(CacheConstants.UserRoles, out items))
             {
                 return items;
@@ -125,9 +125,9 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
-        public async Task<List<Claim>> Claims()
+        public async Task<List<ClaimEntity>> Claims()
         {
-            var items = new List<Claim>();
+            var items = new List<ClaimEntity>();
             if (_cacheProvider.TryGet(CacheConstants.Claims, out items))
             {
                 return items;

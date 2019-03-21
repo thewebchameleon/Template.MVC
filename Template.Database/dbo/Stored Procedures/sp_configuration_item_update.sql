@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_configuration_update]
+﻿CREATE PROCEDURE [dbo].[sp_configuration_item_update]
 	@Id					INT,
 	@Description		VARCHAR(256),
 	@Boolean_Value		BIT,

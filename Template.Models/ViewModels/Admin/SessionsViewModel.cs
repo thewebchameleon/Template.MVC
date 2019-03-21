@@ -9,13 +9,15 @@ namespace Template.Models.ViewModels.Admin
         #region Constructors
 
         public SessionsViewModel(GetSessionsRequest request) : base(request) {
-            Sessions = new List<Session>();
+            Sessions = new List<SessionEntity>();
         }
 
         public SessionsViewModel() : this(new GetSessionsRequest()) { }
 
         #endregion
 
-        public List<Session> Sessions { get; set; }
+        public List<SessionEntity> Sessions { get; set; }
+
+        public string SelectedFilter { get; set; }
     }
 }
