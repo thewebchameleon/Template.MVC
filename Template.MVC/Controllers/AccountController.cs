@@ -168,7 +168,6 @@ namespace Template.MVC.Controllers
                 AddFormErrors(response);
             }
 
-            // todo: viewmodels should be stored in session to avoid making extra calls to the service
             var viewModel = new ProfileViewModel();
             var profileResponse = await _accountService.GetProfile();
             viewModel.Roles = profileResponse.Roles;

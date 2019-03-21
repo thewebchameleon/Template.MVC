@@ -2,7 +2,6 @@
 	@Id             INT,
 	@Name           VARCHAR(256),
 	@Description    VARCHAR(256),
-	@Is_Enabled		BIT,
 	@Updated_By      INT
 AS
 BEGIN
@@ -10,7 +9,6 @@ BEGIN
    SET
 		[Name] = @Name,
 		[Description] = @Description,
-		[Is_Enabled] = @Is_Enabled,
 		[Updated_By] = @Updated_By,
 		[Updated_Date] = GETDATE()
    WHERE

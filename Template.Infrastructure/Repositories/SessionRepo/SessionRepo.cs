@@ -165,7 +165,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
 
         public async Task UpdateSessionEvent(UpdateSessionEventRequest request)
         {
-            var sqlStoredProc = "sp_session_events";
+            var sqlStoredProc = "sp_session_event_update";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (

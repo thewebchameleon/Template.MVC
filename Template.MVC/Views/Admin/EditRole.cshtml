@@ -23,7 +23,7 @@
                 <div class="form-group col-md-6">
                     <label asp-for="Request.ClaimIds" class="control-label"></label>
                     <select id="listClaims" class="selectpicker form-control" multiple>
-                        @foreach (var claims in Model.ClaimsLookup.GroupBy(c => c.GroupName))
+                        @foreach (var claims in Model.ClaimsLookup.GroupBy(c => c.Group_Name))
                         {
                             <optgroup label="@claims.Key">
                                 @foreach (var claim in claims)

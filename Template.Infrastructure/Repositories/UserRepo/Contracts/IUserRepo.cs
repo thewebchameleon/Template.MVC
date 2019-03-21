@@ -47,6 +47,10 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
 
         Task<List<ClaimEntity>> GetClaims();
 
+        Task UpdateClaim(UpdateClaimRequest request);
+
+        Task<int> CreateClaim(CreateClaimRequest request);
+
         Task<int> CreateRoleClaim(CreateRoleClaimRequest request);
 
         Task DeleteRoleClaim(DeleteRoleClaimRequest request);

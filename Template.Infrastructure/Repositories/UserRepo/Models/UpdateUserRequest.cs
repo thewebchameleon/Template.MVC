@@ -20,12 +20,6 @@ namespace Template.Infrastructure.Repositories.UserRepo.Models
 
         public string Password_Hash { get; set; }
 
-        public bool Is_Locked_Out { get; set; }
-
-        public DateTime? Lockout_End { get; set; }
-
-        public bool Is_Enabled { get; set; }
-
         public int Updated_By { get; set; }
     }
 }

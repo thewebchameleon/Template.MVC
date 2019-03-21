@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Claim] (
     [Id]				INT IDENTITY (1, 1) NOT NULL,
     [Key]				VARCHAR (256)		NOT NULL,
-	[GroupName]			VARCHAR (256)		NOT NULL,
+	[Group_Name]			VARCHAR (256)		NOT NULL,
     [Name]				VARCHAR (256)		NOT NULL,
     [Description]		VARCHAR (256)		NOT NULL,
 	[Created_By]		INT					NOT NULL,

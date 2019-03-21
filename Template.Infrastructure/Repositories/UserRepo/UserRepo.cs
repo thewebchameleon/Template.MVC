@@ -480,6 +480,45 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
+        public async Task UpdateClaim(UpdateClaimRequest request)
+        {
+            var sqlStoredProc = "sp_claim_update";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.FirstOrDefault() == 0)
+            {
+                throw new Exception("No items have been updated");
+            }
+        }
+
+        public async Task<int> CreateClaim(CreateClaimRequest request)
+        {
+            var sqlStoredProc = "sp_claim_create";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.FirstOrDefault() == 0)
+            {
+                throw new Exception("No items have been created");
+            }
+            return response.FirstOrDefault();
+        }
+
         #endregion
     }
 }

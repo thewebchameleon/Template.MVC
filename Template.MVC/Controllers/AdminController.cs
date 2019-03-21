@@ -151,8 +151,6 @@ namespace Template.MVC.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _adminService.DisableUser(request);
-                // this redirects so we push notification to the redirect
-                // todo: maintain state of selected item
                 AddNotifications(response);
             }
             return RedirectToAction(nameof(AdminController.UserManagement));
@@ -164,8 +162,6 @@ namespace Template.MVC.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _adminService.EnableUser(request);
-                // this redirects so we push notification to the redirect
-                // todo: maintain state of selected item
                 AddNotifications(response);
             }
             return RedirectToAction(nameof(AdminController.UserManagement));
@@ -234,7 +230,7 @@ namespace Template.MVC.Controllers
 
             viewModel.Request = new UpdateRoleRequest()
             {
-                RoleId = id,
+                Id = id,
                 Name = response.Role.Name,
                 Description = response.Role.Description,
                 ClaimIds = response.Claims.Select(c => c.Id).ToList()
@@ -248,7 +244,7 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                request.RoleId = id;
+                request.Id = id;
 
                 var response = await _adminService.UpdateRole(request);
                 if (response.IsSuccessful)
@@ -267,8 +263,6 @@ namespace Template.MVC.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _adminService.DisableRole(request);
-                // this redirects so we push notification to the redirect
-                // todo: maintain state of selected item
                 AddNotifications(response);
             }
             return RedirectToAction(nameof(AdminController.RoleManagement));
@@ -280,8 +274,6 @@ namespace Template.MVC.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _adminService.EnableRole(request);
-                // this redirects so we push notification to the redirect
-                // todo: maintain state of selected item
                 AddNotifications(response);
             }
             return RedirectToAction(nameof(AdminController.RoleManagement));
@@ -345,7 +337,9 @@ namespace Template.MVC.Controllers
             viewModel.Key = response.Claim.Key;
             viewModel.Request = new UpdateClaimRequest()
             {
-               // Description = response.Claim.Description,
+                Name = response.Claim.Name,
+                Description = response.Claim.Description,
+                GroupName = response.Claim.Group_Name,
             };
 
             return View(viewModel);
@@ -516,7 +510,7 @@ namespace Template.MVC.Controllers
             viewModel.Key = response.SessionEvent.Key;
             viewModel.Request = new UpdateSessionEventRequest()
             {
-                Description = response.SessionEvent.Description,
+                Description = response.SessionEvent.Description
             };
 
             return View(viewModel);

@@ -6,7 +6,7 @@
 
         public string Name { get; set; }
 
-        public string GroupName { get; set; }
+        public string Group_Name { get; set; }
 
         public string Description { get; set; }
     }

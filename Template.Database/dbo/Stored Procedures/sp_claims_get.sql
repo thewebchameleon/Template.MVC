@@ -4,7 +4,7 @@ BEGIN
    SELECT
 		[C].[Id],
 		[C].[Key],
-		[C].[GroupName],
+		[C].[Group_Name],
 		[C].[Name],
 		[C].[Description],
 		[C].[Created_By],

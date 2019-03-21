@@ -1,0 +1,97 @@
+﻿@model ClaimManagementViewModel
+
+@{
+    ViewData["Title"] = "Claim Management";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+
+
+<div class="panel-controls">
+    <a href="@Url.Action("CreateClaim", "Admin" )" class="btn btn-primary">Create Item</a>
+    <div class="panel-right-controls" style="display: none;">
+        <input id="hdnSelectedClaimId" type="hidden" />
+        <button id="btnEditClaim" type="button" class="btn btn-primary">Edit</button>
+    </div>
+</div>
+
+<table id="claimmanagementTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Group Name</th>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model.Claims)
+        {
+            <tr>
+                <td class="claim-identifier">
+                    <input class="u-claimId" type="hidden" value="@claim.Id" />
+                    @claim.Group_Name
+                </td>
+                <td>@claim.Name</td>
+                <td>@claim.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts  {
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var table = $('#claimmanagementTable').DataTable({
+                responsive: {
+                    details: false
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },
+                ]
+            });
+
+            // select row feature
+            $('#claimmanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $('.panel-right-controls').hide();
+                    $("#hdnSelectedClaimId").val('');
+                }
+                else
+                {
+                    var claimId = $(this).children('.claim-identifier').children('input.u-claimId').val();
+
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('.panel-right-controls').show();
+                    $("#hdnSelectedClaimId").val(claimId);
+                }
+            });
+
+        });
+
+        // edit claim
+        $('#btnEditClaim').click(function () {
+            var claimId = GetSelectedClaimId();
+            window.location.href = '@(Url.Action(nameof(AdminController.EditClaim), "Admin"))/' + claimId;
+        });
+
+        function GetSelectedClaimId() {
+            return $("#hdnSelectedClaimId").val();
+        }
+
+    </script>
+
+}

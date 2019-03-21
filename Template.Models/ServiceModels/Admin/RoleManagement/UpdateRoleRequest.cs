@@ -5,7 +5,7 @@ namespace Template.Models.ServiceModels.Admin
 {
     public class UpdateRoleRequest
     {
-        public int RoleId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string Name { get; set; }

@@ -1,12 +1,14 @@
 ﻿namespace Template.Infrastructure.Repositories.UserRepo.Models
 {
-    public class UpdateRoleRequest
+    public class UpdateClaimRequest
     {
         public int Id { get; set; }
 
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public string Group_Name { get; set; }
 
         public int Updated_By { get; set; }
     }

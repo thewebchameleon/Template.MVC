@@ -197,7 +197,19 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new UpdateUserResponse();
 
-            // todo: duplicate check
+            var duplicateResponse = await _accountService.DuplicateUserCheck(new DuplicateUserCheckRequest()
+            {
+                EmailAddress = request.EmailAddress,
+                Username = request.Username,
+                MobileNumber = request.MobileNumber,
+                UserId = request.UserId
+            });
+
+            if (duplicateResponse.Notifications.HasErrors)
+            {
+                response.Notifications.Add(duplicateResponse.Notifications);
+                return response;
+            }
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
@@ -215,11 +227,8 @@ namespace Template.Services
                     Mobile_Number = request.MobileNumber,
                     Email_Address = request.EmailAddress,
                     Password_Hash = user.Password_Hash,
-                    Is_Locked_Out = request.Is_Locked_Out,
-                    Lockout_End = request.Lockout_End,
                     Registration_Confirmed = request.RegistrationConfirmed,
                     Updated_By = session.User.Id,
-                    Is_Enabled = true
                 };
 
                 if (!string.IsNullOrEmpty(request.Password))
@@ -406,12 +415,13 @@ namespace Template.Services
             var response = new UpdateRoleResponse();
 
             var roles = await _entityCache.Roles();
-            var role = roles.FirstOrDefault(u => u.Id == request.RoleId);
+            var role = roles.FirstOrDefault(u => u.Id == request.Id);
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 await uow.UserRepo.UpdateRole(new Infrastructure.Repositories.UserRepo.Models.UpdateRoleRequest()
                 {
+                    Id = request.Id,
                     Name = request.Name,
                     Description = request.Description,
                     Updated_By = session.User.Id
@@ -419,7 +429,7 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            await CreateOrDeleteRoleClaims(request.ClaimIds, request.RoleId, session.User.Id);
+            await CreateOrDeleteRoleClaims(request.ClaimIds, request.Id, session.User.Id);
 
             _entityCache.Remove(CacheConstants.Roles);
             _entityCache.Remove(CacheConstants.RoleClaims);
@@ -528,6 +538,15 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new CreateConfigurationItemResponse();
 
+            var configItems = await _entityCache.ConfigurationItems();
+            var configItem = configItems.FirstOrDefault(c => c.Key == request.Key);
+
+            if (configItem != null)
+            {
+                response.Notifications.AddError($"A configuration item already exists with the key {request.Key}");
+                return response;
+            }
+
             int id;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
@@ -548,10 +567,7 @@ namespace Template.Services
 
             _entityCache.Remove(CacheConstants.ConfigurationItems);
 
-            var configItems = await _entityCache.ConfigurationItems();
-            var configItem = configItems.FirstOrDefault(c => c.Id == id);
-
-            response.Notifications.Add($"Configuration item '{configItem.Key}' has been created", NotificationTypeEnum.Success);
+            response.Notifications.Add($"Configuration item '{request.Key}' has been created", NotificationTypeEnum.Success);
             return response;
         }
 
@@ -800,6 +816,15 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new CreateSessionEventResponse();
 
+            var sessionEvents = await _entityCache.SessionEvents();
+            var sessionEvent = sessionEvents.FirstOrDefault(se => se.Key == request.Key);
+
+            if (sessionEvent != null)
+            {
+                response.Notifications.AddError($"A session event already exists with the key {request.Key}");
+                return response;
+            }
+
             int id;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
@@ -814,10 +839,7 @@ namespace Template.Services
 
             _entityCache.Remove(CacheConstants.SessionEvents);
 
-            var sessionEvents = await _entityCache.SessionEvents();
-            var sessionEvent = sessionEvents.FirstOrDefault(c => c.Id == id);
-
-            response.Notifications.Add($"Session event '{sessionEvent.Key}' has been created", NotificationTypeEnum.Success);
+            response.Notifications.Add($"Session event '{request.Key}' has been created", NotificationTypeEnum.Success);
             return response;
         }
 
@@ -825,24 +847,86 @@ namespace Template.Services
 
         #region Claim Management 
 
-        public Task<GetClaimManagementResponse> GetClaimManagement()
+        public async Task<GetClaimManagementResponse> GetClaimManagement()
         {
-            throw new NotImplementedException();
+            var response = new GetClaimManagementResponse();
+
+            response.Claims = await _entityCache.Claims();
+
+            return response;
         }
 
-        public Task<GetClaimResponse> GetClaim(GetClaimRequest request)
+        public async Task<GetClaimResponse> GetClaim(GetClaimRequest request)
         {
-            throw new NotImplementedException();
+            var response = new GetClaimResponse();
+
+            var claims = await _entityCache.Claims();
+            var claim = claims.FirstOrDefault(c => c.Id == request.Id);
+
+            response.Claim = claim;
+
+            return response;
         }
 
-        public Task<UpdateClaimResponse> UpdateClaim(UpdateClaimRequest request)
+        public async Task<UpdateClaimResponse> UpdateClaim(UpdateClaimRequest request)
         {
-            throw new NotImplementedException();
+            var session = await _sessionService.GetAuthenticatedSession();
+            var response = new UpdateClaimResponse();
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                await uow.UserRepo.UpdateClaim(new Infrastructure.Repositories.UserRepo.Models.UpdateClaimRequest()
+                {
+                    Id = request.Id,
+                    Name = request.Name,
+                    Group_Name = request.GroupName,
+                    Description = request.Description,
+                    Updated_By = session.User.Id
+                });
+                uow.Commit();
+            }
+
+            _entityCache.Remove(CacheConstants.Claims);
+
+            var claims = await _entityCache.Claims();
+            var claim = claims.FirstOrDefault(c => c.Id == request.Id);
+
+            response.Notifications.Add($"Claim '{claim.Key}' has been updated", NotificationTypeEnum.Success);
+            return response;
         }
 
-        public Task<CreateClaimResponse> CreateClaim(CreateClaimRequest request)
+        public async Task<CreateClaimResponse> CreateClaim(CreateClaimRequest request)
         {
-            throw new NotImplementedException();
+            var session = await _sessionService.GetAuthenticatedSession();
+            var response = new CreateClaimResponse();
+
+            var claims = await _entityCache.Claims();
+            var claim = claims.FirstOrDefault(c => c.Key == request.Key);
+
+            if (claim != null)
+            {
+                response.Notifications.AddError($"A claim already exists with the key {request.Key}");
+                return response;
+            }
+
+            int id;
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                id = await uow.UserRepo.CreateClaim(new Infrastructure.Repositories.UserRepo.Models.CreateClaimRequest()
+                {
+                    Key = request.Key,
+                    Description = request.Description,
+                    Group_Name = request.GroupName,
+                    Name = request.Name,
+                    Created_By = session.User.Id
+                });
+                uow.Commit();
+            }
+
+            _entityCache.Remove(CacheConstants.Claims);
+
+            response.Notifications.Add($"Claim '{request.Key}' has been created", NotificationTypeEnum.Success);
+            return response;
         }
 
         #endregion

@@ -213,9 +213,6 @@ namespace Template.Services
                 Last_Name = request.LastName,
                 Mobile_Number = request.MobileNumber,
                 Password_Hash = session.User.Password_Hash,
-                Is_Enabled = session.User.Is_Enabled,
-                Is_Locked_Out = session.User.Is_Locked_Out,
-                Lockout_End = session.User.Lockout_End,
                 Registration_Confirmed = session.User.Registration_Confirmed,
                 Updated_By = session.User.Id
             };
