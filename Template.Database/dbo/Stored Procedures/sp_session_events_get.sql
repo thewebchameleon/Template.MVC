@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_session_event_get]
+﻿CREATE PROCEDURE [dbo].[sp_session_events_get]
 AS
      BEGIN
          SELECT [Id],

@@ -132,7 +132,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
 
         public async Task<List<SessionLogEventEntity>> GetSessionLogEventsBySessionId(GetSessionLogEventsBySessionIdRequest request)
         {
-            var sqlStoredProc = "sp_session_log_evetns_get_by_session_id";
+            var sqlStoredProc = "sp_session_log_events_get_by_session_id";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<SessionLogEventEntity>
                 (
@@ -215,6 +215,26 @@ namespace Template.Infrastructure.Repositories.SessionRepo
                     dbconnection: _connection,
                     dbtransaction: _transaction);
 
+            return response.FirstOrDefault();
+        }
+
+        public async Task<int> CreateSessionLog(CreateSessionLogRequest request)
+        {
+            var sqlStoredProc = "sp_session_log_create";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.FirstOrDefault() == 0)
+            {
+                throw new Exception("No items have been created");
+            }
             return response.FirstOrDefault();
         }
 

@@ -18,5 +18,6 @@ AS
                 [Updated_Date],
                 Is_Deleted
          FROM [User](NOLOCK)
-         WHERE Id != 1;
+         WHERE Id != 1
+		 AND Is_Deleted = 0;
      END;

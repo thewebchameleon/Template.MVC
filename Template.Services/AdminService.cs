@@ -11,6 +11,7 @@ using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models.DomainModels;
 using Template.Models.ServiceModels;
 using Template.Models.ServiceModels.Admin;
+using Template.Models.ServiceModels.Admin.ClaimManagement;
 using Template.Services.Contracts;
 
 namespace Template.Services
@@ -20,10 +21,6 @@ namespace Template.Services
         #region Instance Fields
 
         private readonly ILogger<AdminService> _logger;
-
-        private readonly UserManager<UserEntity> _userManager;
-        private readonly RoleManager<RoleEntity> _roleManager;
-        private readonly SignInManager<UserEntity> _signInManager;
 
         private readonly IEmailService _emailService;
         private readonly IAccountService _accountService;
@@ -38,9 +35,6 @@ namespace Template.Services
 
         public AdminService(
             ILogger<AdminService> logger,
-            UserManager<UserEntity> userManager,
-            RoleManager<RoleEntity> roleManager,
-            SignInManager<UserEntity> signInManager,
             IEmailService emailService,
             IAccountService accountService,
             ISessionService sessionService,
@@ -48,10 +42,6 @@ namespace Template.Services
             IEntityCache entityCache)
         {
             _logger = logger;
-
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _signInManager = signInManager;
 
             _uowFactory = uowFactory;
 
@@ -90,18 +80,15 @@ namespace Template.Services
             {
                 user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    User_Id = request.UserId
+                    User_Id = request.Id
+                });
+
+                await uow.UserRepo.EnableUser(new Infrastructure.Repositories.UserRepo.Models.EnableUserRequest()
+                {
+                    User_Id = request.Id,
+                    Updated_By = session.User.Id
                 });
                 uow.Commit();
-            }
-            user.Is_Enabled = true;
-            user.Updated_By = session.User.Id;
-
-            var updateResponse = await _userManager.UpdateAsync(user);
-            if (!updateResponse.Succeeded)
-            {
-                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                return response;
             }
 
             response.Notifications.Add($"User '{user.Username}' has been enabled", NotificationTypeEnum.Success);
@@ -120,17 +107,12 @@ namespace Template.Services
                 {
                     User_Id = request.Id
                 });
+
+                await uow.UserRepo.DisableUser(new Infrastructure.Repositories.UserRepo.Models.DisableUserRequest()
+                {
+                    Id = request.Id
+                });
                 uow.Commit();
-            }
-
-            user.Is_Enabled = false;
-            user.Updated_By = session.User.Id;
-
-            var updateResponse = await _userManager.UpdateAsync(user);
-            if (!updateResponse.Succeeded)
-            {
-                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                return response;
             }
 
             response.Notifications.Add($"User '{user.Username}' has been disabled", NotificationTypeEnum.Success);
@@ -185,21 +167,26 @@ namespace Template.Services
                 return response;
             }
 
-            var user = new UserEntity()
+            var password = "";
+
+            int id;
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                Username = username,
-                First_Name = request.FirstName,
-                Last_Name = request.LastName,
-                Mobile_Number = request.MobileNumber,
-                Email_Address = request.EmailAddress,
-                Created_By = session.User.Id,
-                Updated_By = session.User.Id,
-                Is_Enabled = true
-            };
+                id = await uow.UserRepo.CreateUser(new Infrastructure.Repositories.UserRepo.Models.CreateUserRequest()
+                {
+                    Username = username,
+                    First_Name = request.FirstName,
+                    Last_Name = request.LastName,
+                    Mobile_Number = request.MobileNumber,
+                    Email_Address = request.EmailAddress,
+                    Password_Hash = password,
+                    Created_By = session.User.Id,
+                    Is_Enabled = true
+                });
+                uow.Commit();
+            }
 
-            await _userManager.CreateAsync(user, request.Password);
-
-            await CreateOrDeleteUserRoles(request.RoleIds, user.Id, session.User.Id);
+            await CreateOrDeleteUserRoles(request.RoleIds, id, session.User.Id);
 
             response.Notifications.Add($"User {request.Username} has been created", NotificationTypeEnum.Success);
             return response;
@@ -210,46 +197,43 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new UpdateUserResponse();
 
-            UserEntity user;
+            // todo: duplicate check
+
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
                     User_Id = request.UserId
                 });
+
+                var dbRequest = new Infrastructure.Repositories.UserRepo.Models.UpdateUserRequest()
+                {
+                    Id = request.UserId,
+                    Username = request.Username,
+                    First_Name = request.FirstName,
+                    Last_Name = request.LastName,
+                    Mobile_Number = request.MobileNumber,
+                    Email_Address = request.EmailAddress,
+                    Password_Hash = user.Password_Hash,
+                    Is_Locked_Out = request.Is_Locked_Out,
+                    Lockout_End = request.Lockout_End,
+                    Registration_Confirmed = request.RegistrationConfirmed,
+                    Updated_By = session.User.Id,
+                    Is_Enabled = true
+                };
+
+                if (!string.IsNullOrEmpty(request.Password))
+                {
+                    dbRequest.Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                }
+
+                await uow.UserRepo.UpdateUser(dbRequest);
                 uow.Commit();
             }
 
-            user.Username = request.Username;
-            user.Email_Address = request.EmailAddress;
-            user.First_Name = request.FirstName;
-            user.Last_Name = request.LastName;
-            user.Mobile_Number = request.MobileNumber;
-            user.Registration_Confirmed = request.RegistrationConfirmed;
-            user.Lockout_End = request.Lockout_End;
-            user.Is_Locked_Out = request.Is_Locked_Out;
-            user.Updated_By = session.User.Id;
-
             await CreateOrDeleteUserRoles(request.RoleIds, request.UserId, session.User.Id);
 
-            if (!string.IsNullOrEmpty(request.Password))
-            {
-                var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
-                if (!updatePasswordResponse.Succeeded)
-                {
-                    response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
-                    return response;
-                }
-            }
-            var updateResponse = await _userManager.UpdateAsync(user);
-            if (!updateResponse.Succeeded)
-            {
-                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                return response;
-            }
-
-            response.Notifications.Add($"User {user.Username} has been updated", NotificationTypeEnum.Success);
+            response.Notifications.Add($"User {request.Username} has been updated", NotificationTypeEnum.Success);
             return response;
         }
 
@@ -313,14 +297,14 @@ namespace Template.Services
             var roles = await _entityCache.Roles();
             var role = roles.FirstOrDefault(u => u.Id == request.RoleId);
 
-            role.Is_Enabled = true;
-            role.Updated_By = session.User.Id;
-
-            var updateResponse = await _roleManager.UpdateAsync(role);
-            if (!updateResponse.Succeeded)
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                return response;
+                await uow.UserRepo.EnableRole(new Infrastructure.Repositories.UserRepo.Models.EnableRoleRequest()
+                {
+                    Role_Id = role.Id,
+                    Updated_By = session.User.Id
+                });
+                uow.Commit();
             }
 
             _entityCache.Remove(CacheConstants.Roles);
@@ -337,14 +321,14 @@ namespace Template.Services
             var roles = await _entityCache.Roles();
             var role = roles.FirstOrDefault(u => u.Id == request.Id);
 
-            role.Is_Enabled = false;
-            role.Updated_By = session.User.Id;
-
-            var updateResponse = await _roleManager.UpdateAsync(role);
-            if (!updateResponse.Succeeded)
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                return response;
+                await uow.UserRepo.DisableRole(new Infrastructure.Repositories.UserRepo.Models.DisableRoleRequest()
+                {
+                    Id = role.Id,
+                    Updated_By = session.User.Id
+                });
+                uow.Commit();
             }
 
             _entityCache.Remove(CacheConstants.Roles);
@@ -393,19 +377,24 @@ namespace Template.Services
                 return response;
             }
 
-            var role = new RoleEntity()
+            int id;
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                Name = request.Name,
-                Description = request.Description,
-                Created_By = session.User.Id,
-                Updated_By = session.User.Id,
-                Is_Enabled = true
-            };
+                id = await uow.UserRepo.CreateRole(new Infrastructure.Repositories.UserRepo.Models.CreateRoleRequest()
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    Created_By = session.User.Id,
+                });
+                uow.Commit();
+            }
 
-            await _roleManager.CreateAsync(role);
             _entityCache.Remove(CacheConstants.Roles);
 
-            await CreateOrDeleteRoleClaims(request.ClaimIds, role.Id, session.User.Id);
+            var roles = await _entityCache.Roles();
+            var role = roles.FirstOrDefault(r => r.Id == id);
+
+            await CreateOrDeleteRoleClaims(request.ClaimIds, id, session.User.Id);
 
             response.Notifications.Add($"Role '{request.Name}' has been created", NotificationTypeEnum.Success);
             return response;
@@ -419,20 +408,21 @@ namespace Template.Services
             var roles = await _entityCache.Roles();
             var role = roles.FirstOrDefault(u => u.Id == request.RoleId);
 
-            role.Name = request.Name;
-            role.Description = request.Description;
-            role.Updated_By = session.User.Id;
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                await uow.UserRepo.UpdateRole(new Infrastructure.Repositories.UserRepo.Models.UpdateRoleRequest()
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    Updated_By = session.User.Id
+                });
+                uow.Commit();
+            }
 
             await CreateOrDeleteRoleClaims(request.ClaimIds, request.RoleId, session.User.Id);
 
-            var updateResponse = await _roleManager.UpdateAsync(role);
-            if (!updateResponse.Succeeded)
-            {
-                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                return response;
-            }
-
             _entityCache.Remove(CacheConstants.Roles);
+            _entityCache.Remove(CacheConstants.RoleClaims);
 
             response.Notifications.Add($"Role '{role.Name}' has been updated", NotificationTypeEnum.Success);
             return response;
@@ -594,6 +584,15 @@ namespace Template.Services
                 {
                     Session_Id = request.Id
                 });
+
+                if (session.User_Id.HasValue)
+                {
+                    var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                    {
+                        User_Id = session.User_Id.Value
+                    });
+                    response.User = user;
+                }
 
                 var eventsLookup = await _entityCache.SessionEvents();
                 var eventIds = events.Select(e => e.Id);
@@ -820,6 +819,30 @@ namespace Template.Services
 
             response.Notifications.Add($"Session event '{sessionEvent.Key}' has been created", NotificationTypeEnum.Success);
             return response;
+        }
+
+        #endregion
+
+        #region Claim Management 
+
+        public Task<GetClaimManagementResponse> GetClaimManagement()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<GetClaimResponse> GetClaim(GetClaimRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UpdateClaimResponse> UpdateClaim(UpdateClaimRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CreateClaimResponse> CreateClaim(CreateClaimRequest request)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

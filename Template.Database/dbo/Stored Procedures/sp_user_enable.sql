@@ -1,15 +1,15 @@
-﻿CREATE PROCEDURE [dbo].[sp_user_delete]
-	@Id    INT,
+﻿CREATE PROCEDURE [dbo].[sp_user_enable]
+	@User_Id    INT,
 	@Updated_By INT
 AS
 BEGIN
    UPDATE [User]
    SET
-		Is_Deleted = 1,
+		[Is_Enabled] = 1,
 		[Updated_By] = @Updated_By,
 		[Updated_Date] = GETDATE()
    WHERE
-		[Id] = @Id
+		[Id] = @User_Id
    SELECT
-		@Id AS [Id]
+		@User_Id AS [Id]
 END

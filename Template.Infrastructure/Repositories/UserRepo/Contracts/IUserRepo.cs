@@ -13,11 +13,15 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
 
         Task UpdateRole(UpdateRoleRequest request);
 
-        Task DeleteRole(DeleteRoleRequest request);
+        Task DisableRole(DisableRoleRequest request);
+
+        Task EnableRole(EnableRoleRequest request);
 
         Task<int> CreateUser(CreateUserRequest request);
 
-        Task DeleteUser(DeleteUserRequest request);
+        Task DisableUser(DisableUserRequest request);
+
+        Task EnableUser(EnableUserRequest request);
 
         Task UpdateUser(UpdateUserRequest request);
 

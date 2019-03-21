@@ -22,7 +22,3 @@ GO
 CREATE NONCLUSTERED INDEX [IX_Session_Log_Event_Session_Log_Id]
     ON [dbo].[Session_Log_Event]([Session_Log_Id] ASC);
 GO
-
-CREATE NONCLUSTERED INDEX [IX_Session_Log_Event_Created_Date]
-    ON [dbo].[Session_Log_Event]([Created_Date] ASC);
-GO

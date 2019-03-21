@@ -35,6 +35,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Profile">Profile</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Sessions">Sessions</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Admin
@@ -42,8 +45,9 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="UserManagement">Users</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="RoleManagement">Roles</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="ClaimManagement">Claims</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="ConfigurationManagement">Configuration</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="Sessions">Sessions</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="SessionEventManagement">Session Events</a>
                             </div>
                         </li>
                         <li class="nav-item">

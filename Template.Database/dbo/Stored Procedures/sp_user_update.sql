@@ -21,7 +21,7 @@ BEGIN
 		[First_Name] = @First_Name,
 		[Last_Name] = @Last_Name,
 		[Mobile_Number] = @Mobile_Number,
-		[Password_Hash] = @Password_Hash,
+		[Password_Hash] = ISNULL(@Password_Hash, [Password_Hash]),
 		[Is_Locked_Out] = @Is_Locked_Out,
 		[Lockout_End] = @Lockout_End,
 		[Is_Enabled] = @Is_Enabled,

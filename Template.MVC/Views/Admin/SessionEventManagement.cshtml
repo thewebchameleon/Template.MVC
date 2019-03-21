@@ -1,0 +1,95 @@
+﻿@model SessionEventManagementViewModel
+
+@{
+    ViewData["Title"] = "Session Event Management";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+
+
+<div class="panel-controls">
+    <a href="@Url.Action("CreateSessionEvent", "Admin" )" class="btn btn-primary">Create Event</a>
+    <div class="panel-right-controls" style="display: none;">
+        <input id="hdnSelectedSessionEventId" type="hidden" />
+        <button id="btnEditSessionEvent" type="button" class="btn btn-primary">Edit</button>
+    </div>
+</div>
+
+<table id="sessionEventmanagementTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sessionEvent in Model.SessionEvents)
+        {
+            <tr>
+                <td class="sessionEvent-identifier">
+                    <input class="u-sessionEventId" type="hidden" value="@sessionEvent.Id" />
+                    @sessionEvent.Key
+                </td>
+                <td>@sessionEvent.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts  {
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var table = $('#sessionEventmanagementTable').DataTable({
+                responsive: {
+                    details: false
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },
+                ]
+            });
+
+            // select row feature
+            $('#sessionEventmanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $('.panel-right-controls').hide();
+                    $("#hdnSelectedSessionEventId").val('');
+                }
+                else
+                {
+                    var sessionEventId = $(this).children('.sessionEvent-identifier').children('input.u-sessionEventId').val();
+
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('.panel-right-controls').show();
+                    $("#hdnSelectedSessionEventId").val(sessionEventId);
+                }
+            });
+
+        });
+
+        // edit session event
+        $('#btnEditSessionEvent').click(function () {
+            var sessionEventId = GetSelectedSessionEventId();
+            window.location.href = '@(Url.Action(nameof(AdminController.EditSessionEvent), "Admin"))/' + sessionEventId;
+        });
+
+        function GetSelectedSessionEventId() {
+            return $("#hdnSelectedSessionEventId").val();
+        }
+
+    </script>
+
+}

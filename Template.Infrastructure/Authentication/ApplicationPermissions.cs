@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Template.Infrastructure.Identity
+namespace Template.Infrastructure.Authentication
 {
     //todo: this should move to the DB config
     public static class ApplicationPermissions

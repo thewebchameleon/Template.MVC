@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,12 +11,12 @@ using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Configuration.Models;
-using Template.Infrastructure.Identity;
 using Template.Infrastructure.Session;
 using Template.Infrastructure.Session.Contracts;
 using Template.Infrastructure.UnitOfWork;
 using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models.DomainModels;
+using Template.MVC.Filters;
 using Template.MVC.Middleware;
 using Template.Services;
 using Template.Services.Contracts;
@@ -46,9 +46,6 @@ namespace Template.MVC
             services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<CacheSettings>>().Value);
 
             // Configure services
-            services.AddTransient<IUserStore<UserEntity>, UserManager>();
-            services.AddTransient<IRoleStore<RoleEntity>, RoleManager>();
-
             services.AddTransient<ISessionProvider, SessionProvider>();
             services.AddTransient<ICacheProvider, MemoryCacheProvider>();
             services.AddTransient<IEntityCache, EntityCache>();
@@ -59,22 +56,21 @@ namespace Template.MVC
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<ISessionService, SessionService>();
 
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => false;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+
+                // Although this setting breaks OAuth2 and other cross-origin authentication schemes, 
+                // it elevates the level of cookie security for other types of apps that don't rely 
+                // on cross-origin request processing.
+                options.MinimumSameSitePolicy = SameSiteMode.Strict;
             });
 
-            // add identity
-            services.AddIdentity<UserEntity, RoleEntity>()
-                .AddSignInManager<AuthenticationManager>()
-                .AddDefaultTokenProviders();
-
-            // Configure Identity options and password complexity here
-            services.Configure<IdentityOptions>(options => { options = ApplicationConstants.IdentityOptions; });
-            services.ConfigureApplicationCookie(options => { options = ApplicationConstants.CookieAuthenticationOptions; });
-
+            // authentication and authorization
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => { options = ApplicationConstants.CookieAuthenticationOptions; });
             services.AddAuthorization(options => { options = ApplicationConstants.AuthorizationOptions; });
 
             services.AddDistributedMemoryCache();
@@ -86,7 +82,10 @@ namespace Template.MVC
                 options.Cookie.HttpOnly = true;
             });
 
-            services.AddMvc()
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(SessionLoggingFilter));
+            })
 #if DEBUG
                 // todo: this is causing routing to throw an exception - https://github.com/aspnet/AspNetCore/issues/7647
                 //.AddRazorRuntimeCompilation()
@@ -124,7 +123,7 @@ namespace Template.MVC
 
             app.UseCookiePolicy();
             app.UseSession();
-            app.UseSessionLogging();
+            app.UseSessionMiddleware();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMvc();

@@ -11,9 +11,9 @@
 <hr />
 
 
-<div id="panelUserControls">
+<div class="panel-controls">
     <a href="@Url.Action("CreateUser", "Admin" )" class="btn btn-primary">Create User</a>
-    <div id="panelEditUserControls" style="display: none;">
+    <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedUserId" type="hidden" />
         <button id="btnDisableUserModal" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalDisableUser" style="display: none;">Disable</button>
         <button id="btnEnableUserModal" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalEnableUser" style="display: none;">Enable</button>
@@ -123,7 +123,7 @@
                 if ($(this).hasClass('selected'))
                 {
                     $(this).removeClass('selected');
-                    $('#panelEditUserControls').hide();
+                    $('.panel-right-controls').hide();
                     $("#hdnSelectedUserId").val('');
                 }
                 else
@@ -141,7 +141,7 @@
 
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
-                    $('#panelEditUserControls').show();
+                    $('.panel-right-controls').show();
                     $("#hdnSelectedUserId").val(userId);
                 }
             });

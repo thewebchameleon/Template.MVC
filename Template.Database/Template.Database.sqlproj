@@ -73,14 +73,14 @@
     <Build Include="dbo\Stored Procedures\sp_role_claim_delete.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_claims_get.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_create.sql" />
-    <Build Include="dbo\Stored Procedures\sp_role_delete.sql" />
+    <Build Include="dbo\Stored Procedures\sp_role_disable.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_update.sql" />
     <Build Include="dbo\Stored Procedures\sp_roles_get.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_add_user_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_sessions_get_by_user_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_create.sql" />
-    <Build Include="dbo\Stored Procedures\sp_user_delete.sql" />
+    <Build Include="dbo\Stored Procedures\sp_user_disable.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_duplicate_check.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_get_by_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_role_create.sql" />
@@ -118,6 +118,9 @@
     <Build Include="dbo\Stored Procedures\sp_session_logs_get_by_session_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_log_events_get_by_session_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_get_by_id.sql" />
+    <Build Include="dbo\Stored Procedures\sp_session_log_create.sql" />
+    <Build Include="dbo\Stored Procedures\sp_user_enable.sql" />
+    <Build Include="dbo\Stored Procedures\sp_role_enable.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Template.Database.refactorlog" />

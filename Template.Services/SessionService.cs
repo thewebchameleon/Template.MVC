@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Template.Infrastructure.Configuration;
@@ -20,6 +22,8 @@ namespace Template.Services
         private readonly ISessionProvider _sessionProvider;
         private readonly IUnitOfWorkFactory _uowFactory;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         #endregion
 
         #region Constructor
@@ -27,11 +31,13 @@ namespace Template.Services
         public SessionService(
             ILogger<SessionService> logger,
             ISessionProvider sessionProvider,
-            IUnitOfWorkFactory uowFactory)
+            IUnitOfWorkFactory uowFactory,
+            IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _uowFactory = uowFactory;
             _sessionProvider = sessionProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -54,8 +60,11 @@ namespace Template.Services
             var response = new GetSessionResponse();
 
             // get or create a new session
-            if (!_sessionProvider.TryGet(SessionConstants.SessionEntity, out SessionEntity session))
+            var session = await _sessionProvider.Get<SessionEntity>(SessionConstants.SessionEntity);
+            if (session == null)
             {
+                await _httpContextAccessor.HttpContext.SignOutAsync(); // flush any authenticated cookies in the event the application restarts
+
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
                     session = await uow.SessionRepo.CreateSession(new Infrastructure.Repositories.SessionRepo.Models.CreateSessionRequest()
@@ -64,13 +73,14 @@ namespace Template.Services
                     });
                     uow.Commit();
 
-                    _sessionProvider.Set(SessionConstants.SessionEntity, session);
+                    await _sessionProvider.Set(SessionConstants.SessionEntity, session);
                 }
             }
             response.Id = session.Id;
 
-            // get / rehydrate user from session if authenticated
-            if (!_sessionProvider.TryGet(SessionConstants.UserEntity, out UserEntity user)
+            // get or hydrate user from session
+            var user = await _sessionProvider.Get<UserEntity>(SessionConstants.UserEntity);
+            if (user == null
                 && session.User_Id.HasValue)
             {
                 using (var uow = _uowFactory.GetUnitOfWork())
@@ -80,6 +90,8 @@ namespace Template.Services
                         User_Id = session.User_Id.Value
                     });
                     uow.Commit();
+
+                    await _sessionProvider.Set(SessionConstants.UserEntity, user);
                 }
             }
             response.User = user;

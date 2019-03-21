@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[Session_Log] (
     [Id]				INT          IDENTITY (1, 1) NOT NULL,
     [Session_Id]		INT          NOT NULL,
+	[Method]			VARCHAR(10)  NOT NULL,
 	[Controller]		VARCHAR(256) NOT NULL,
 	[Action]			VARCHAR(256) NOT NULL,
     [Created_By]		INT          NOT NULL,
@@ -21,6 +22,14 @@ GO
 
 CREATE NONCLUSTERED INDEX [IX_Session_Log_Session_Id]
     ON [dbo].[Session_Log]([Session_Id] ASC);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_Session_Log_Controller]
+    ON [dbo].[Session_Log]([Controller] ASC);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_Session_Log_Action]
+    ON [dbo].[Session_Log]([Action] ASC);
 GO
 
 CREATE NONCLUSTERED INDEX [IX_Session_Log_Created_Date]

@@ -23,22 +23,22 @@
                 <div class="form-group col-md-6">
                     <label asp-for="Request.ClaimIds" class="control-label"></label>
                     <select id="listClaims" class="selectpicker form-control" multiple>
-                        @foreach (var claimType in Model.ClaimsLookup.GroupBy(c => c.Type))
+                        @foreach (var claims in Model.ClaimsLookup.GroupBy(c => c.GroupName))
                         {
-                        <optgroup label="@claimType.Key">
-                            @foreach (var claim in claimType)
+                            <optgroup label="@claims.Key">
+                                @foreach (var claim in claims)
                                 {
                                     var isSelected = Model.Request.ClaimIds.Any(c => c == claim.Id);
                                     if (isSelected)
                                     {
-                            <option value="@claim.Id" selected>@claim.Value</option>
+                                        <option value="@claim.Id" selected>@claim.Name</option>
                                     }
                                     else
                                     {
-                            <option value="@claim.Id">@claim.Value</option>
+                                        <option value="@claim.Id">@claim.Name</option>
                                     }
                                 }
-                        </optgroup>
+                            </optgroup>
                         }
                     </select>
                     <div id="listClaims-container"></div>

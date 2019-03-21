@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Template.Models.ServiceModels.Admin;
+using Template.Models.ServiceModels.Admin.ClaimManagement;
 
 namespace Template.Services.Contracts
 {
@@ -29,6 +30,16 @@ namespace Template.Services.Contracts
         Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request);
 
         Task<CreateRoleResponse> CreateRole(CreateRoleRequest request);
+
+
+        Task<GetClaimManagementResponse> GetClaimManagement();
+
+        Task<GetClaimResponse> GetClaim(GetClaimRequest request);
+
+        Task<UpdateClaimResponse> UpdateClaim(UpdateClaimRequest request);
+
+        Task<CreateClaimResponse> CreateClaim(CreateClaimRequest request);
+
 
 
         Task<GetConfigurationManagementResponse> GetConfigurationManagement();

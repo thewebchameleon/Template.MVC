@@ -10,9 +10,9 @@
 <h4>@ViewData["Title"]</h4>
 <hr />
 
-<div id="panelRoleControls">
+<div class="panel-controls">
     <a href="@Url.Action("CreateRole", "Admin" )" class="btn btn-primary">Create Role</a>
-    <div id="panelEditRoleControls" style="display: none;">
+    <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedRoleId" type="hidden" />
         <button id="btnDisableRoleModal" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalDisableRole" style="display: none;">Disable</button>
         <button id="btnEnableRoleModal" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalEnableRole" style="display: none;">Enable</button>
@@ -116,7 +116,7 @@
                 if ($(this).hasClass('selected'))
                 {
                     $(this).removeClass('selected');
-                    $('#panelEditRoleControls').hide();
+                    $('.panel-right-controls').hide();
                     $("#hdnSelectedRoleId").val('');
                 }
                 else
@@ -134,7 +134,7 @@
 
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
-                    $('#panelEditRoleControls').show();
+                    $('.panel-right-controls').show();
                     $("#hdnSelectedRoleId").val(roleId);
                 }
             });

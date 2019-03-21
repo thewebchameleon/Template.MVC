@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Models.ServiceModels.Admin;
+using Template.Models.ServiceModels.Admin.ClaimManagement;
 using Template.Models.ViewModels.Admin;
 using Template.Services.Contracts;
 
@@ -288,6 +289,89 @@ namespace Template.MVC.Controllers
 
         #endregion
 
+        #region Claim Management
+
+        [HttpGet]
+        public async Task<IActionResult> ClaimManagement()
+        {
+            var viewModel = new ClaimManagementViewModel();
+
+            var response = await _adminService.GetClaimManagement();
+            viewModel.Claims = response.Claims;
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult CreateClaim()
+        {
+            var viewModel = new CreateClaimViewModel();
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateClaim(CreateClaimRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.CreateClaim(request);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToAction(nameof(AdminController.ClaimManagement));
+                }
+                AddFormErrors(response);
+            }
+            var viewModel = new CreateClaimViewModel(request);
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditClaim(int id)
+        {
+            var viewModel = new EditClaimViewModel();
+
+            var response = await _adminService.GetClaim(new GetClaimRequest()
+            {
+                Id = id
+            });
+
+            if (!response.IsSuccessful)
+            {
+                AddNotifications(response);
+                return View(viewModel);
+            }
+
+            viewModel.Key = response.Claim.Key;
+            viewModel.Request = new UpdateClaimRequest()
+            {
+               // Description = response.Claim.Description,
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditClaim(int id, UpdateClaimRequest request)
+        {
+            request.Id = id;
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.UpdateClaim(request);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToAction(nameof(AdminController.ClaimManagement));
+                }
+                AddFormErrors(response);
+            }
+            var viewModel = new EditClaimViewModel(request);
+            return View(viewModel);
+        }
+
+
+        #endregion
+
         #region Configuration Management
 
         [HttpGet]
@@ -373,6 +457,89 @@ namespace Template.MVC.Controllers
             var viewModel = new EditConfigurationItemViewModel(request);
             return View(viewModel);
         }
+
+        #endregion
+
+        #region Session Event Management
+
+        [HttpGet]
+        public async Task<IActionResult> SessionEventManagement()
+        {
+            var viewModel = new SessionEventManagementViewModel();
+
+            var response = await _adminService.GetSessionEventManagement();
+            viewModel.SessionEvents = response.SessionEvents;
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult CreateSessionEvent()
+        {
+            var viewModel = new CreateSessionEventViewModel();
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateSessionEvent(CreateSessionEventRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.CreateSessionEvent(request);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToAction(nameof(AdminController.SessionEventManagement));
+                }
+                AddFormErrors(response);
+            }
+            var viewModel = new CreateSessionEventViewModel(request);
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditSessionEvent(int id)
+        {
+            var viewModel = new EditSessionEventViewModel();
+
+            var response = await _adminService.GetSessionEvent(new GetSessionEventRequest()
+            {
+                Id = id
+            });
+
+            if (!response.IsSuccessful)
+            {
+                AddNotifications(response);
+                return View(viewModel);
+            }
+
+            viewModel.Key = response.SessionEvent.Key;
+            viewModel.Request = new UpdateSessionEventRequest()
+            {
+                Description = response.SessionEvent.Description,
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditSessionEvent(int id, UpdateSessionEventRequest request)
+        {
+            request.Id = id;
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.UpdateSessionEvent(request);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToAction(nameof(AdminController.SessionEventManagement));
+                }
+                AddFormErrors(response);
+            }
+            var viewModel = new EditSessionEventViewModel(request);
+            return View(viewModel);
+        }
+
 
         #endregion
 

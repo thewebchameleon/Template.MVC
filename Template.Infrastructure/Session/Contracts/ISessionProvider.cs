@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Template.Infrastructure.Session.Contracts
 {
     public interface ISessionProvider
     {
-        bool TryGet<T>(string key, out T value);
+        Task<T> Get<T>(string key);
 
-        T Set<T>(string key, T value);
+        Task<T> Set<T>(string key, T value);
+
+        Task Remove(string key);
     }
 }

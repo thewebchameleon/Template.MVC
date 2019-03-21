@@ -1,4 +1,4 @@
-﻿namespace Template.Infrastructure.Identity
+﻿namespace Template.Infrastructure.Authentication
 {
     public static class ClaimConstants
     {

@@ -11,9 +11,9 @@
 <hr />
 
 
-<div id="panelConfigurationItemControls">
+<div class="panel-controls">
     <a href="@Url.Action("CreateConfigurationItem", "Admin" )" class="btn btn-primary">Create Item</a>
-    <div id="panelEditConfigurationItemControls" style="display: none;">
+    <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedConfigurationItemId" type="hidden" />
         <button id="btnEditConfigurationItem" type="button" class="btn btn-primary">Edit</button>
     </div>
@@ -66,7 +66,7 @@
                 if ($(this).hasClass('selected'))
                 {
                     $(this).removeClass('selected');
-                    $('#panelEditConfigurationItemControls').hide();
+                    $('.panel-right-controls').hide();
                     $("#hdnSelectedConfigurationItemId").val('');
                 }
                 else
@@ -75,7 +75,7 @@
 
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
-                    $('#panelEditConfigurationItemControls').show();
+                    $('.panel-right-controls').show();
                     $("#hdnSelectedConfigurationItemId").val(configurationItemId);
                 }
             });

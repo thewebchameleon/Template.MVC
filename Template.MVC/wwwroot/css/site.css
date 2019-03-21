@@ -79,11 +79,11 @@ body {
 
 /* #region admin pages */
 
-#panelUserControls, #panelRoleControls, #panelConfigurationItemControls, #panelSessionControls {
+.panel-controls {
     margin-bottom: 20px;
 }
 
-#panelEditUserControls, #panelEditRoleControls, #panelEditConfigurationItemControls, #panelViewSessionControls {
+.panel-right-controls {
     display: inline-block;
     float: right;
 }

@@ -14,13 +14,15 @@
 <h4>@ViewData["Title"] @filterDisplayText</h4>
 <hr />
 
-<div id="panelSessionControls">
+<div class="panel-controls">
     <button id="btnLast24Hours" type="button" class="btn btn-primary">Last 24 hours</button>
-    <button id="btnLastXDaysModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalLastXDays">Last x days</button>
-    <button id="btnFilterByDayModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFilterByDay">Filter by day</button>
-    <button id="btnFilterByUserModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFilterByUser">Filter by user</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalLastXDays">Last x days</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFilterByDay">Filter by day</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalFilterByUser">Filter by user</button>
 
-    <div id="panelViewSessionControls" style="display: none;">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalViewSessionById">View session by ID</button>
+
+    <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedSessionId" type="hidden" />
         <button id="btnViewSession" type="button" class="btn btn-primary">View</button>
     </div>
@@ -148,6 +150,33 @@
     </div>
 </div>
 
+@* view session by ID *@
+<div class="modal fade" id="modalViewSessionById" tabindex="-1" role="dialog" aria-labelledby="modalViewSessionByIdLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalViewSessionByIdLabel">Filter by day</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Please specify the session ID
+            </div>
+            <div class="modal-footer">
+                <form>
+                    <div class="form-group">
+                        <label for="inputSessionId" class="control-label">Session ID</label>
+                        <input id="inputSessionId" class="form-control" required />
+                    </div>
+                    <button id="btnViewSessionById" type="button" class="btn btn-primary">View</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts  {
 
     @*<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -176,7 +205,7 @@
                 if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
 
-                    $('#panelViewSessionControls').show();
+                    $('.panel-right-controls').show();
                 }
                 else {
                     var sessionId = $(this).children('.session-identifier').children('input.u-sessionId').val();
@@ -185,7 +214,7 @@
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
 
-                    $('#panelViewSessionControls').show();
+                    $('.panel-right-controls').show();
                 }
             });
 
@@ -200,6 +229,12 @@
         // view session
         $('#btnViewSession').click(function () {
             var sessionId = GetSelectedSessionId();
+            window.location.href = '@(Url.Action(nameof(AdminController.Session), "Admin"))/' + sessionId;
+        });
+
+        // view session by ID modal
+        $('#btnViewSessionById').click(function () {
+            var sessionId = $("#inputSessionId").val();
             window.location.href = '@(Url.Action(nameof(AdminController.Session), "Admin"))/' + sessionId;
         });
 

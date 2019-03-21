@@ -1,13 +1,21 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Template.Common.Extensions;
 using Template.Common.Notifications;
+using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
+using Template.Infrastructure.Session;
+using Template.Infrastructure.Session.Contracts;
 using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models.DomainModels;
 using Template.Models.ServiceModels;
@@ -22,15 +30,13 @@ namespace Template.Services
 
         private readonly ILogger<AccountService> _logger;
 
-        private readonly UserManager<UserEntity> _userManager;
-        private readonly RoleManager<RoleEntity> _roleManager;
-        private readonly SignInManager<UserEntity> _signInManager;
-
         private readonly IEmailService _emailService;
         private readonly ISessionService _sessionService;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWorkFactory _uowFactory;
         private readonly IEntityCache _entityCache;
+        private readonly ISessionProvider _sessionProvider;
 
         #endregion
 
@@ -38,21 +44,18 @@ namespace Template.Services
 
         public AccountService(
             ILogger<AccountService> logger,
-            UserManager<UserEntity> userManager,
-            RoleManager<RoleEntity> roleManager,
-            SignInManager<UserEntity> signInManager,
             IEmailService emailService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
-            IEntityCache entityCache)
+            IEntityCache entityCache,
+            ISessionProvider sessionProvider,
+            IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
 
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _signInManager = signInManager;
-
+            _httpContextAccessor = httpContextAccessor;
             _uowFactory = uowFactory;
+            _sessionProvider = sessionProvider;
 
             _entityCache = entityCache;
             _emailService = emailService;
@@ -80,60 +83,95 @@ namespace Template.Services
                 return response;
             }
 
-            var user = new UserEntity()
+            int id;
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                Username = username,
-                Email_Address = request.EmailAddress,
-                Is_Enabled = true,
-                Created_By = ApplicationConstants.SystemUserId,
-                Created_Date = DateTime.Now,
-                Updated_By = ApplicationConstants.SystemUserId,
-                Updated_Date = DateTime.Now,
-            };
+                id = await uow.UserRepo.CreateUser(new Infrastructure.Repositories.UserRepo.Models.CreateUserRequest()
+                {
+                    Username = username,
+                    Email_Address = request.EmailAddress,
+                    Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                    Is_Enabled = true,
+                    Created_By = ApplicationConstants.SystemUserId,
+                });
+                uow.Commit();
+            }
 
-            await _userManager.CreateAsync(user, request.Password);
             await _emailService.SendAccountActivationEmail(new SendAccountActivationEmailRequest()
             {
-                UserID = user.Id
+                UserID = id
             });
 
             _entityCache.Remove(CacheConstants.UserRoles);
 
-            response.Notifications.Add($"You have been successfully registered, please check {user.Email_Address} for an activation link", NotificationTypeEnum.Success);
+            response.Notifications.Add($"You have been successfully registered, please check {request.EmailAddress} for an activation link", NotificationTypeEnum.Success);
             return response;
         }
 
         public async Task<LoginResponse> Login(LoginRequest request)
         {
+            var session = await _sessionService.GetSession();
             var response = new LoginResponse();
 
-            var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, request.RememberMe, lockoutOnFailure: false);
-            if (result.Succeeded)
+            UserEntity user;
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                return response;
+                user = await uow.UserRepo.GetUserByUsername(new Infrastructure.Repositories.UserRepo.Models.GetUserByUsernameRequest()
+                {
+                    Username = request.Username
+                });
+
+                if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password_Hash))
+                {
+                    response.Notifications.AddError("Username or password is incorrect");
+                    return response;
+                }
+
+                if (!user.Is_Enabled)
+                {
+                    response.Notifications.AddError("Your account has been disabled, please contact the website administrator");
+                    return response;
+                }
+
+                if (user.Is_Locked_Out)
+                {
+                    response.Notifications.AddError("Your account has been locked due to too many invalid login attempts, please try again later");
+                    return response;
+                }
+
+                var sessionEntity = await uow.SessionRepo.AddUserToSession(new Infrastructure.Repositories.SessionRepo.Models.AddUserToSessionRequest()
+                {
+                    Id = session.Id,
+                    User_Id = user.Id,
+                    Updated_By = ApplicationConstants.SystemUserId
+                });
+                uow.Commit();
+
+                await _sessionProvider.Set(SessionConstants.SessionEntity, sessionEntity);
             }
-            if (result.IsLockedOut)
+
+            var claims = new List<Claim>
             {
-                response.Notifications.AddError("Your account has been locked due to too many invalid login attempts");
-                return response;
-            }
-            if (result.IsNotAllowed)
-            {
-                response.Notifications.AddError("Your account has been disabled, please contact the website administrator");
-                return response;
-            }
-            if (result.RequiresTwoFactor)
-            {
-                response.Notifications.AddError("Two-Factor authentication has not been implimented");
-                return response;
-            }
-            response.Notifications.AddError("Your username or password was incorrect");
+                new Claim(ClaimConstants.SessionId, session.Id.ToString()),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var properties = ApplicationConstants.AuthenticationProperties;
+            properties.IsPersistent = request.RememberMe;
+
+            await _httpContextAccessor.HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                properties);
+
             return response;
         }
 
         public void Logout()
         {
-            _signInManager.SignOutAsync();
+            _httpContextAccessor.HttpContext.SignOutAsync().Wait();
         }
 
         public Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
@@ -166,30 +204,35 @@ namespace Template.Services
             var response = new UpdateProfileResponse();
             var session = await _sessionService.GetAuthenticatedSession();
 
-            var user = session.User;
-
-            user.Username = request.Username;
-            user.Email_Address = request.EmailAddress;
-            user.First_Name = request.FirstName;
-            user.Last_Name = request.LastName;
-            user.Mobile_Number = request.MobileNumber;
+            var dbRequest = new Infrastructure.Repositories.UserRepo.Models.UpdateUserRequest()
+            {
+                Id = session.User.Id,
+                Username = request.Username,
+                Email_Address = request.EmailAddress,
+                First_Name = request.FirstName,
+                Last_Name = request.LastName,
+                Mobile_Number = request.MobileNumber,
+                Password_Hash = session.User.Password_Hash,
+                Is_Enabled = session.User.Is_Enabled,
+                Is_Locked_Out = session.User.Is_Locked_Out,
+                Lockout_End = session.User.Lockout_End,
+                Registration_Confirmed = session.User.Registration_Confirmed,
+                Updated_By = session.User.Id
+            };
 
             if (!string.IsNullOrEmpty(request.Password))
             {
-                var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var updatePasswordResponse = await _userManager.ResetPasswordAsync(user, resetPasswordToken, request.Password);
-                if (!updatePasswordResponse.Succeeded)
-                {
-                    response.Notifications.AddErrors(updatePasswordResponse.Errors.Select(e => e.Description).ToList());
-                    return response;
-                }
+                dbRequest.Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             }
-            var updateResponse = await _userManager.UpdateAsync(user);
-            if (!updateResponse.Succeeded)
+
+            using (var uow = _uowFactory.GetUnitOfWork())
             {
-                response.Notifications.AddErrors(updateResponse.Errors.Select(e => e.Description).ToList());
-                return response;
+                await uow.UserRepo.UpdateUser(dbRequest);
+                uow.Commit();
             }
+
+            // rehydrate user in session
+            await _sessionProvider.Remove(SessionConstants.UserEntity);
 
             response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
             return response;

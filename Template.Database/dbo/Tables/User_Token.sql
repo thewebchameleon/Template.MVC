@@ -23,6 +23,6 @@ CREATE NONCLUSTERED INDEX [IX_User_Token_User_Id]
 	ON [dbo].[User_Token]([User_Id] ASC)
 GO
 
-CREATE NONCLUSTERED INDEX [IX_User_Token_Guid]
+CREATE UNIQUE NONCLUSTERED INDEX [IX_User_Token_Guid]
 	ON [dbo].[User_Token]([Guid] ASC)
 GO

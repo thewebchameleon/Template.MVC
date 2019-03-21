@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 using Template.Infrastructure.Session.Contracts;
 
 namespace Template.Infrastructure.Session
@@ -15,24 +16,32 @@ namespace Template.Infrastructure.Session
             _session = _httpContextAccessor.HttpContext.Session;
         }
 
-        public bool TryGet<T>(string id, out T value)
+        public async Task<T> Get<T>(string id)
         {
-            value = default;
+            if (!_session.IsAvailable)
+            {
+                await _session.LoadAsync();
+            }
+
             var storedValue = _session.GetString(id);
             if (!string.IsNullOrEmpty(storedValue))
             {
                 try
                 {
-                    value = JsonConvert.DeserializeObject<T>(storedValue);
-                    return true;
+                    return JsonConvert.DeserializeObject<T>(storedValue);
                 }
                 catch { }
             }
-            return false;
+            return default;
         }
 
-        public T Set<T>(string key, T value)
+        public async Task<T> Set<T>(string key, T value)
         {
+            if (!_session.IsAvailable)
+            {
+                await _session.LoadAsync();
+            }
+
             if (value != null)
             {
                 _session.SetString(key, JsonConvert.SerializeObject(value));
@@ -41,8 +50,12 @@ namespace Template.Infrastructure.Session
             return value;
         }
 
-        public void Remove(string key)
+        public async Task Remove(string key)
         {
+            if (!_session.IsAvailable)
+            {
+                await _session.LoadAsync();
+            }
             _session.Remove(key);
         }
     }

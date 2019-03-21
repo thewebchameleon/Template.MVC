@@ -2,7 +2,7 @@
 
 namespace Template.Models.ServiceModels.Admin
 {
-    public class GetSessionEventResponse
+    public class GetSessionEventResponse : ServiceResponse
     {
         public SessionEventEntity SessionEvent { get; set; }
     }

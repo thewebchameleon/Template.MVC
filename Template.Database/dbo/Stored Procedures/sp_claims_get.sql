@@ -3,8 +3,10 @@ AS
 BEGIN
    SELECT
 		[C].[Id],
-		[C].[Type],
-		[C].[Value],
+		[C].[Key],
+		[C].[GroupName],
+		[C].[Name],
+		[C].[Description],
 		[C].[Created_By],
 		[C].[Created_Date],
 		[C].[Updated_By],

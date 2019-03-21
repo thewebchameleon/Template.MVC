@@ -207,9 +207,9 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task DeleteRole(DeleteRoleRequest request)
+        public async Task DisableRole(DisableRoleRequest request)
         {
-            var sqlStoredProc = "sp_role_delete";
+            var sqlStoredProc = "sp_role_disable";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
@@ -222,7 +222,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
 
             if (response == null || response.First() == 0)
             {
-                throw new Exception("No items have been deleted");
+                throw new Exception("No items have been disabled");
             }
         }
 
@@ -246,9 +246,9 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.FirstOrDefault();
         }
 
-        public async Task DeleteUser(DeleteUserRequest request)
+        public async Task DisableUser(DisableUserRequest request)
         {
-            var sqlStoredProc = "sp_user_delete";
+            var sqlStoredProc = "sp_user_disable";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
@@ -261,7 +261,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
 
             if (response == null || response.First() == 0)
             {
-                throw new Exception("No items have been deleted");
+                throw new Exception("No items have been disabled");
             }
         }
 
@@ -440,6 +440,44 @@ namespace Template.Infrastructure.Repositories.UserRepo
                     dbtransaction: _transaction);
 
             return response.FirstOrDefault();
+        }
+
+        public async Task EnableRole(EnableRoleRequest request)
+        {
+            var sqlStoredProc = "sp_role_enable";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.First() == 0)
+            {
+                throw new Exception("No items have been enabled");
+            }
+        }
+
+        public async Task EnableUser(EnableUserRequest request)
+        {
+            var sqlStoredProc = "sp_user_enable";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.First() == 0)
+            {
+                throw new Exception("No items have been enabled");
+            }
         }
 
         #endregion

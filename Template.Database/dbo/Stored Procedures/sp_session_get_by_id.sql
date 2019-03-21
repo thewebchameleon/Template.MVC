@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_session_get_by_id]
-	@Id DATE
+	@Id INT
 AS
 BEGIN
    SELECT TOP 1
