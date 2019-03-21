@@ -79,6 +79,7 @@ namespace Template.Services
                     {
                         User_Id = session.User_Id.Value
                     });
+                    uow.Commit();
                 }
             }
             response.User = user;

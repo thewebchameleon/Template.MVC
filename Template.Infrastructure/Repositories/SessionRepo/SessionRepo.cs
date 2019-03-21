@@ -37,7 +37,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
         {
             var sqlStoredProc = "sp_session_add_user_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -53,7 +53,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
         {
             var sqlStoredProc = "sp_session_create";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -69,7 +69,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
         {
             var sqlStoredProc = "sp_sessions_get_by_date";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -85,7 +85,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
         {
             var sqlStoredProc = "sp_sessions_get_by_start_date";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -101,7 +101,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
         {
             var sqlStoredProc = "sp_sessions_get_by_user_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -118,7 +118,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
         {
             var sqlStoredProc = "sp_session_logs_get_by_session_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionLogEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionLogEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -134,7 +134,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
         {
             var sqlStoredProc = "sp_session_log_evetns_get_by_session_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionLogEventEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionLogEventEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -151,7 +151,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo
         {
             var sqlStoredProc = "sp_session_events_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<Template.Models.DomainModels.SessionEventEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEventEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: new { },
@@ -199,6 +199,22 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             {
                 throw new Exception("No items have been created");
             }
+            return response.FirstOrDefault();
+        }
+
+        public async Task<SessionEntity> GetSessionById(GetSessionByIdRequest request)
+        {
+            var sqlStoredProc = "sp_session_get_by_id";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
             return response.FirstOrDefault();
         }
 

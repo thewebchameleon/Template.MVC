@@ -41,7 +41,6 @@ namespace Template.Infrastructure.Cache
             using (var uow = _uowFactory.GetUnitOfWork())
             {
                 items = await uow.ConfigurationRepo.GetConfigurationItems();
-
                 uow.Commit();
             }
             _cacheProvider.Set(CacheConstants.ConfigurationItems, items);
@@ -140,6 +139,24 @@ namespace Template.Infrastructure.Cache
                 uow.Commit();
             }
             _cacheProvider.Set(CacheConstants.Claims, items);
+
+            return items;
+        }
+
+        public async Task<List<SessionEventEntity>> SessionEvents()
+        {
+            var items = new List<SessionEventEntity>();
+            if (_cacheProvider.TryGet(CacheConstants.SessionEvents, out items))
+            {
+                return items;
+            }
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                items = await uow.SessionRepo.GetSessionEvents();
+                uow.Commit();
+            }
+            _cacheProvider.Set(CacheConstants.SessionEvents, items);
 
             return items;
         }

@@ -43,5 +43,14 @@ namespace Template.Services.Contracts
         Task<GetSessionsResponse> GetSessions(GetSessionsRequest request);
 
         Task<GetSessionResponse> GetSession(GetSessionRequest request);
+
+
+        Task<GetSessionEventManagementResponse> GetSessionEventManagement();
+
+        Task<GetSessionEventResponse> GetSessionEvent(GetSessionEventRequest request);
+
+        Task<UpdateSessionEventResponse> UpdateSessionEvent(UpdateSessionEventRequest request);
+
+        Task<CreateSessionEventResponse> CreateSessionEvent(CreateSessionEventRequest request);
     }
 }

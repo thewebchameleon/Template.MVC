@@ -571,7 +571,44 @@ namespace Template.Services
 
         public async Task<GetSessionResponse> GetSession(GetSessionRequest request)
         {
-            return new GetSessionResponse();
+            var response = new GetSessionResponse();
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                var session = await uow.SessionRepo.GetSessionById(new Infrastructure.Repositories.SessionRepo.Models.GetSessionByIdRequest()
+                {
+                    Id = request.Id
+                });
+
+                if (session == null)
+                {
+                    response.Notifications.AddError($"Could not find session with Id {request.Id}");
+                    return response;
+                }
+
+                var logs = await uow.SessionRepo.GetSessionLogsBySessionId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionLogsBySessionIdRequest()
+                {
+                    Session_Id = request.Id
+                });
+                var events = await uow.SessionRepo.GetSessionLogEventsBySessionId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionLogEventsBySessionIdRequest()
+                {
+                    Session_Id = request.Id
+                });
+
+                var eventsLookup = await _entityCache.SessionEvents();
+                var eventIds = events.Select(e => e.Id);
+
+                response.Session = session;
+                response.Logs = logs.Select(l => new SessionLog()
+                {
+                    Action = l.Action,
+                    Controller = l.Controller,
+                    Events = eventsLookup.Where(el => eventIds.Contains(el.Id)).ToList()
+                }).ToList();
+
+                uow.Commit();
+                return response;
+            }
         }
 
         public async Task<GetSessionsResponse> GetSessions(GetSessionsRequest request)
@@ -586,6 +623,8 @@ namespace Template.Services
                     {
                         Start_Date = DateTime.Now.AddDays(-1)
                     });
+
+                    uow.Commit();
                 }
                 response.SelectedFilter = "Last 24 Hours";
             }
@@ -598,6 +637,8 @@ namespace Template.Services
                     {
                         Start_Date = DateTime.Today.AddDays(request.LastXDays.Value * -1)
                     });
+
+                    uow.Commit();
                 }
                 response.SelectedFilter = $"Last {request.LastXDays} days";
             }
@@ -610,6 +651,8 @@ namespace Template.Services
                     {
                         Date = request.Day.Value
                     });
+
+                    uow.Commit();
                 }
                 response.SelectedFilter = request.Day.Value.ToLongDateString();
             }
@@ -622,6 +665,8 @@ namespace Template.Services
                     {
                         User_Id = request.UserId.Value
                     });
+
+                    uow.Commit();
                 }
                 response.SelectedFilter = $"User ID: {request.UserId}";
             }
@@ -645,6 +690,8 @@ namespace Template.Services
                     {
                         User_Id = user.Id
                     });
+
+                    uow.Commit();
                 }
                 response.SelectedFilter = $"Username: {request.Username}";
             }
@@ -668,6 +715,8 @@ namespace Template.Services
                     {
                         User_Id = user.Id
                     });
+
+                    uow.Commit();
                 }
                 response.SelectedFilter = $"Mobile Number: {request.MobileNumber}";
             }
@@ -691,11 +740,85 @@ namespace Template.Services
                     {
                         User_Id = user.Id
                     });
+
+                    uow.Commit();
                 }
                 response.SelectedFilter = $"Email Address: {request.EmailAddress}";
             }
 
             response.Sessions = response.Sessions.OrderByDescending(s => s.Created_Date).ToList();
+            return response;
+        }
+
+        public async Task<GetSessionEventManagementResponse> GetSessionEventManagement()
+        {
+            var response = new GetSessionEventManagementResponse();
+
+            response.SessionEvents = await _entityCache.SessionEvents();
+
+            return response;
+        }
+
+        public async Task<GetSessionEventResponse> GetSessionEvent(GetSessionEventRequest request)
+        {
+            var response = new GetSessionEventResponse();
+
+            var sessionEvents = await _entityCache.SessionEvents();
+            var sessionEvent = sessionEvents.FirstOrDefault(c => c.Id == request.Id);
+
+            response.SessionEvent = sessionEvent;
+
+            return response;
+        }
+
+        public async Task<UpdateSessionEventResponse> UpdateSessionEvent(UpdateSessionEventRequest request)
+        {
+            var session = await _sessionService.GetAuthenticatedSession();
+            var response = new UpdateSessionEventResponse();
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                await uow.SessionRepo.UpdateSessionEvent(new Infrastructure.Repositories.SessionRepo.Models.UpdateSessionEventRequest()
+                {
+                    Id = request.Id,
+                    Description = request.Description,
+                    Updated_By = session.User.Id
+                });
+                uow.Commit();
+            }
+
+            _entityCache.Remove(CacheConstants.SessionEvents);
+
+            var sessionEvents = await _entityCache.SessionEvents();
+            var sessionEvent = sessionEvents.FirstOrDefault(c => c.Id == request.Id);
+
+            response.Notifications.Add($"Session event '{sessionEvent.Key}' has been updated", NotificationTypeEnum.Success);
+            return response;
+        }
+
+        public async Task<CreateSessionEventResponse> CreateSessionEvent(CreateSessionEventRequest request)
+        {
+            var session = await _sessionService.GetAuthenticatedSession();
+            var response = new CreateSessionEventResponse();
+
+            int id;
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                id = await uow.SessionRepo.CreateSessionEvent(new Infrastructure.Repositories.SessionRepo.Models.CreateSessionEventRequest()
+                {
+                    Key = request.Key,
+                    Description = request.Description,
+                    Created_By = session.User.Id
+                });
+                uow.Commit();
+            }
+
+            _entityCache.Remove(CacheConstants.SessionEvents);
+
+            var sessionEvents = await _entityCache.SessionEvents();
+            var sessionEvent = sessionEvents.FirstOrDefault(c => c.Id == id);
+
+            response.Notifications.Add($"Session event '{sessionEvent.Key}' has been created", NotificationTypeEnum.Success);
             return response;
         }
 

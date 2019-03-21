@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Template.Models.DomainModels;
+using Template.Models.ServiceModels.Admin;
 
 namespace Template.Models.ViewModels.Admin
 {
@@ -9,13 +10,13 @@ namespace Template.Models.ViewModels.Admin
 
         public SessionViewModel()
         {
-            Logs = new List<SessionLogEntity>();
+            Logs = new List<SessionLog>();
         }
 
         #endregion
 
-        public DomainModels.SessionEntity Session { get; set; }
+        public SessionEntity Session { get; set; }
 
-        public List<SessionLogEntity> Logs { get; set; }
+        public List<SessionLog> Logs { get; set; }
     }
 }

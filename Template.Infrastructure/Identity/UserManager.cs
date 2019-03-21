@@ -91,10 +91,13 @@ namespace Template.Infrastructure.Identity
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                return await uow.UserRepo.GetUserById(new GetUserByIdRequest()
+                var user = await uow.UserRepo.GetUserById(new GetUserByIdRequest()
                 {
                     User_Id = int.Parse(userId)
                 });
+
+                uow.Commit();
+                return user;
             }
         }
 
@@ -104,10 +107,13 @@ namespace Template.Infrastructure.Identity
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                return await uow.UserRepo.GetUserByUsername(new GetUserByUsernameRequest()
+                var user = await uow.UserRepo.GetUserByUsername(new GetUserByUsernameRequest()
                 {
                     Username = normalizedUserName
                 });
+
+                uow.Commit();
+                return user;
             }
         }
 
@@ -193,10 +199,13 @@ namespace Template.Infrastructure.Identity
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                return await uow.UserRepo.GetUserByEmail(new GetUserByEmailRequest()
+                var user =  await uow.UserRepo.GetUserByEmail(new GetUserByEmailRequest()
                 {
                     Email_Address = normalizedEmail
                 });
+
+                uow.Commit();
+                return user;
             }
         }
 
