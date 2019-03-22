@@ -30,5 +30,7 @@ namespace Template.Infrastructure.Repositories.SessionRepo.Contracts
         Task<SessionEntity> GetSessionById(GetSessionByIdRequest request);
 
         Task<int> CreateSessionLog(CreateSessionLogRequest request);
+
+        Task<int> CreateSessionLogEvent(CreateSessionLogEventRequest request);
     }
 }

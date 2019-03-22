@@ -238,6 +238,26 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             return response.FirstOrDefault();
         }
 
+        public async Task<int> CreateSessionLogEvent(CreateSessionLogEventRequest request)
+        {
+            var sqlStoredProc = "sp_session_log_event_create";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.FirstOrDefault() == 0)
+            {
+                throw new Exception("No items have been created");
+            }
+            return response.FirstOrDefault();
+        }
+
 
         #endregion
     }

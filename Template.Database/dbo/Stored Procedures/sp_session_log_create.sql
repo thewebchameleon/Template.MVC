@@ -3,6 +3,8 @@
 	@Method				VARCHAR(10),
 	@Controller			VARCHAR(256),
 	@Action				VARCHAR(256),
+	@Action_Data_JSON		VARCHAR(MAX),
+	@Url				VARCHAR(256),
 	@Created_By			INT
 AS
 BEGIN
@@ -12,6 +14,8 @@ BEGIN
 		[Method],
 		[Controller],
         [Action],
+		[Action_Data_JSON],
+		[Url],
         [Created_By],
         [Created_Date],
         [Updated_By],
@@ -24,6 +28,8 @@ BEGIN
 		@Method,
 		@Controller,
 		@Action,
+		@Action_Data_JSON,
+		@Url,
 		@Created_By,
 		GETDATE(),
 		@Created_By,

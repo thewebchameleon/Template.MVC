@@ -611,14 +611,17 @@ namespace Template.Services
                 }
 
                 var eventsLookup = await _entityCache.SessionEvents();
-                var eventIds = events.Select(e => e.Id);
 
                 response.Session = session;
-                response.Logs = logs.Select(l => new SessionLog()
-                {
-                    Action = l.Action,
-                    Controller = l.Controller,
-                    Events = eventsLookup.Where(el => eventIds.Contains(el.Id)).ToList()
+                response.Logs = logs.Select(l => {
+
+                    var eventIds = events.Where(e => e.Session_Log_Id == l.Id).Select(e => e.Event_Id);
+                    return new SessionLog()
+                    {
+                        Entity = l,
+                        Events = eventsLookup.Where(el => eventIds.Contains(el.Id)).ToList()
+                    };
+
                 }).ToList();
 
                 uow.Commit();

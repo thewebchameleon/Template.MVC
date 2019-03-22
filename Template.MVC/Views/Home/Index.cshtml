@@ -2,14 +2,23 @@
     ViewData["Title"] = "Welcome";
 }
 
-<div class="text-center">
+<div class="jumbotron">
     <h1 class="display-4">@ViewData["Title"]</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p class="lead">This is a template starter project that has everything you need to start building ASP.NET Core 3 applications</p>
+    <hr class="my-4">
+    <p>Explore the site's many features are click the link below to view documentation</p>
+    <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+</div>
+
+<div class="jumbotron">
+    <h1 class="display-4">This is a promotional banner!</h1>
+    <p class="lead">This is a toggled feature!</p>
 </div>
 
 <div>
     <h4>todo</h4>
     <ul>
+        <li>edit pages should have the ID in a hidden field instead of being set in the controller</li>
         <li>change session management to use query strings for filtering</li>
         <li>custom tag helpers for complex ui elements (multiselect, nullable radio button)</li>
         <li>authorization (admin, manager, reporter)</li>

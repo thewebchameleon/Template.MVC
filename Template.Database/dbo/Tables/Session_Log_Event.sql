@@ -1,7 +1,8 @@
 ﻿CREATE TABLE [dbo].[Session_Log_Event] (
     [Id]				INT          IDENTITY (1, 1) NOT NULL,
     [Session_Log_Id]	INT          NOT NULL,
-	[Event_Id]	INT			 NOT NULL,
+	[Event_Id]			INT			 NOT NULL,
+	[Message]			VARCHAR(MAX) NULL,
     [Created_By]		INT          NOT NULL,
     [Created_Date]		DATETIME     NOT NULL,
     [Updated_By]		INT          NOT NULL,

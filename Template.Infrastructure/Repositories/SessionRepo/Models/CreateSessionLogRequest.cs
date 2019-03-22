@@ -10,6 +10,10 @@
 
         public string Action { get; set; }
 
+        public string Action_Data_JSON { get; set; }
+
+        public string Url { get; set; }
+
         public int Created_By { get; set; }
     }
 }

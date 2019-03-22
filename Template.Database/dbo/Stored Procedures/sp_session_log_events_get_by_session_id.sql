@@ -6,6 +6,7 @@ BEGIN
 		[S].[Id],
 		[S].[Session_Log_Id],
 		[S].[Event_Id],
+		[S].[Message],
 		[S].[Created_By],
 		[S].[Created_Date],
 		[S].[Updated_By],

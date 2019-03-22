@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 using Template.Models.ServiceModels;
 using Template.Models.ServiceModels.Account;
@@ -159,6 +160,8 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
+                throw new Exception("Oops");
+
                 var response = await _accountService.UpdateProfile(request);
                 if (response.IsSuccessful)
                 {

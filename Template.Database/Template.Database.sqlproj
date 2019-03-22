@@ -123,6 +123,7 @@
     <Build Include="dbo\Stored Procedures\sp_role_enable.sql" />
     <Build Include="dbo\Stored Procedures\sp_claim_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_claim_update.sql" />
+    <Build Include="dbo\Stored Procedures\sp_session_log_event_create.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Template.Database.refactorlog" />
