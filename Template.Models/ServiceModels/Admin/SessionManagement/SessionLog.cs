@@ -7,6 +7,6 @@ namespace Template.Models.ServiceModels.Admin
     {
         public SessionLogEntity Entity { get; set; }
 
-        public List<SessionEventEntity> Events { get; set; }
+        public List<SessionLogEvent> Events { get; set; }
     }
 }

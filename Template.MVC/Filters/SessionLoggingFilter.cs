@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Session;
+using Template.Infrastructure.Session.Contracts;
 using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Services.Contracts;
 
@@ -17,15 +18,18 @@ namespace Template.MVC.Filters
         private readonly ISessionService _sessionService;
         private readonly IUnitOfWorkFactory _uowFactory;
         private readonly IEntityCache _entityCache;
+        private readonly ISessionProvider _sessionProvider;
 
         public SessionLoggingFilter(
             ISessionService sessionService,
             IEntityCache entityCache,
-            IUnitOfWorkFactory uowFactory)
+            IUnitOfWorkFactory uowFactory,
+            ISessionProvider sessionProvider)
         {
             _sessionService = sessionService;
             _uowFactory = uowFactory;
             _entityCache = entityCache;
+            _sessionProvider = sessionProvider;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -53,6 +57,9 @@ namespace Template.MVC.Filters
 
                 sessionLogId = await uow.SessionRepo.CreateSessionLog(dbRequest);
                 uow.Commit();
+
+                // required for session event logging
+                await _sessionProvider.Set(SessionConstants.SessionLogId, sessionLogId);
             }
 
             // do something before the action executes

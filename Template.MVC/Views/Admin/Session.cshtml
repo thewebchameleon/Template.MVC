@@ -36,7 +36,7 @@
 
         if (sessionLog.Events.Any())
         {
-            if (sessionLog.Events.Any(e => e.Key == SessionConstants.Events.Error))
+            if (sessionLog.Events.Any(e => e.Event.Key == SessionConstants.Events.Error))
             {
                 css += " has-error";
             }
@@ -65,9 +65,23 @@
 
 <style>
 
-    .prettyprint span:first-child {
-        float: left;
+    .has-events {
+        box-shadow: 0 0 0 5px #f3cb3c !important;
     }
+
+    .prettyprint {
+        margin-bottom: 10px;
+        display: block;
+        position: relative;
+    }
+
+    .time-line-detail .alert {
+        margin-bottom: 0;
+    }
+
+        .prettyprint span:first-child {
+            float: left;
+        }
 
     code {
         white-space: pre-wrap;
@@ -372,16 +386,17 @@
                                 }
                                 @foreach (var sessionLogEvent in sessionLog.Events)
                                 {
-                                    if (sessionLogEvent.Key == SessionConstants.Events.Error)
+                                    if (sessionLogEvent.Event.Key == SessionConstants.Events.Error)
                                     {
                                         <div class="alert alert-danger" role="alert">
-                                            @sessionLogEvent.Description
+                                            <h5 class="alert-heading">@sessionLogEvent.Event.Description</h5>
+                                            <p>@sessionLogEvent.Message</p>
                                         </div>
                                     }
                                     else
                                     {
                                         <div class="alert alert-success" role="alert">
-                                            @sessionLogEvent.Description
+                                            <h5 class="alert-heading">@sessionLogEvent.Event.Description</h5>
                                         </div>
                                     }
                                 }

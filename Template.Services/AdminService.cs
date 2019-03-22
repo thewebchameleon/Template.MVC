@@ -596,7 +596,7 @@ namespace Template.Services
                 {
                     Session_Id = request.Id
                 });
-                var events = await uow.SessionRepo.GetSessionLogEventsBySessionId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionLogEventsBySessionIdRequest()
+                var logEvents = await uow.SessionRepo.GetSessionLogEventsBySessionId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionLogEventsBySessionIdRequest()
                 {
                     Session_Id = request.Id
                 });
@@ -615,11 +615,15 @@ namespace Template.Services
                 response.Session = session;
                 response.Logs = logs.Select(l => {
 
-                    var eventIds = events.Where(e => e.Session_Log_Id == l.Id).Select(e => e.Event_Id);
+                    var eventIds = logEvents.Where(le => le.Session_Log_Id == l.Id).Select(le => le.Event_Id);
                     return new SessionLog()
                     {
                         Entity = l,
-                        Events = eventsLookup.Where(el => eventIds.Contains(el.Id)).ToList()
+                        Events = eventsLookup.Where(e => eventIds.Contains(e.Id)).Select(e => new SessionLogEvent()
+                        {
+                            Event = e,
+                            Message = logEvents.FirstOrDefault(le => le.Event_Id == e.Id).Message
+                        }).ToList()
                     };
 
                 }).ToList();

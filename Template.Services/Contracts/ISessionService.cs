@@ -8,5 +8,9 @@ namespace Template.Services.Contracts
         Task<GetSessionResponse> GetSession();
 
         Task<GetSessionResponse> GetAuthenticatedSession();
+
+        Task WriteSessionLogEvent(CreateSessionLogEventRequest request);
+
+        Task RehydrateSession();
     }
 }

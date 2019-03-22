@@ -6,6 +6,8 @@ namespace Template.Models.ServiceModels.Session
     {
         public int Id { get; set; }
 
+        public int SessionLogId { get; set; }
+
         public UserEntity User { get; set; }
     }
 }

@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Session;
 using Template.Infrastructure.Session.Contracts;
@@ -21,6 +23,7 @@ namespace Template.Services
 
         private readonly ISessionProvider _sessionProvider;
         private readonly IUnitOfWorkFactory _uowFactory;
+        private readonly IEntityCache _entityCache;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -32,12 +35,14 @@ namespace Template.Services
             ILogger<SessionService> logger,
             ISessionProvider sessionProvider,
             IUnitOfWorkFactory uowFactory,
+            IEntityCache entityCache,
             IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _uowFactory = uowFactory;
             _sessionProvider = sessionProvider;
             _httpContextAccessor = httpContextAccessor;
+            _entityCache = entityCache;
         }
 
         #endregion
@@ -77,6 +82,7 @@ namespace Template.Services
                 }
             }
             response.Id = session.Id;
+            response.SessionLogId = await _sessionProvider.Get<int>(SessionConstants.SessionLogId);
 
             // get or hydrate user from session
             var user = await _sessionProvider.Get<UserEntity>(SessionConstants.UserEntity);
@@ -97,6 +103,39 @@ namespace Template.Services
             response.User = user;
 
             return response;
+        }
+
+        public async Task RehydrateSession()
+        {
+            await _sessionProvider.Remove(SessionConstants.UserEntity);
+        }
+
+        public async Task WriteSessionLogEvent(CreateSessionLogEventRequest request)
+        {
+            var session = await GetSession();
+
+            var events = await _entityCache.SessionEvents();
+            var eventItem = events.FirstOrDefault(e => e.Key == request.EventKey);
+
+            if (eventItem == null)
+            {
+                // todo: rather log this than throw an exception
+                throw new Exception($"Could not find session log event with key {request.EventKey}");
+            }
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                await uow.SessionRepo.CreateSessionLogEvent(new Infrastructure.Repositories.SessionRepo.Models.CreateSessionLogEventRequest()
+                {
+                    Session_Log_Id = session.SessionLogId,
+                    Event_Id = eventItem.Id,
+                    Message = request.Message,
+                    Created_By = ApplicationConstants.SystemUserId
+                });
+                uow.Commit();
+
+                await _sessionProvider.Set(SessionConstants.SessionEntity, session);
+            }
         }
 
         #endregion

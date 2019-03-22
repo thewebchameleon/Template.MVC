@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -94,6 +93,7 @@ namespace Template.Services
                     Is_Enabled = true,
                     Created_By = ApplicationConstants.SystemUserId,
                 });
+
                 uow.Commit();
             }
 
@@ -103,6 +103,11 @@ namespace Template.Services
             });
 
             _entityCache.Remove(CacheConstants.UserRoles);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionConstants.Events.UserRegistered
+            });
 
             response.Notifications.Add($"You have been successfully registered, please check {request.EmailAddress} for an activation link", NotificationTypeEnum.Success);
             return response;
@@ -166,6 +171,11 @@ namespace Template.Services
                 new ClaimsPrincipal(claimsIdentity),
                 properties);
 
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionConstants.Events.UserLoggedIn
+            });
+
             return response;
         }
 
@@ -228,8 +238,12 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            // rehydrate user in session
-            await _sessionProvider.Remove(SessionConstants.UserEntity);
+            // rehydrate user in session due to profile updating
+            await _sessionService.RehydrateSession();
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionConstants.Events.UserRegistered
+            });
 
             response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
             return response;

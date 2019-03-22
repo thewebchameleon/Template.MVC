@@ -36,6 +36,10 @@ namespace Template.MVC.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
+        /// <summary>
+        ///  adds notifications to the form validation summary
+        /// </summary>
+        /// <param name="response"></param>
         public void AddFormErrors(IServiceResponse response)
         {
             foreach (var notification in response.Notifications.Where(n => n.Type == NotificationTypeEnum.Error))
@@ -44,6 +48,10 @@ namespace Template.MVC.Controllers
             }
         }
 
+        /// <summary>
+        /// adds notifications to the next page redirect
+        /// </summary>
+        /// <param name="response"></param>
         public void AddNotifications(IServiceResponse response)
         {
             var notifications = new List<Notification>();
@@ -59,6 +67,10 @@ namespace Template.MVC.Controllers
             TempData["Notifications"] = JsonConvert.SerializeObject(notifications);
         }
 
+        /// <summary>
+        /// adds notifications to the page due to a isolated form post (multiple forms present)
+        /// </summary>
+        /// <param name="model"></param>
         public void AddNotifications(IValidatableObject model)
         {
             var notifications = new List<Notification>();
