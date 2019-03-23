@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -15,7 +14,6 @@ using Template.Infrastructure.Session;
 using Template.Infrastructure.Session.Contracts;
 using Template.Infrastructure.UnitOfWork;
 using Template.Infrastructure.UnitOfWork.Contracts;
-using Template.Models.DomainModels;
 using Template.MVC.Filters;
 using Template.MVC.Middleware;
 using Template.Services;
@@ -48,13 +46,14 @@ namespace Template.MVC
             // Configure services
             services.AddTransient<ISessionProvider, SessionProvider>();
             services.AddTransient<ICacheProvider, MemoryCacheProvider>();
-            services.AddTransient<IEntityCache, EntityCache>();
+            services.AddTransient<IApplicationCache, ApplicationCache>();
             services.AddTransient<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<ISessionService, SessionService>();
+            services.AddTransient<IHomeService, HomeService>();
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 

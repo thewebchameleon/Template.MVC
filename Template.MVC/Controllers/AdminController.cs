@@ -18,7 +18,7 @@ namespace Template.MVC.Controllers
         #region Instance Fields
 
         private readonly IAdminService _adminService;
-        private readonly IEntityCache _entityCache;
+        private readonly IApplicationCache _cache;
         private readonly ILogger _logger;
 
         #endregion
@@ -27,11 +27,11 @@ namespace Template.MVC.Controllers
 
         public AdminController(
             IAdminService adminService,
-            IEntityCache entityCache,
+            IApplicationCache entityCache,
             ILoggerFactory loggerFactory)
         {
             _adminService = adminService;
-            _entityCache = entityCache;
+            _cache = entityCache;
             _logger = loggerFactory.CreateLogger<AdminController>();
         }
 
@@ -57,8 +57,8 @@ namespace Template.MVC.Controllers
         {
             var viewModel = new CreateUserViewModel()
             {
-                ClaimsLookup = await _entityCache.Claims(),
-                RolesLookup = await _entityCache.Roles()
+                ClaimsLookup = await _cache.Claims(),
+                RolesLookup = await _cache.Roles()
             };
 
             return View(viewModel);
@@ -79,8 +79,8 @@ namespace Template.MVC.Controllers
             }
             var viewModel = new CreateUserViewModel(request)
             {
-                ClaimsLookup = await _entityCache.Claims(),
-                RolesLookup = await _entityCache.Roles()
+                ClaimsLookup = await _cache.Claims(),
+                RolesLookup = await _cache.Roles()
             };
             return View(viewModel);
         }
@@ -90,8 +90,8 @@ namespace Template.MVC.Controllers
         {
             var viewModel = new EditUserViewModel()
             {
-                ClaimsLookup = await _entityCache.Claims(),
-                RolesLookup = await _entityCache.Roles()
+                ClaimsLookup = await _cache.Claims(),
+                RolesLookup = await _cache.Roles()
             };
 
             var response = await _adminService.GetUser(new GetUserRequest()
@@ -139,8 +139,8 @@ namespace Template.MVC.Controllers
             }
             var viewModel = new EditUserViewModel(request)
             {
-                ClaimsLookup = await _entityCache.Claims(),
-                RolesLookup = await _entityCache.Roles()
+                ClaimsLookup = await _cache.Claims(),
+                RolesLookup = await _cache.Roles()
             };
             return View(viewModel);
         }
@@ -187,7 +187,7 @@ namespace Template.MVC.Controllers
         {
             var viewModel = new CreateRoleViewModel()
             {
-                ClaimsLookup = await _entityCache.Claims()
+                ClaimsLookup = await _cache.Claims()
             };
 
             return View(viewModel);
@@ -196,6 +196,11 @@ namespace Template.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRole(CreateRoleRequest request)
         {
+            var viewModel = new CreateRoleViewModel(request)
+            {
+                ClaimsLookup = await _cache.Claims()
+            };
+
             if (ModelState.IsValid)
             {
                 var response = await _adminService.CreateRole(request);
@@ -206,7 +211,7 @@ namespace Template.MVC.Controllers
                 }
                 AddFormErrors(response);
             }
-            return View(new CreateRoleViewModel(request));
+            return View(viewModel);
         }
 
         [HttpGet]
@@ -214,7 +219,7 @@ namespace Template.MVC.Controllers
         {
             var viewModel = new EditRoleViewModel()
             {
-                ClaimsLookup = await _entityCache.Claims()
+                ClaimsLookup = await _cache.Claims()
             };
 
             var response = await _adminService.GetRole(new GetRoleRequest()

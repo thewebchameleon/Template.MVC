@@ -34,7 +34,7 @@ namespace Template.Services
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWorkFactory _uowFactory;
-        private readonly IEntityCache _entityCache;
+        private readonly IApplicationCache _cache;
         private readonly ISessionProvider _sessionProvider;
 
         #endregion
@@ -46,7 +46,7 @@ namespace Template.Services
             IEmailService emailService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
-            IEntityCache entityCache,
+            IApplicationCache entityCache,
             ISessionProvider sessionProvider,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -56,7 +56,7 @@ namespace Template.Services
             _uowFactory = uowFactory;
             _sessionProvider = sessionProvider;
 
-            _entityCache = entityCache;
+            _cache = entityCache;
             _emailService = emailService;
             _sessionService = sessionService;
         }
@@ -102,11 +102,11 @@ namespace Template.Services
                 UserID = id
             });
 
-            _entityCache.Remove(CacheConstants.UserRoles);
+            _cache.Remove(CacheConstants.UserRoles);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
-                EventKey = SessionConstants.Events.UserRegistered
+                EventKey = SessionEventKeys.UserRegistered
             });
 
             response.Notifications.Add($"You have been successfully registered, please check {request.EmailAddress} for an activation link", NotificationTypeEnum.Success);
@@ -173,7 +173,7 @@ namespace Template.Services
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
-                EventKey = SessionConstants.Events.UserLoggedIn
+                EventKey = SessionEventKeys.UserLoggedIn
             });
 
             return response;
@@ -181,6 +181,7 @@ namespace Template.Services
 
         public void Logout()
         {
+            _sessionProvider.Remove(SessionConstants.SessionEntity).Wait();
             _httpContextAccessor.HttpContext.SignOutAsync().Wait();
         }
 
@@ -194,8 +195,8 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
 
             var user = session.User;
-            var roles = await _entityCache.Roles();
-            var userRoles = await _entityCache.UserRoles();
+            var roles = await _cache.Roles();
+            var userRoles = await _cache.UserRoles();
             var usersRoles = userRoles.Where(ur => ur.User_Id == session.User.Id).Select(ur => ur.Role_Id);
 
             return new GetProfileResponse()
@@ -242,7 +243,7 @@ namespace Template.Services
             await _sessionService.RehydrateSession();
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
-                EventKey = SessionConstants.Events.UserUpdatedProfile
+                EventKey = SessionEventKeys.UserUpdatedProfile
             });
 
             response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);
@@ -319,7 +320,7 @@ namespace Template.Services
         {
             var response = new DuplicateRoleCheckResponse();
 
-            var roles = await _entityCache.Roles();
+            var roles = await _cache.Roles();
             var matchFound = roles.Any(u => string.Equals(u.Name, request.Name, StringComparison.InvariantCultureIgnoreCase));
 
             if (matchFound)
@@ -332,7 +333,7 @@ namespace Template.Services
 
         //public async Task<ActivateAccountResponse> ActivateAccount(ActivateAccountRequest request, int userId)
         //{
-        //    var tokens = await _entityCache.Tokens();
+        //    var tokens = await _cache.Tokens();
         //    var token = tokens.FirstOrDefault(t => t.Value == request.Token);
 
         //    if (token == null)
@@ -356,7 +357,7 @@ namespace Template.Services
         //        uow.Commit();
         //    }
 
-        //    _entityCache.Clear(CacheConstants.Tokens);
+        //    _cache.Clear(CacheConstants.Tokens);
 
         //    return new ActivateAccountResponse();
         //}
@@ -425,7 +426,7 @@ namespace Template.Services
         //        throw new Exception(string.Join(",", result.Errors.Select(e => e.Description)));
         //    }
 
-        //    var users = await _entityCache.Users();
+        //    var users = await _cache.Users();
         //    user = users.FirstOrDefault(u => u.Id == user.Id);
 
         //    var roles = await _userManager.GetRolesAsync(user);
@@ -518,11 +519,11 @@ namespace Template.Services
 
         //        if (rolesToRemove.Any() || rolesToAdd.Any())
         //        {
-        //            _entityCache.Remove(CacheConstants.UserRoles);
+        //            _cache.Remove(CacheConstants.UserRoles);
         //        }
         //    }
-        //    _entityCache.Remove(CacheConstants.UserRoles);
-        //    _entityCache.Remove(CacheConstants.Users);
+        //    _cache.Remove(CacheConstants.UserRoles);
+        //    _cache.Remove(CacheConstants.Users);
 
         //    return new UpdateUserResponse()
         //    {
@@ -553,7 +554,7 @@ namespace Template.Services
         //        throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
         //    }
 
-        //    _entityCache.Remove(CacheConstants.Users);
+        //    _cache.Remove(CacheConstants.Users);
 
         //    return new DeleteUserResponse();
         //}
@@ -595,8 +596,8 @@ namespace Template.Services
         //    {
         //        await _roleManager.AddClaimAsync(role, new Claim(ClaimConstants.Permission, ApplicationPermissions.GetPermissionByValue(claim.Value)));
         //    }
-        //    _entityCache.Remove(CacheConstants.RoleClaims);
-        //    _entityCache.Remove(CacheConstants.Roles);
+        //    _cache.Remove(CacheConstants.RoleClaims);
+        //    _cache.Remove(CacheConstants.Roles);
 
         //    return new CreateRoleResponse()
         //    {
@@ -612,7 +613,7 @@ namespace Template.Services
 
         //public async Task<UpdateRoleResponse> UpdateRole(UpdateRoleRequest request, int userId)
         //{
-        //    var roles = await _entityCache.Roles();
+        //    var roles = await _cache.Roles();
         //    var role = roles.FirstOrDefault(r => r.Id == request.Id);
 
         //    if (role == null)
@@ -649,8 +650,8 @@ namespace Template.Services
         //        }
         //    }
 
-        //    _entityCache.Remove(CacheConstants.RoleClaims);
-        //    _entityCache.Remove(CacheConstants.Roles);
+        //    _cache.Remove(CacheConstants.RoleClaims);
+        //    _cache.Remove(CacheConstants.Roles);
 
         //    return new UpdateRoleResponse()
         //    {
@@ -679,16 +680,16 @@ namespace Template.Services
         //    {
         //        throw new Exception(string.Join(",", result.Errors.Select(e => e.Description)));
         //    }
-        //    _entityCache.Remove(CacheConstants.Roles);
+        //    _cache.Remove(CacheConstants.Roles);
 
         //    return new DeleteRoleResponse();
         //}
 
         //public async Task<GetUsersResponse> GetUsers(GetUsersRequest request, int userId)
         //{
-        //    var userRoles = await _entityCache.UserRoles();
-        //    var roles = await _entityCache.Roles();
-        //    var users = await _entityCache.Users();
+        //    var userRoles = await _cache.UserRoles();
+        //    var roles = await _cache.Roles();
+        //    var users = await _cache.Users();
         //    users = users.OrderByDescending(r => r.Id).ToList();
 
         //    if (request.Page != -1)
@@ -724,7 +725,7 @@ namespace Template.Services
 
         //public async Task<UnblockUserResponse> UnblockUser(UnblockUserRequest request, int userId)
         //{
-        //    var users = await _entityCache.Users();
+        //    var users = await _cache.Users();
         //    var user = users.First(u => u.Id == request.UserId);
 
         //    if (user == null)
@@ -742,19 +743,19 @@ namespace Template.Services
 
         //    await _userManager.UpdateAsync(user);
 
-        //    _entityCache.Remove(CacheConstants.Users);
+        //    _cache.Remove(CacheConstants.Users);
 
         //    throw new NotImplementedException();
         //}
 
         //public async Task<GetRolesResponse> GetRoles(GetRolesRequest request, int userId)
         //{
-        //    var userRoles = await _entityCache.UserRoles();
+        //    var userRoles = await _cache.UserRoles();
         //    userRoles = userRoles.Where(ur => !ur.Is_Deleted).ToList();
 
-        //    var claims = await _entityCache.RoleClaims();
+        //    var claims = await _cache.RoleClaims();
 
-        //    var roles = await _entityCache.Roles();
+        //    var roles = await _cache.Roles();
         //    roles = roles.Where(r => !r.Is_Deleted).OrderBy(r => r.Name).ToList();
 
         //    if (request.Page != -1)
@@ -792,8 +793,8 @@ namespace Template.Services
 
         //public async Task<GetRolesByUserIdResponse> GetRolesByUserId(GetRolesByUserIdRequest request, int userId)
         //{
-        //    var userRoles = await _entityCache.UserRoles();
-        //    var roles = await _entityCache.Roles();
+        //    var userRoles = await _cache.UserRoles();
+        //    var roles = await _cache.Roles();
 
         //    var roleIds = userRoles.Where(ur => ur.UserId == request.UserId).Select(ur => ur.RoleId).ToList();
         //    roles = roles.Where(r => roleIds.Contains(r.Id)).ToList();
@@ -822,7 +823,7 @@ namespace Template.Services
         //        throw new Exception(string.Join(",", result.Errors.Select(e => e.Description)));
         //    }
 
-        //    _entityCache.Remove(CacheConstants.Users);
+        //    _cache.Remove(CacheConstants.Users);
 
         //    return new UpdateUserPreferencesResponse() { Configuration = request.Configuration };
         //}

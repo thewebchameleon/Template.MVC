@@ -23,7 +23,7 @@ namespace Template.Services
 
         private readonly ISessionProvider _sessionProvider;
         private readonly IUnitOfWorkFactory _uowFactory;
-        private readonly IEntityCache _entityCache;
+        private readonly IApplicationCache _cache;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -35,14 +35,14 @@ namespace Template.Services
             ILogger<SessionService> logger,
             ISessionProvider sessionProvider,
             IUnitOfWorkFactory uowFactory,
-            IEntityCache entityCache,
+            IApplicationCache entityCache,
             IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _uowFactory = uowFactory;
             _sessionProvider = sessionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _entityCache = entityCache;
+            _cache = entityCache;
         }
 
         #endregion
@@ -68,7 +68,9 @@ namespace Template.Services
             var session = await _sessionProvider.Get<SessionEntity>(SessionConstants.SessionEntity);
             if (session == null)
             {
-                await _httpContextAccessor.HttpContext.SignOutAsync(); // flush any authenticated cookies in the event the application restarts
+                // flush any authenticated cookies in the event the application restarts
+                await _httpContextAccessor.HttpContext.SignOutAsync(); 
+                await _sessionProvider.Remove(SessionConstants.UserEntity);
 
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
@@ -114,7 +116,7 @@ namespace Template.Services
         {
             var session = await GetSession();
 
-            var events = await _entityCache.SessionEvents();
+            var events = await _cache.SessionEvents();
             var eventItem = events.FirstOrDefault(e => e.Key == request.EventKey);
 
             if (eventItem == null)

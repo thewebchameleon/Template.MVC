@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Template.Infrastructure.Cache.Contracts;
+using Template.Infrastructure.Configuration.Models;
 using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models.DomainModels;
 
 namespace Template.Infrastructure.Cache
 {
-    public class EntityCache : IEntityCache
+    public class ApplicationCache : IApplicationCache
     {
         #region Instance Fields
 
@@ -20,7 +21,7 @@ namespace Template.Infrastructure.Cache
 
         #region Constructor
 
-        public EntityCache(IUnitOfWorkFactory uowFactory, ICacheProvider cacheProvider)
+        public ApplicationCache(IUnitOfWorkFactory uowFactory, ICacheProvider cacheProvider)
         {
             _uowFactory = uowFactory;
             _cacheProvider = cacheProvider;
@@ -29,24 +30,6 @@ namespace Template.Infrastructure.Cache
         #endregion
 
         #region Public Methods
-
-        public async Task<List<ConfigurationEntity>> ConfigurationItems()
-        {
-            var items = new List<ConfigurationEntity>();
-            if (_cacheProvider.TryGet(CacheConstants.ConfigurationItems, out items))
-            {
-                return items;
-            }
-
-            using (var uow = _uowFactory.GetUnitOfWork())
-            {
-                items = await uow.ConfigurationRepo.GetConfigurationItems();
-                uow.Commit();
-            }
-            _cacheProvider.Set(CacheConstants.ConfigurationItems, items);
-
-            return items;
-        }
 
         public async Task<List<RoleClaim>> RoleClaims()
         {
@@ -164,6 +147,24 @@ namespace Template.Infrastructure.Cache
         public void Remove(string key)
         {
             _cacheProvider.Remove(key);
+        }
+
+        public async Task<ApplicationConfiguration> Configuration()
+        {
+            var items = new List<ConfigurationEntity>();
+            if (_cacheProvider.TryGet(CacheConstants.ConfigurationItems, out items))
+            {
+                return new ApplicationConfiguration(items);
+            }
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                items = await uow.ConfigurationRepo.GetConfigurationItems();
+                uow.Commit();
+            }
+            _cacheProvider.Set(CacheConstants.ConfigurationItems, items);
+
+            return new ApplicationConfiguration(items);
         }
 
         #endregion

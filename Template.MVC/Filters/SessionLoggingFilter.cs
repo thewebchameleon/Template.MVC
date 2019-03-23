@@ -17,18 +17,18 @@ namespace Template.MVC.Filters
     {
         private readonly ISessionService _sessionService;
         private readonly IUnitOfWorkFactory _uowFactory;
-        private readonly IEntityCache _entityCache;
+        private readonly IApplicationCache _cache;
         private readonly ISessionProvider _sessionProvider;
 
         public SessionLoggingFilter(
             ISessionService sessionService,
-            IEntityCache entityCache,
+            IApplicationCache entityCache,
             IUnitOfWorkFactory uowFactory,
             ISessionProvider sessionProvider)
         {
             _sessionService = sessionService;
             _uowFactory = uowFactory;
-            _entityCache = entityCache;
+            _cache = entityCache;
             _sessionProvider = sessionProvider;
         }
 
@@ -68,8 +68,8 @@ namespace Template.MVC.Filters
 
             if (resultContext.Exception != null && !resultContext.ExceptionHandled)
             {
-                var events = await _entityCache.SessionEvents();
-                var eventItem = events.FirstOrDefault(e => e.Key == SessionConstants.Events.Error);
+                var events = await _cache.SessionEvents();
+                var eventItem = events.FirstOrDefault(e => e.Key == SessionEventKeys.Error);
 
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {

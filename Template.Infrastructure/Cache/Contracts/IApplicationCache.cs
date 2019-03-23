@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Template.Infrastructure.Configuration.Models;
 using Template.Models.DomainModels;
 
 namespace Template.Infrastructure.Cache.Contracts
 {
-    public interface IEntityCache
+    public interface IApplicationCache
     {
-        Task<List<ConfigurationEntity>> ConfigurationItems();
+        Task<ApplicationConfiguration> Configuration();
 
         Task<List<RoleEntity>> Roles();
 

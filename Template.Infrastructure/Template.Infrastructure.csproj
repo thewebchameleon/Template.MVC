@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Authentication\Contracts\" />
-    <Folder Include="Configuration\Contracts\" />
   </ItemGroup>
 
 </Project>

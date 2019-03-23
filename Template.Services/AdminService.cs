@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Template.Common.Notifications;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
+using Template.Infrastructure.Session;
 using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models.DomainModels;
 using Template.Models.ServiceModels;
@@ -28,7 +29,7 @@ namespace Template.Services
         private readonly ISessionService _sessionService;
 
         private readonly IUnitOfWorkFactory _uowFactory;
-        private readonly IEntityCache _entityCache;
+        private readonly IApplicationCache _cache;
 
         #endregion
 
@@ -40,13 +41,13 @@ namespace Template.Services
             IAccountService accountService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
-            IEntityCache entityCache)
+            IApplicationCache entityCache)
         {
             _logger = logger;
 
             _uowFactory = uowFactory;
 
-            _entityCache = entityCache;
+            _cache = entityCache;
             _emailService = emailService;
             _accountService = accountService;
             _sessionService = sessionService;
@@ -90,6 +91,11 @@ namespace Template.Services
                     Updated_By = session.User.Id
                 });
                 uow.Commit();
+
+                await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+                {
+                    EventKey = SessionEventKeys.UserEnabled
+                });
             }
 
             response.Notifications.Add($"User '{user.Username}' has been enabled", NotificationTypeEnum.Success);
@@ -114,6 +120,11 @@ namespace Template.Services
                     Id = request.Id
                 });
                 uow.Commit();
+
+                await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+                {
+                    EventKey = SessionEventKeys.UserDisabled
+                });
             }
 
             response.Notifications.Add($"User '{user.Username}' has been disabled", NotificationTypeEnum.Success);
@@ -124,9 +135,9 @@ namespace Template.Services
         {
             var response = new GetUserResponse();
 
-            var userRoles = await _entityCache.UserRoles();
-            var roles = await _entityCache.Roles();
-            var claims = await _entityCache.Claims();
+            var userRoles = await _cache.UserRoles();
+            var roles = await _cache.Roles();
+            var claims = await _cache.Claims();
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
@@ -189,6 +200,12 @@ namespace Template.Services
 
             await CreateOrDeleteUserRoles(request.RoleIds, id, session.User.Id);
 
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.UserCreated,
+                Message = $"User Id: {id}"
+            });
+
             response.Notifications.Add($"User {request.Username} has been created", NotificationTypeEnum.Success);
             return response;
         }
@@ -243,13 +260,18 @@ namespace Template.Services
 
             await CreateOrDeleteUserRoles(request.RoleIds, request.UserId, session.User.Id);
 
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.UserUpdated
+            });
+
             response.Notifications.Add($"User {request.Username} has been updated", NotificationTypeEnum.Success);
             return response;
         }
 
         private async Task CreateOrDeleteUserRoles(List<int> newRoles, int userId, int loggedInUserId)
         {
-            var userRoles = await _entityCache.UserRoles();
+            var userRoles = await _cache.UserRoles();
             var existingRoles = userRoles.Where(ur => ur.User_Id == userId).Select(ur => ur.Role_Id);
 
             var rolesToBeDeleted = existingRoles.Where(ur => !newRoles.Contains(ur));
@@ -282,7 +304,12 @@ namespace Template.Services
                     }
                     uow.Commit();
                 }
-                _entityCache.Remove(CacheConstants.UserRoles);
+                _cache.Remove(CacheConstants.UserRoles);
+
+                await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+                {
+                    EventKey = SessionEventKeys.UserRolesUpdated
+                });
             }
         }
 
@@ -294,7 +321,7 @@ namespace Template.Services
         {
             var response = new GetRoleManagementResponse();
 
-            response.Roles = await _entityCache.Roles();
+            response.Roles = await _cache.Roles();
 
             return response;
         }
@@ -304,7 +331,7 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new EnableRoleResponse();
 
-            var roles = await _entityCache.Roles();
+            var roles = await _cache.Roles();
             var role = roles.FirstOrDefault(u => u.Id == request.RoleId);
 
             using (var uow = _uowFactory.GetUnitOfWork())
@@ -317,7 +344,12 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.Roles);
+            _cache.Remove(CacheConstants.Roles);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.RoleEnabled
+            });
 
             response.Notifications.Add($"Role '{role.Name}' has been enabled", NotificationTypeEnum.Success);
             return response;
@@ -328,7 +360,7 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new DisableRoleResponse();
 
-            var roles = await _entityCache.Roles();
+            var roles = await _cache.Roles();
             var role = roles.FirstOrDefault(u => u.Id == request.Id);
 
             using (var uow = _uowFactory.GetUnitOfWork())
@@ -341,7 +373,12 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.Roles);
+            _cache.Remove(CacheConstants.Roles);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.RoleDisabled
+            });
 
             response.Notifications.Add($"Role '{role.Name}' has been disabled", NotificationTypeEnum.Success);
             return response;
@@ -351,9 +388,9 @@ namespace Template.Services
         {
             var response = new GetRoleResponse();
 
-            var roles = await _entityCache.Roles();
-            var claims = await _entityCache.Claims();
-            var roleClaims = await _entityCache.RoleClaims();
+            var roles = await _cache.Roles();
+            var claims = await _cache.Claims();
+            var roleClaims = await _cache.RoleClaims();
 
             var role = roles.FirstOrDefault(r => r.Id == request.RoleId);
             if (role == null)
@@ -399,12 +436,17 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.Roles);
+            _cache.Remove(CacheConstants.Roles);
 
-            var roles = await _entityCache.Roles();
+            var roles = await _cache.Roles();
             var role = roles.FirstOrDefault(r => r.Id == id);
 
             await CreateOrDeleteRoleClaims(request.ClaimIds, id, session.User.Id);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.RoleCreated
+            });
 
             response.Notifications.Add($"Role '{request.Name}' has been created", NotificationTypeEnum.Success);
             return response;
@@ -415,7 +457,7 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new UpdateRoleResponse();
 
-            var roles = await _entityCache.Roles();
+            var roles = await _cache.Roles();
             var role = roles.FirstOrDefault(u => u.Id == request.Id);
 
             using (var uow = _uowFactory.GetUnitOfWork())
@@ -432,8 +474,13 @@ namespace Template.Services
 
             await CreateOrDeleteRoleClaims(request.ClaimIds, request.Id, session.User.Id);
 
-            _entityCache.Remove(CacheConstants.Roles);
-            _entityCache.Remove(CacheConstants.RoleClaims);
+            _cache.Remove(CacheConstants.Roles);
+            _cache.Remove(CacheConstants.RoleClaims);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.RoleUpdated
+            });
 
             response.Notifications.Add($"Role '{role.Name}' has been updated", NotificationTypeEnum.Success);
             return response;
@@ -441,7 +488,7 @@ namespace Template.Services
 
         private async Task CreateOrDeleteRoleClaims(List<int> newClaims, int roleId, int loggedInUserId)
         {
-            var roleClaims = await _entityCache.RoleClaims();
+            var roleClaims = await _cache.RoleClaims();
             var existingClaims = roleClaims.Where(rc => rc.Role_Id == roleId).Select(rc => rc.Claim_Id);
 
             var claimsToBeDeleted = existingClaims.Where(ur => !newClaims.Contains(ur));
@@ -474,7 +521,12 @@ namespace Template.Services
                     }
                     uow.Commit();
                 }
-                _entityCache.Remove(CacheConstants.RoleClaims);
+                _cache.Remove(CacheConstants.RoleClaims);
+
+                await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+                {
+                    EventKey = SessionEventKeys.RoleClaimsUpdated
+                });
             }
         }
 
@@ -486,7 +538,8 @@ namespace Template.Services
         {
             var response = new GetConfigurationManagementResponse();
 
-            response.ConfigurationItems = await _entityCache.ConfigurationItems();
+            var configuration = await _cache.Configuration();
+            response.ConfigurationItems = configuration.Items;
 
             return response;
         }
@@ -495,8 +548,8 @@ namespace Template.Services
         {
             var response = new GetConfigurationItemResponse();
 
-            var configItems = await _entityCache.ConfigurationItems();
-            var configItem = configItems.FirstOrDefault(c => c.Id == request.Id);
+            var configuration = await _cache.Configuration();
+            var configItem = configuration.Items.FirstOrDefault(c => c.Id == request.Id);
 
             response.ConfigurationItem = configItem;
 
@@ -525,10 +578,15 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.ConfigurationItems);
+            _cache.Remove(CacheConstants.ConfigurationItems);
 
-            var configItems = await _entityCache.ConfigurationItems();
-            var configItem = configItems.FirstOrDefault(c => c.Id == request.Id);
+            var configuration = await _cache.Configuration();
+            var configItem = configuration.Items.FirstOrDefault(c => c.Id == request.Id);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.ConfigurationUpdated
+            });
 
             response.Notifications.Add($"Configuration item '{configItem.Key}' has been updated", NotificationTypeEnum.Success);
             return response;
@@ -539,8 +597,8 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new CreateConfigurationItemResponse();
 
-            var configItems = await _entityCache.ConfigurationItems();
-            var configItem = configItems.FirstOrDefault(c => c.Key == request.Key);
+            var configuration = await _cache.Configuration();
+            var configItem = configuration.Items.FirstOrDefault(c => c.Key == request.Key);
 
             if (configItem != null)
             {
@@ -566,7 +624,12 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.ConfigurationItems);
+            _cache.Remove(CacheConstants.ConfigurationItems);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.ConfigurationCreated
+            });
 
             response.Notifications.Add($"Configuration item '{request.Key}' has been created", NotificationTypeEnum.Success);
             return response;
@@ -611,7 +674,7 @@ namespace Template.Services
                     response.User = user;
                 }
 
-                var eventsLookup = await _entityCache.SessionEvents();
+                var eventsLookup = await _cache.SessionEvents();
 
                 response.Session = session;
                 response.Logs = logs.Select(l =>
@@ -783,7 +846,7 @@ namespace Template.Services
         {
             var response = new GetSessionEventManagementResponse();
 
-            response.SessionEvents = await _entityCache.SessionEvents();
+            response.SessionEvents = await _cache.SessionEvents();
 
             return response;
         }
@@ -792,7 +855,7 @@ namespace Template.Services
         {
             var response = new GetSessionEventResponse();
 
-            var sessionEvents = await _entityCache.SessionEvents();
+            var sessionEvents = await _cache.SessionEvents();
             var sessionEvent = sessionEvents.FirstOrDefault(c => c.Id == request.Id);
 
             response.SessionEvent = sessionEvent;
@@ -816,10 +879,15 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.SessionEvents);
+            _cache.Remove(CacheConstants.SessionEvents);
 
-            var sessionEvents = await _entityCache.SessionEvents();
+            var sessionEvents = await _cache.SessionEvents();
             var sessionEvent = sessionEvents.FirstOrDefault(c => c.Id == request.Id);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.SessionEventUpdated
+            });
 
             response.Notifications.Add($"Session event '{sessionEvent.Key}' has been updated", NotificationTypeEnum.Success);
             return response;
@@ -830,7 +898,7 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new CreateSessionEventResponse();
 
-            var sessionEvents = await _entityCache.SessionEvents();
+            var sessionEvents = await _cache.SessionEvents();
             var sessionEvent = sessionEvents.FirstOrDefault(se => se.Key == request.Key);
 
             if (sessionEvent != null)
@@ -851,7 +919,12 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.SessionEvents);
+            _cache.Remove(CacheConstants.SessionEvents);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.SessionEventCreated
+            });
 
             response.Notifications.Add($"Session event '{request.Key}' has been created", NotificationTypeEnum.Success);
             return response;
@@ -865,7 +938,7 @@ namespace Template.Services
         {
             var response = new GetClaimManagementResponse();
 
-            response.Claims = await _entityCache.Claims();
+            response.Claims = await _cache.Claims();
 
             return response;
         }
@@ -874,7 +947,7 @@ namespace Template.Services
         {
             var response = new GetClaimResponse();
 
-            var claims = await _entityCache.Claims();
+            var claims = await _cache.Claims();
             var claim = claims.FirstOrDefault(c => c.Id == request.Id);
 
             response.Claim = claim;
@@ -900,10 +973,15 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.Claims);
+            _cache.Remove(CacheConstants.Claims);
 
-            var claims = await _entityCache.Claims();
+            var claims = await _cache.Claims();
             var claim = claims.FirstOrDefault(c => c.Id == request.Id);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.ClaimUpdated
+            });
 
             response.Notifications.Add($"Claim '{claim.Key}' has been updated", NotificationTypeEnum.Success);
             return response;
@@ -914,7 +992,7 @@ namespace Template.Services
             var session = await _sessionService.GetAuthenticatedSession();
             var response = new CreateClaimResponse();
 
-            var claims = await _entityCache.Claims();
+            var claims = await _cache.Claims();
             var claim = claims.FirstOrDefault(c => c.Key == request.Key);
 
             if (claim != null)
@@ -937,7 +1015,12 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _entityCache.Remove(CacheConstants.Claims);
+            _cache.Remove(CacheConstants.Claims);
+
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.ClaimCreated
+            });
 
             response.Notifications.Add($"Claim '{request.Key}' has been created", NotificationTypeEnum.Success);
             return response;
