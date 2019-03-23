@@ -242,7 +242,7 @@ namespace Template.Services
             await _sessionService.RehydrateSession();
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
-                EventKey = SessionConstants.Events.UserRegistered
+                EventKey = SessionConstants.Events.UserUpdatedProfile
             });
 
             response.Notifications.Add("Profile updated successfully", NotificationTypeEnum.Success);

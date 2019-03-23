@@ -12,6 +12,7 @@ using Template.Models.DomainModels;
 using Template.Models.ServiceModels;
 using Template.Models.ServiceModels.Admin;
 using Template.Models.ServiceModels.Admin.ClaimManagement;
+using Template.Models.ServiceModels.Admin.SessionManagement;
 using Template.Services.Contracts;
 
 namespace Template.Services
@@ -613,7 +614,8 @@ namespace Template.Services
                 var eventsLookup = await _entityCache.SessionEvents();
 
                 response.Session = session;
-                response.Logs = logs.Select(l => {
+                response.Logs = logs.Select(l =>
+                {
 
                     var eventIds = logEvents.Where(le => le.Session_Log_Id == l.Id).Select(le => le.Event_Id);
                     return new SessionLog()
@@ -636,12 +638,13 @@ namespace Template.Services
         public async Task<GetSessionsResponse> GetSessions(GetSessionsRequest request)
         {
             var response = new GetSessionsResponse();
+            var sessions = new List<Infrastructure.Repositories.SessionRepo.Models.GetSessionsResponse>();
 
             if (request.Last24Hours.HasValue && request.Last24Hours.Value)
             {
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
-                    response.Sessions = await uow.SessionRepo.GetSessionsByStartDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByStartDateRequest()
+                    sessions = await uow.SessionRepo.GetSessionsByStartDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByStartDateRequest()
                     {
                         Start_Date = DateTime.Now.AddDays(-1)
                     });
@@ -655,7 +658,7 @@ namespace Template.Services
             {
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
-                    response.Sessions = await uow.SessionRepo.GetSessionsByStartDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByStartDateRequest()
+                    sessions = await uow.SessionRepo.GetSessionsByStartDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByStartDateRequest()
                     {
                         Start_Date = DateTime.Today.AddDays(request.LastXDays.Value * -1)
                     });
@@ -669,7 +672,7 @@ namespace Template.Services
             {
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
-                    response.Sessions = await uow.SessionRepo.GetSessionsByDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByDateRequest()
+                    sessions = await uow.SessionRepo.GetSessionsByDate(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByDateRequest()
                     {
                         Date = request.Day.Value
                     });
@@ -683,7 +686,7 @@ namespace Template.Services
             {
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
-                    response.Sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
+                    sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
                     {
                         User_Id = request.UserId.Value
                     });
@@ -708,7 +711,7 @@ namespace Template.Services
                         return response;
                     }
 
-                    response.Sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
+                    sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
                     {
                         User_Id = user.Id
                     });
@@ -733,7 +736,7 @@ namespace Template.Services
                         return response;
                     }
 
-                    response.Sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
+                    sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
                     {
                         User_Id = user.Id
                     });
@@ -758,7 +761,7 @@ namespace Template.Services
                         return response;
                     }
 
-                    response.Sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
+                    sessions = await uow.SessionRepo.GetSessionsByUserId(new Infrastructure.Repositories.SessionRepo.Models.GetSessionsByUserIdRequest()
                     {
                         User_Id = user.Id
                     });
@@ -768,7 +771,11 @@ namespace Template.Services
                 response.SelectedFilter = $"Email Address: {request.EmailAddress}";
             }
 
-            response.Sessions = response.Sessions.OrderByDescending(s => s.Created_Date).ToList();
+            response.Sessions = sessions.Select(s => new Session()
+            {
+                Entity = s,
+                Username = s.Username
+            }).OrderByDescending(s => s.Entity.Created_Date).ToList();
             return response;
         }
 

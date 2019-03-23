@@ -11,11 +11,11 @@ namespace Template.Infrastructure.Repositories.SessionRepo.Contracts
 
         Task<SessionEntity> CreateSession(CreateSessionRequest request);
 
-        Task<List<SessionEntity>> GetSessionsByUserId(GetSessionsByUserIdRequest request);
+        Task<List<GetSessionsResponse>> GetSessionsByUserId(GetSessionsByUserIdRequest request);
 
-        Task<List<SessionEntity>> GetSessionsByStartDate(GetSessionsByStartDateRequest request);
+        Task<List<GetSessionsResponse>> GetSessionsByStartDate(GetSessionsByStartDateRequest request);
 
-        Task<List<SessionEntity>> GetSessionsByDate(GetSessionsByDateRequest request);
+        Task<List<GetSessionsResponse>> GetSessionsByDate(GetSessionsByDateRequest request);
 
         Task<int> CreateSessionEvent(CreateSessionEventRequest request);
 

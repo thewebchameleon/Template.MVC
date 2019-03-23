@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Template.Models.DomainModels;
 using Template.Models.ServiceModels.Admin;
+using Template.Models.ServiceModels.Admin.SessionManagement;
 
 namespace Template.Models.ViewModels.Admin
 {
@@ -9,14 +9,14 @@ namespace Template.Models.ViewModels.Admin
         #region Constructors
 
         public SessionsViewModel(GetSessionsRequest request) : base(request) {
-            Sessions = new List<SessionEntity>();
+            Sessions = new List<Session>();
         }
 
         public SessionsViewModel() : this(new GetSessionsRequest()) { }
 
         #endregion
 
-        public List<SessionEntity> Sessions { get; set; }
+        public List<Session> Sessions { get; set; }
 
         public string SelectedFilter { get; set; }
     }

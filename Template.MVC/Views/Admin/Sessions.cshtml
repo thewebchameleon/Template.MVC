@@ -31,20 +31,22 @@
 <table id="sessionsTable" class="table table-bordered" style="width: 100%;">
     <thead>
         <tr>
-            <th>User Id</th>
+            <th>Id</th>
+            <th>Username</th>
             <th>Created Date </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var session in Model.Sessions)
         {
-            <tr>
-                <td class="session-identifier">
-                    <input class="u-sessionId" type="hidden" value="@session.Id" />
-                    @session.User_Id
-                </td>
-                <td>@session.Created_Date.ToShortDateTimeString()</td>
-            </tr>
+        <tr>
+            <td class="session-identifier">
+                <input class="u-sessionId" type="hidden" value="@session.Entity.Id" />
+                @session.Entity.Id
+            </td>
+            <td>@session.Username</td>
+            <td>@session.Entity.Created_Date.ToShortDateTimeString()</td>
+        </tr>
         }
     </tbody>
 </table>
@@ -192,6 +194,7 @@
         $(document).ready(function () {
 
             var table = $('#sessionsTable').DataTable({
+                order: [[ 0, "desc" ]],
                 responsive: {
                     details: false
                 },

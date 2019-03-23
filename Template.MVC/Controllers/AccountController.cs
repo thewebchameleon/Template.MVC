@@ -160,8 +160,6 @@ namespace Template.MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                throw new Exception("Oops");
-
                 var response = await _accountService.UpdateProfile(request);
                 if (response.IsSuccessful)
                 {

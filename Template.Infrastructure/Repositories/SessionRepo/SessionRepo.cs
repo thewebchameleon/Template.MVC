@@ -65,11 +65,11 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             return response.FirstOrDefault();
         }
 
-        public async Task<List<SessionEntity>> GetSessionsByDate(GetSessionsByDateRequest request)
+        public async Task<List<GetSessionsResponse>> GetSessionsByDate(GetSessionsByDateRequest request)
         {
             var sqlStoredProc = "sp_sessions_get_by_date";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<GetSessionsResponse>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -81,11 +81,11 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             return response.ToList();
         }
 
-        public async Task<List<SessionEntity>> GetSessionsByStartDate(GetSessionsByStartDateRequest request)
+        public async Task<List<GetSessionsResponse>> GetSessionsByStartDate(GetSessionsByStartDateRequest request)
         {
             var sqlStoredProc = "sp_sessions_get_by_start_date";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<GetSessionsResponse>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -97,11 +97,11 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             return response.ToList();
         }
 
-        public async Task<List<SessionEntity>> GetSessionsByUserId(GetSessionsByUserIdRequest request)
+        public async Task<List<GetSessionsResponse>> GetSessionsByUserId(GetSessionsByUserIdRequest request)
         {
             var sqlStoredProc = "sp_sessions_get_by_user_id";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<SessionEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<GetSessionsResponse>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: request,
@@ -257,6 +257,8 @@ namespace Template.Infrastructure.Repositories.SessionRepo
             }
             return response.FirstOrDefault();
         }
+
+       
 
 
         #endregion
