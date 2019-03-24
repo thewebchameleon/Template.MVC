@@ -24,26 +24,7 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label asp-for="Request.ClaimIds" class="control-label"></label>
-                    <select id="listClaims" class="selectpicker form-control" multiple>
-                        @foreach (var claims in Model.ClaimsLookup.GroupBy(c => c.Group_Name))
-                        {
-                            <optgroup label="@claims.Key">
-                                @foreach (var claim in claims)
-                                {
-                                    var isSelected = Model.Request.ClaimIds.Any(c => c == claim.Id);
-                                    if (isSelected)
-                                    {
-                                        <option value="@claim.Id" selected>@claim.Name</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@claim.Id">@claim.Name</option>
-                                    }
-                                }
-                            </optgroup>
-                        }
-                    </select>
-                    <div id="listClaims-container"></div>
+                    <multiselect asp-for="Request.ClaimIds" asp-items="Model.ClaimsLookup" class="form-control"></multiselect>
                 </div>
             </div>
             <div class="form-group">
@@ -55,15 +36,4 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-
-    <script type="text/javascript">
-        $('#listClaims').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $('#listClaims-container').empty();
-
-            var selectedValues = $(this).val();
-            selectedValues.forEach(function (value, index) {
-                $('#listClaims-container').append("<input type='hidden' name='Request.ClaimIds' value=" + value + "></div>");
-            });
-        });
-    </script>
 }

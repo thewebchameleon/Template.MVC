@@ -12,14 +12,11 @@ namespace Template.Models.ViewModels.Admin
 
         public EditUserViewModel() : this(new UpdateUserRequest())
         {
-            ClaimsLookup = new List<ClaimEntity>();
-            RolesLookup = new List<RoleEntity>();
+            RolesLookup = new List<SelectListItem>();
         }
 
         #endregion
 
-        public List<ClaimEntity> ClaimsLookup { get; set; }
-
-        public List<RoleEntity> RolesLookup { get; set; }
+        public List<SelectListItem> RolesLookup { get; set; }
     }
 }

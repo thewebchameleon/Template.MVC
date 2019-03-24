@@ -61,26 +61,7 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label asp-for="Request.RoleIds" class="control-label"></label>
-                    <select id="listRoles" class="selectpicker form-control" multiple>
-                        @foreach (var role in Model.RolesLookup)
-                        {
-                            var isSelected = Model.Request.RoleIds.Any(c => c == role.Id);
-                            if (isSelected)
-                            {
-                                <option value="@role.Id" selected>@role.Name</option>
-                            }
-                            else
-                            {
-                                <option value="@role.Id">@role.Name</option>
-                            }
-                        }
-                    </select>
-                    <div id="listRoles-container">
-                        @foreach (var roleId in Model.Request.RoleIds)
-                        {
-                            <input type='hidden' name='Request.RoleIds' value="@roleId" />
-                        }
-                    </div>
+                    <multiselect asp-for="Request.RoleIds" asp-items="Model.RolesLookup" class="form-control"></multiselect>
                 </div>
             </div>
             <div class="form-group">

@@ -1,4 +1,10 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// bootstrap-select library used in conjunction with the aspcore MultiSelect tag helper
+$(".selectpicker").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    var container = $('#' + e.target.id + '-container');
+    container.empty();
 
-// Write your JavaScript code.
+    var selectedValues = $(this).val();
+    selectedValues.forEach(function (value, index) {
+        $(container).append("<input type='hidden' name='" + e.target.id + "' value=" + value + " />");
+    });
+});

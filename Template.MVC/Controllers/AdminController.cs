@@ -6,6 +6,7 @@ using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Models.ServiceModels.Admin;
 using Template.Models.ServiceModels.Admin.ClaimManagement;
+using Template.Models.ViewModels;
 using Template.Models.ViewModels.Admin;
 using Template.MVC.Attributes;
 using Template.Services.Contracts;
@@ -56,10 +57,10 @@ namespace Template.MVC.Controllers
         [AuthorizePermission(PermissionKeys.ManageUsers)]
         public async Task<IActionResult> CreateUser()
         {
+            var roles = await _cache.Roles();
             var viewModel = new CreateUserViewModel()
             {
-                ClaimsLookup = await _cache.Claims(),
-                RolesLookup = await _cache.Roles()
+                RolesLookup = roles.Select(r => new SelectListItem(r.Name, r.Id)).ToList()
             };
 
             return View(viewModel);
@@ -79,10 +80,10 @@ namespace Template.MVC.Controllers
                 }
                 AddFormErrors(response);
             }
+            var roles = await _cache.Roles();
             var viewModel = new CreateUserViewModel(request)
             {
-                ClaimsLookup = await _cache.Claims(),
-                RolesLookup = await _cache.Roles()
+                RolesLookup = roles.Select(r => new SelectListItem(r.Name, r.Id)).ToList()
             };
             return View(viewModel);
         }
@@ -91,10 +92,10 @@ namespace Template.MVC.Controllers
         [AuthorizePermission(PermissionKeys.ManageUsers)]
         public async Task<IActionResult> EditUser(int id)
         {
+            var roles = await _cache.Roles();
             var viewModel = new EditUserViewModel()
             {
-                ClaimsLookup = await _cache.Claims(),
-                RolesLookup = await _cache.Roles()
+                RolesLookup = roles.Select(r => new SelectListItem(r.Name, r.Id)).ToList()
             };
 
             var response = await _adminService.GetUser(new GetUserRequest()
@@ -139,10 +140,11 @@ namespace Template.MVC.Controllers
                 }
                 AddFormErrors(response);
             }
+
+            var roles = await _cache.Roles();
             var viewModel = new EditUserViewModel(request)
             {
-                ClaimsLookup = await _cache.Claims(),
-                RolesLookup = await _cache.Roles()
+                RolesLookup = roles.Select(r => new SelectListItem(r.Name, r.Id)).ToList()
             };
             return View(viewModel);
         }
@@ -190,9 +192,10 @@ namespace Template.MVC.Controllers
         [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> CreateRole()
         {
+            var claims = await _cache.Claims();
             var viewModel = new CreateRoleViewModel()
             {
-                ClaimsLookup = await _cache.Claims()
+                ClaimsLookup = claims.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
             };
 
             return View(viewModel);
@@ -202,9 +205,10 @@ namespace Template.MVC.Controllers
         [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> CreateRole(CreateRoleRequest request)
         {
+            var claims = await _cache.Claims();
             var viewModel = new CreateRoleViewModel(request)
             {
-                ClaimsLookup = await _cache.Claims()
+                ClaimsLookup = claims.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
             };
 
             if (ModelState.IsValid)
@@ -224,9 +228,10 @@ namespace Template.MVC.Controllers
         [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> EditRole(int id)
         {
+            var claims = await _cache.Claims();
             var viewModel = new EditRoleViewModel()
             {
-                ClaimsLookup = await _cache.Claims()
+                ClaimsLookup = claims.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
             };
 
             var response = await _adminService.GetRole(new GetRoleRequest()

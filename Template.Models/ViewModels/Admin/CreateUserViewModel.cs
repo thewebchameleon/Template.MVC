@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Template.Models.DomainModels;
 using Template.Models.ServiceModels.Admin;
 
 namespace Template.Models.ViewModels.Admin
@@ -14,8 +13,6 @@ namespace Template.Models.ViewModels.Admin
 
         #endregion
 
-        public List<ClaimEntity> ClaimsLookup { get; set; }
-
-        public List<RoleEntity> RolesLookup { get; set; }
+        public List<SelectListItem> RolesLookup { get; set; }
     }
 }

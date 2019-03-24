@@ -16,7 +16,7 @@ namespace Template.MVC.TagHelpers
         }
 
         /// <summary>
-        /// Gets or sets the policy name that determines access to the HTML block.
+        /// Gets or sets the permission name that determines access to the HTML block.
         /// </summary>
         [HtmlAttributeName("asp-permission")]
         public string Permission { get; set; }
