@@ -31,21 +31,21 @@ namespace Template.Infrastructure.Cache
 
         #region Public Methods
 
-        public async Task<List<RoleClaim>> RoleClaims()
+        public async Task<List<RolePermission>> RolePermissions()
         {
-            var items = new List<RoleClaim>();
-            if (_cacheProvider.TryGet(CacheConstants.RoleClaims, out items))
+            var items = new List<RolePermission>();
+            if (_cacheProvider.TryGet(CacheConstants.RolePermissions, out items))
             {
                 return items;
             }
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                items = await uow.UserRepo.GetRoleClaims();
+                items = await uow.UserRepo.GetRolePermissions();
 
                 uow.Commit();
             }
-            _cacheProvider.Set(CacheConstants.RoleClaims, items);
+            _cacheProvider.Set(CacheConstants.RolePermissions, items);
 
             return items;
         }
@@ -107,21 +107,21 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
-        public async Task<List<ClaimEntity>> Claims()
+        public async Task<List<PermissionEntity>> Permissions()
         {
-            var items = new List<ClaimEntity>();
-            if (_cacheProvider.TryGet(CacheConstants.Claims, out items))
+            var items = new List<PermissionEntity>();
+            if (_cacheProvider.TryGet(CacheConstants.Permissions, out items))
             {
                 return items;
             }
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                items = await uow.UserRepo.GetClaims();
+                items = await uow.UserRepo.GetPermissions();
 
                 uow.Commit();
             }
-            _cacheProvider.Set(CacheConstants.Claims, items);
+            _cacheProvider.Set(CacheConstants.Permissions, items);
 
             return items;
         }

@@ -227,7 +227,7 @@ namespace Template.MVC.Controllers
         //        // If the user does not have an account, then ask the user to create an account.
         //        ViewData["ReturnUrl"] = returnUrl;
         //        ViewData["ProviderDisplayName"] = info.ProviderDisplayName;
-        //        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        //        var email = info.Principal.FindFirstValue(PermissionTypes.Email);
         //        return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
         //    }
         //}

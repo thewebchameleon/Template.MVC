@@ -39,21 +39,21 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
 
         Task<List<RoleEntity>> GetRoles();
 
-        Task<List<RoleClaim>> GetRoleClaims();
+        Task<List<RolePermission>> GetRolePermissions();
 
         Task<List<TokenEntity>> GetTokens();
 
         Task<List<UserRoleEntity>> GetUserRoles();
 
-        Task<List<ClaimEntity>> GetClaims();
+        Task<List<PermissionEntity>> GetPermissions();
 
-        Task UpdateClaim(UpdateClaimRequest request);
+        Task UpdatePermission(UpdatePermissionRequest request);
 
-        Task<int> CreateClaim(CreateClaimRequest request);
+        Task<int> CreatePermission(CreatePermissionRequest request);
 
-        Task<int> CreateRoleClaim(CreateRoleClaimRequest request);
+        Task<int> CreateRolePermission(CreateRolePermissionRequest request);
 
-        Task DeleteRoleClaim(DeleteRoleClaimRequest request);
+        Task DeleteRolePermission(DisableRolePermissionRequest request);
 
         Task<UserEntity> GetUserById(GetUserByIdRequest request);
 

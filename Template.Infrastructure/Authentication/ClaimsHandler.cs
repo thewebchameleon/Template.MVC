@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using Template.Infrastructure.Authentication;
 
 namespace Template.Infrastructure.Authentication
 {
-    public class ClaimsHandler : AuthorizationHandler<ClaimsRequirement>
+    public class PermissionsHandler : AuthorizationHandler<PermissionsRequirement>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-                                                   ClaimsRequirement requirement)
+                                                   PermissionsRequirement requirement)
         {
             if (!context.User.HasClaim(c =>
-                    c.Type == ClaimConstants.UserPermission
-                    && requirement.Claims.Contains(c.Value)
+                    c.Type == PermissionConstants.UserPermission
+                    && requirement.Permissions.Contains(c.Value)
             ))
             {
                 context.Succeed(requirement);

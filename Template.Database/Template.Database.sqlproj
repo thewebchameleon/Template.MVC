@@ -69,9 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Stored Procedures\sp_configuration_items_get.sql" />
-    <Build Include="dbo\Stored Procedures\sp_role_claim_create.sql" />
-    <Build Include="dbo\Stored Procedures\sp_role_claim_delete.sql" />
-    <Build Include="dbo\Stored Procedures\sp_role_claims_get.sql" />
+    <Build Include="dbo\Stored Procedures\sp_role_permission_create.sql" />
+    <Build Include="dbo\Stored Procedures\sp_role_permission_delete.sql" />
+    <Build Include="dbo\Stored Procedures\sp_role_permissions_get.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_disable.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_update.sql" />
@@ -95,13 +95,13 @@
     <Build Include="dbo\Stored Procedures\sp_users_get.sql" />
     <Build Include="dbo\Tables\Configuration.sql" />
     <Build Include="dbo\Tables\Role.sql" />
-    <Build Include="dbo\Tables\Role_Claim.sql" />
+    <Build Include="dbo\Tables\Role_Permission.sql" />
     <Build Include="dbo\Tables\Session.sql" />
     <Build Include="dbo\Tables\User.sql" />
     <Build Include="dbo\Tables\User_Role.sql" />
     <Build Include="dbo\Tables\User_Token.sql" />
-    <Build Include="dbo\Tables\Claim.sql" />
-    <Build Include="dbo\Stored Procedures\sp_claims_get.sql" />
+    <Build Include="dbo\Tables\Permission.sql" />
+    <Build Include="dbo\Stored Procedures\sp_permissions_get.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_get_by_username.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_get_by_email.sql" />
     <Build Include="dbo\Stored Procedures\sp_configuration_item_create.sql" />
@@ -121,8 +121,8 @@
     <Build Include="dbo\Stored Procedures\sp_session_log_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_enable.sql" />
     <Build Include="dbo\Stored Procedures\sp_role_enable.sql" />
-    <Build Include="dbo\Stored Procedures\sp_claim_create.sql" />
-    <Build Include="dbo\Stored Procedures\sp_claim_update.sql" />
+    <Build Include="dbo\Stored Procedures\sp_permission_create.sql" />
+    <Build Include="dbo\Stored Procedures\sp_permission_update.sql" />
     <Build Include="dbo\Stored Procedures\sp_session_log_event_create.sql" />
   </ItemGroup>
   <ItemGroup>

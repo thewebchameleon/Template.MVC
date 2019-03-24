@@ -1,6 +1,6 @@
 ﻿namespace Template.Infrastructure.Repositories.UserRepo.Models
 {
-    public class CreateClaimRequest
+    public class CreatePermissionRequest
     {
         public string Key { get; set; }
 

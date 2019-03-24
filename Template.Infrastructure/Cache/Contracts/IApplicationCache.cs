@@ -13,9 +13,9 @@ namespace Template.Infrastructure.Cache.Contracts
 
         Task<List<UserRoleEntity>> UserRoles();
 
-        Task<List<RoleClaim>> RoleClaims();
+        Task<List<RolePermission>> RolePermissions();
 
-        Task<List<ClaimEntity>> Claims();
+        Task<List<PermissionEntity>> Permissions();
 
         Task<List<TokenEntity>> Tokens();
 

@@ -9,11 +9,11 @@
         public const string UserLoggedIn = "USER_LOGGED_IN";
         public const string UserRegistered = "USER_REGISTERED";
         public const string UserUpdatedProfile = "USER_UPDATED_PROFILE";
-        public const string ClaimCreated = "CLAIM_CREATED";
-        public const string ClaimUpdated = "CLAIM_UPDATED";
+        public const string PermissionCreated = "PERMISSION_CREATED";
+        public const string PermissionUpdated = "PERMISSION_UPDATED";
         public const string ConfigurationCreated = "CONFIGURATION_CREATED";
         public const string ConfigurationUpdated = "CONFIGURATION_UPDATED";
-        public const string RoleClaimsUpdated = "ROLES_CLAIMS_UPDATED";
+        public const string RolePermissionsUpdated = "ROLES_PERMISSIONS_UPDATED";
         public const string RoleCreated = "ROLE_CREATED";
         public const string RoleUpdated = "ROLE_UPDATED";
         public const string RoleDisabled = "ROLE_DISABLED";

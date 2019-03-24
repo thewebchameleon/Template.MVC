@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Template.Models.ServiceModels.Admin.ClaimManagement
+namespace Template.Models.ServiceModels.Admin.PermissionManagement
 {
-    public class UpdateClaimRequest
+    public class UpdatePermissionRequest
     {
         public int Id { get; set; }
 

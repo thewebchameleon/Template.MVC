@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_claim_update]
+﻿CREATE PROCEDURE [dbo].[sp_permission_update]
 	@Id					INT,
 	@Name				VARCHAR(256),
 	@Group_Name			VARCHAR(256),
@@ -6,7 +6,7 @@
 	@Updated_By			INT
 AS
 BEGIN
-	UPDATE [Claim]
+	UPDATE [Permission]
 	SET
         [Description] = @Description,
 		[Name] = @Name,

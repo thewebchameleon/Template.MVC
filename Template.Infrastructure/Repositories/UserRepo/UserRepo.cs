@@ -120,11 +120,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.ToList();
         }
 
-        public async Task<List<RoleClaim>> GetRoleClaims()
+        public async Task<List<RolePermission>> GetRolePermissions()
         {
-            var sqlStoredProc = "sp_role_claims_get";
+            var sqlStoredProc = "sp_role_permissions_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<RoleClaim>
+            var response = await DapperAdapter.GetFromStoredProcAsync<RolePermission>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: new { },
@@ -323,9 +323,9 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task<int> CreateRoleClaim(CreateRoleClaimRequest request)
+        public async Task<int> CreateRolePermission(CreateRolePermissionRequest request)
         {
-            var sqlStoredProc = "sp_role_claim_create";
+            var sqlStoredProc = "sp_role_permission_create";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
@@ -343,9 +343,9 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.First();
         }
 
-        public async Task DeleteRoleClaim(DeleteRoleClaimRequest request)
+        public async Task DeleteRolePermission(DisableRolePermissionRequest request)
         {
-            var sqlStoredProc = "sp_role_claim_delete";
+            var sqlStoredProc = "sp_role_permission_delete";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
@@ -362,11 +362,11 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task<List<ClaimEntity>> GetClaims()
+        public async Task<List<PermissionEntity>> GetPermissions()
         {
-            var sqlStoredProc = "sp_claims_get";
+            var sqlStoredProc = "sp_permissions_get";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<ClaimEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<PermissionEntity>
                 (
                     storedProcedureName: sqlStoredProc,
                     parameters: new { },
@@ -480,9 +480,9 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task UpdateClaim(UpdateClaimRequest request)
+        public async Task UpdatePermission(UpdatePermissionRequest request)
         {
-            var sqlStoredProc = "sp_claim_update";
+            var sqlStoredProc = "sp_permission_update";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (
@@ -499,9 +499,9 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task<int> CreateClaim(CreateClaimRequest request)
+        public async Task<int> CreatePermission(CreatePermissionRequest request)
         {
-            var sqlStoredProc = "sp_claim_create";
+            var sqlStoredProc = "sp_permission_create";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (

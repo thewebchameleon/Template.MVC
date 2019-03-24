@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [dbo].[sp_role_claim_create]
+﻿CREATE PROCEDURE [dbo].[sp_role_permission_create]
 	@Role_Id     INT,
-	@Claim_Id	INT,
+	@Permission_Id	INT,
 	@Created_By  INT
 AS
 BEGIN
@@ -9,9 +9,9 @@ BEGIN
 	(
 		SELECT
 				1
-		FROM	[Role_Claim] (NOLOCK)
+		FROM	[Role_Permission] (NOLOCK)
 		WHERE	[Role_Id] = @Role_Id
-		AND		[Claim_Id] = @Claim_Id
+		AND		[Permission_Id] = @Permission_Id
 	)
 	BEGIN
 
@@ -22,13 +22,13 @@ BEGIN
 		SELECT
 			 @Is_Deleted = [Is_Deleted],
 			 @Id = [Id]
-		FROM   [Role_Claim] (NOLOCK)
+		FROM   [Role_Permission] (NOLOCK)
 		WHERE  [Role_Id] = @Role_Id
-			 AND [Claim_Id] = @Claim_Id
+			 AND [Permission_Id] = @Permission_Id
 
 		IF @Is_Deleted = 1
 		BEGIN
-			UPDATE [Role_Claim]
+			UPDATE [Role_Permission]
 			SET 
 				[Is_Deleted] = 0,
 				Updated_By = Created_By,
@@ -39,10 +39,10 @@ BEGIN
 	END 
 	ELSE
 	BEGIN
-		INSERT INTO [Role_Claim]
+		INSERT INTO [Role_Permission]
 		(
 				[Role_Id],
-				[Claim_Id],
+				[Permission_Id],
 				[Created_By],
 				[Created_Date],
 				[Updated_By],
@@ -52,7 +52,7 @@ BEGIN
 		VALUES
 		(
 				@Role_Id,
-				@Claim_Id,
+				@Permission_Id,
 				@Created_By,
 				GETDATE(),
 				@Created_By,

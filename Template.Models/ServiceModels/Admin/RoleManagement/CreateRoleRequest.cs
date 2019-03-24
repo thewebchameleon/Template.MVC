@@ -9,12 +9,12 @@ namespace Template.Models.ServiceModels.Admin
 
         public string Description { get; set; }
 
-        [Display(Name = "Claims")]
-        public List<int> ClaimIds { get; set; }
+        [Display(Name = "Permissions")]
+        public List<int> PermissionIds { get; set; }
 
         public CreateRoleRequest()
         {
-            ClaimIds = new List<int>();
+            PermissionIds = new List<int>();
         }
     }
 }

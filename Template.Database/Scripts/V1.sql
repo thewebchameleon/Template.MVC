@@ -8,7 +8,7 @@
 DECLARE @AdminUsername VARCHAR(50) = 'admin',
 		@AdminEmailAddress VARCHAR(50) = 'admin@example.com',
 		@AdminFirstName VARCHAR(50) = 'Admin',
-		@AdminPasswordHash VARCHAR(50) = '$2a$11$gtuEiRe1d3pRs37gieG3bu1sLzlD1LRwKKQd0W8ks8nvKDacIv05O', -- 123456
+		@AdminPasswordHash VARCHAR(50) = '$2a$11$mgFGp1fndqWS/xAYrowNE.1ndWKcgRCcow0ynX.j/RrsckOSxr7Ty', -- 123456
 		@AdminUserId INT; -- used for assigning roles at the bottom
 
 --add system user
@@ -41,7 +41,7 @@ VALUES ('USER_REGISTERED', 'User has registered', 1, GETDATE(), 1, GETDATE())
 
 INSERT INTO [Session_Event]
 ([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
-VALUES ('CLAIM_CREATED', 'Claim has been created', 1, GETDATE(), 1, GETDATE())
+VALUES ('PERMISSION_CREATED', 'Permission has been created', 1, GETDATE(), 1, GETDATE())
 
 INSERT INTO [Session_Event]
 ([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
@@ -49,7 +49,7 @@ VALUES ('SESSION_EVENT_CREATED', 'Session event has been created', 1, GETDATE(),
 
 INSERT INTO [Session_Event]
 ([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
-VALUES ('CLAIM_UPDATED', 'Claim has been updated', 1, GETDATE(), 1, GETDATE())
+VALUES ('PERMISSION_UPDATED', 'Permission has been updated', 1, GETDATE(), 1, GETDATE())
 
 INSERT INTO [Session_Event]
 ([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
@@ -61,7 +61,7 @@ VALUES ('CONFIGURATION_UPDATED', 'Configuration item has been updated', 1, GETDA
 
 INSERT INTO [Session_Event]
 ([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
-VALUES ('ROLES_CLAIMS_UPDATED', 'Role claims have been updated', 1, GETDATE(), 1, GETDATE())
+VALUES ('ROLES_PERMISSIONS_UPDATED', 'Role permissions have been updated', 1, GETDATE(), 1, GETDATE())
 
 INSERT INTO [Session_Event]
 ([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
@@ -114,32 +114,32 @@ INSERT INTO [Configuration]
 VALUES ('HOME_PROMO_BANNER_IS_ENABLED', 'Feature switch for a promotional banner on the home page', 1, NULL, NULL, NULL, NULL, NULL, 1, GETDATE(), 1, GETDATE())
 
 
---add claims
-INSERT INTO [Claim]
+--add permissions
+INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('SESSIONS_VIEW', 'Sessions', 'View sessions', 'View user''s sessions', 1, GETDATE(), 1, GETDATE())
 
-INSERT INTO [Claim]
+INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('USERS_MANAGE', 'Admin', 'Manage users', 'Create, edit and view users', 1, GETDATE(), 1, GETDATE())
 
-INSERT INTO [Claim]
+INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('ROLES_MANAGE', 'Admin', 'Manage roles', 'Create, edit and moderate roles', 1, GETDATE(), 1, GETDATE())
 
-INSERT INTO [Claim]
+INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
-VALUES ('CLAIMS_MANAGE', 'Admin', 'Manage claims', 'Create and edit claims', 1, GETDATE(), 1, GETDATE())
+VALUES ('PERMISSION_MANAGE', 'Admin', 'Manage permissions', 'Create and edit permissions', 1, GETDATE(), 1, GETDATE())
 
-INSERT INTO [Claim]
+INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('SESSION_EVENTS_MANAGE', 'Admin', 'Manage session events', 'Create and edit session events', 1, GETDATE(), 1, GETDATE())
 
-INSERT INTO [Claim]
+INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('CONFIGURATION_MANAGE', 'Admin', 'Manage configuration', 'Create and edit configuration items', 1, GETDATE(), 1, GETDATE())
 
-INSERT INTO [Claim]
+INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('ADMIN_VIEW', 'Admin', 'Readonly admin view', 'View the admin section of the website', 1, GETDATE(), 1, GETDATE())
 
@@ -148,11 +148,11 @@ INSERT INTO [Role]
 ([Name], [Description], [Is_Enabled], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('Admin', 'Administrator account', 1, 1, GETDATE(), 1, GETDATE())
 
---add role claims
-INSERT INTO [Role_Claim]
-([Role_Id], [Claim_Id], Created_By, [Created_Date], [Updated_By], [Updated_Date])
-SELECT 1, [Id] AS [Claim_Id], 1, GETDATE(), 1, GETDATE()
-FROM [Claim]
+--add role permissions
+INSERT INTO [Role_Permission]
+([Role_Id], [Permission_Id], Created_By, [Created_Date], [Updated_By], [Updated_Date])
+SELECT 1, [Id] AS [Permission_Id], 1, GETDATE(), 1, GETDATE()
+FROM [Permission]
 
 --add add user role
 INSERT INTO [User_Role]

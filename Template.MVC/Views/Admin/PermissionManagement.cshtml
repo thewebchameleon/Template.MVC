@@ -1,7 +1,7 @@
-﻿@model ClaimManagementViewModel
+﻿@model PermissionManagementViewModel
 
 @{
-    ViewData["Title"] = "Claim Management";
+    ViewData["Title"] = "Permission Management";
 }
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
@@ -11,15 +11,15 @@
 <hr />
 
 
-<div class="panel-controls" asp-authorize asp-permission="@PermissionKeys.ManageClaims">
-    <a href="@Url.Action("CreateClaim", "Admin" )" class="btn btn-primary">Create Item</a>
+<div class="panel-controls" asp-authorize asp-permission="@PermissionKeys.ManagePermissions">
+    <a href="@Url.Action("CreatePermission", "Admin" )" class="btn btn-primary">Create Item</a>
     <div class="panel-right-controls" style="display: none;">
-        <input id="hdnSelectedClaimId" type="hidden" />
-        <button id="btnEditClaim" type="button" class="btn btn-primary">Edit</button>
+        <input id="hdnSelectedPermissionId" type="hidden" />
+        <button id="btnEditPermission" type="button" class="btn btn-primary">Edit</button>
     </div>
 </div>
 
-<table id="claimmanagementTable" class="table table-bordered" style="width: 100%;">
+<table id="permissionmanagementTable" class="table table-bordered" style="width: 100%;">
     <thead>
         <tr>
             <th>Group Name</th>
@@ -28,15 +28,15 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var claim in Model.Claims)
+        @foreach (var permission in Model.Permissions)
         {
             <tr>
-                <td class="claim-identifier">
-                    <input class="u-claimId" type="hidden" value="@claim.Id" />
-                    @claim.Group_Name
+                <td class="permission-identifier">
+                    <input class="u-permissionId" type="hidden" value="@permission.Id" />
+                    @permission.Group_Name
                 </td>
-                <td>@claim.Name</td>
-                <td>@claim.Description</td>
+                <td>@permission.Name</td>
+                <td>@permission.Description</td>
             </tr>
         }
     </tbody>
@@ -52,7 +52,7 @@
 
         $(document).ready(function () {
 
-            var table = $('#claimmanagementTable').DataTable({
+            var table = $('#permissionmanagementTable').DataTable({
                 responsive: {
                     details: false
                 },
@@ -62,34 +62,34 @@
             });
 
             // select row feature
-            $('#claimmanagementTable tbody').on('click', 'tr', function (e) {
+            $('#permissionmanagementTable tbody').on('click', 'tr', function (e) {
                 if ($(this).hasClass('selected'))
                 {
                     $(this).removeClass('selected');
                     $('.panel-right-controls').hide();
-                    $("#hdnSelectedClaimId").val('');
+                    $("#hdnSelectedPermissionId").val('');
                 }
                 else
                 {
-                    var claimId = $(this).children('.claim-identifier').children('input.u-claimId').val();
+                    var permissionId = $(this).children('.permission-identifier').children('input.u-permissionId').val();
 
                     table.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
                     $('.panel-right-controls').show();
-                    $("#hdnSelectedClaimId").val(claimId);
+                    $("#hdnSelectedPermissionId").val(permissionId);
                 }
             });
 
         });
 
-        // edit claim
-        $('#btnEditClaim').click(function () {
-            var claimId = GetSelectedClaimId();
-            window.location.href = '@(Url.Action(nameof(AdminController.EditClaim), "Admin"))/' + claimId;
+        // edit permission
+        $('#btnEditPermission').click(function () {
+            var permissionId = GetSelectedPermissionId();
+            window.location.href = '@(Url.Action(nameof(AdminController.EditPermission), "Admin"))/' + permissionId;
         });
 
-        function GetSelectedClaimId() {
-            return $("#hdnSelectedClaimId").val();
+        function GetSelectedPermissionId() {
+            return $("#hdnSelectedPermissionId").val();
         }
 
     </script>

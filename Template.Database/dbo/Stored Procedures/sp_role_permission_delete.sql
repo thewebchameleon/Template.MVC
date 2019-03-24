@@ -1,12 +1,12 @@
-﻿CREATE PROCEDURE [dbo].[sp_role_claim_delete]
+﻿CREATE PROCEDURE [dbo].[sp_role_permission_delete]
 	@Role_Id     INT,
-	@Claim_Id	VARCHAR(256),
+	@Permission_Id	VARCHAR(256),
 	@Updated_By  INT
 AS
 BEGIN
    DECLARE
 		@Id INT;
-   UPDATE [Role_Claim]
+   UPDATE [Role_Permission]
    SET
 		@Id = [Id],
 		Is_Deleted = 1,
@@ -14,7 +14,7 @@ BEGIN
 		[Updated_Date] = GETDATE()
    WHERE
 		[Role_Id] = @Role_Id
-		AND [Claim_Id] = @Claim_Id
+		AND [Permission_Id] = @Permission_Id
    SELECT
 		@Id AS [Id]
 END

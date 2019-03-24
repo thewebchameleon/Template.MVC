@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_claims_get]
+﻿CREATE PROCEDURE [dbo].[sp_permissions_get]
 AS
 BEGIN
    SELECT
@@ -12,6 +12,6 @@ BEGIN
 		[C].[Updated_By],
 		[C].[Updated_Date],
 		[C].Is_Deleted
-   FROM   [Claim] [C](NOLOCK)
+   FROM   [Permission] [C](NOLOCK)
    WHERE [C].Is_Deleted = 0
 END

@@ -13,7 +13,7 @@ using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models.DomainModels;
 using Template.Models.ServiceModels;
 using Template.Models.ServiceModels.Admin;
-using Template.Models.ServiceModels.Admin.ClaimManagement;
+using Template.Models.ServiceModels.Admin.PermissionManagement;
 using Template.Models.ServiceModels.Admin.SessionManagement;
 using Template.Services.Contracts;
 
@@ -138,7 +138,7 @@ namespace Template.Services
 
             var userRoles = await _cache.UserRoles();
             var roles = await _cache.Roles();
-            var claims = await _cache.Claims();
+            var permissions = await _cache.Permissions();
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
@@ -388,8 +388,8 @@ namespace Template.Services
             var response = new GetRoleResponse();
 
             var roles = await _cache.Roles();
-            var claims = await _cache.Claims();
-            var roleClaims = await _cache.RoleClaims();
+            var permissions = await _cache.Permissions();
+            var rolePermissions = await _cache.RolePermissions();
 
             var role = roles.FirstOrDefault(r => r.Id == request.RoleId);
             if (role == null)
@@ -398,10 +398,10 @@ namespace Template.Services
                 return response;
             }
 
-            var rolesClaims = roleClaims.Where(rc => rc.Role_Id == request.RoleId).Select(rc => rc.Claim_Id);
+            var rolesPermissions = rolePermissions.Where(rc => rc.Role_Id == request.RoleId).Select(rc => rc.Permission_Id);
 
             response.Role = role;
-            response.Claims = claims.Where(c => rolesClaims.Contains(c.Id)).ToList();
+            response.Permissions = permissions.Where(c => rolesPermissions.Contains(c.Id)).ToList();
 
             response.Role = role;
             return response;
@@ -440,7 +440,7 @@ namespace Template.Services
             var roles = await _cache.Roles();
             var role = roles.FirstOrDefault(r => r.Id == id);
 
-            await CreateOrDeleteRoleClaims(request.ClaimIds, id, session.User.Id);
+            await CreateOrDeleteRolePermissions(request.PermissionIds, id, session.User.Id);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
@@ -471,10 +471,10 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            await CreateOrDeleteRoleClaims(request.ClaimIds, request.Id, session.User.Id);
+            await CreateOrDeleteRolePermissions(request.PermissionIds, request.Id, session.User.Id);
 
             _cache.Remove(CacheConstants.Roles);
-            _cache.Remove(CacheConstants.RoleClaims);
+            _cache.Remove(CacheConstants.RolePermissions);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
@@ -485,46 +485,46 @@ namespace Template.Services
             return response;
         }
 
-        private async Task CreateOrDeleteRoleClaims(List<int> newClaims, int roleId, int loggedInUserId)
+        private async Task CreateOrDeleteRolePermissions(List<int> newPermissions, int roleId, int loggedInUserId)
         {
-            var roleClaims = await _cache.RoleClaims();
-            var existingClaims = roleClaims.Where(rc => rc.Role_Id == roleId).Select(rc => rc.Claim_Id);
+            var rolePermissions = await _cache.RolePermissions();
+            var existingPermissions = rolePermissions.Where(rc => rc.Role_Id == roleId).Select(rc => rc.Permission_Id);
 
-            var claimsToBeDeleted = existingClaims.Where(ur => !newClaims.Contains(ur));
-            var claimsToBeCreated = newClaims.Where(ur => !existingClaims.Contains(ur));
+            var permissionsToBeDeleted = existingPermissions.Where(ur => !newPermissions.Contains(ur));
+            var permissionsToBeCreated = newPermissions.Where(ur => !existingPermissions.Contains(ur));
 
-            if (claimsToBeDeleted.Any() || claimsToBeCreated.Any())
+            if (permissionsToBeDeleted.Any() || permissionsToBeCreated.Any())
             {
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
-                    foreach (var claimId in claimsToBeCreated)
+                    foreach (var permissionId in permissionsToBeCreated)
                     {
-                        await uow.UserRepo.CreateRoleClaim(new Infrastructure.Repositories.UserRepo.Models.CreateRoleClaimRequest()
+                        await uow.UserRepo.CreateRolePermission(new Infrastructure.Repositories.UserRepo.Models.CreateRolePermissionRequest()
                         {
                             Role_Id = roleId,
-                            Claim_Id = claimId,
+                            Permission_Id = permissionId,
                             Created_By = loggedInUserId
                         });
 
                     }
 
-                    foreach (var claimId in claimsToBeDeleted)
+                    foreach (var permissionId in permissionsToBeDeleted)
                     {
-                        await uow.UserRepo.DeleteRoleClaim(new Infrastructure.Repositories.UserRepo.Models.DeleteRoleClaimRequest()
+                        await uow.UserRepo.DeleteRolePermission(new Infrastructure.Repositories.UserRepo.Models.DisableRolePermissionRequest()
                         {
                             Role_Id = roleId,
-                            Claim_Id = claimId,
+                            Permission_Id = permissionId,
                             Updated_By = loggedInUserId
                         });
 
                     }
                     uow.Commit();
                 }
-                _cache.Remove(CacheConstants.RoleClaims);
+                _cache.Remove(CacheConstants.RolePermissions);
 
                 await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
                 {
-                    EventKey = SessionEventKeys.RoleClaimsUpdated
+                    EventKey = SessionEventKeys.RolePermissionsUpdated
                 });
             }
         }
@@ -931,37 +931,37 @@ namespace Template.Services
 
         #endregion
 
-        #region Claim Management 
+        #region Permission Management 
 
-        public async Task<GetClaimManagementResponse> GetClaimManagement()
+        public async Task<GetPermissionManagementResponse> GetPermissionManagement()
         {
-            var response = new GetClaimManagementResponse();
+            var response = new GetPermissionManagementResponse();
 
-            response.Claims = await _cache.Claims();
+            response.Permissions = await _cache.Permissions();
 
             return response;
         }
 
-        public async Task<GetClaimResponse> GetClaim(GetClaimRequest request)
+        public async Task<GetPermissionResponse> GetPermission(GetPermissionRequest request)
         {
-            var response = new GetClaimResponse();
+            var response = new GetPermissionResponse();
 
-            var claims = await _cache.Claims();
-            var claim = claims.FirstOrDefault(c => c.Id == request.Id);
+            var permissions = await _cache.Permissions();
+            var permission = permissions.FirstOrDefault(c => c.Id == request.Id);
 
-            response.Claim = claim;
+            response.Permission = permission;
 
             return response;
         }
 
-        public async Task<UpdateClaimResponse> UpdateClaim(UpdateClaimRequest request)
+        public async Task<UpdatePermissionResponse> UpdatePermission(UpdatePermissionRequest request)
         {
             var session = await _sessionService.GetAuthenticatedSession();
-            var response = new UpdateClaimResponse();
+            var response = new UpdatePermissionResponse();
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                await uow.UserRepo.UpdateClaim(new Infrastructure.Repositories.UserRepo.Models.UpdateClaimRequest()
+                await uow.UserRepo.UpdatePermission(new Infrastructure.Repositories.UserRepo.Models.UpdatePermissionRequest()
                 {
                     Id = request.Id,
                     Name = request.Name,
@@ -972,38 +972,38 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _cache.Remove(CacheConstants.Claims);
+            _cache.Remove(CacheConstants.Permissions);
 
-            var claims = await _cache.Claims();
-            var claim = claims.FirstOrDefault(c => c.Id == request.Id);
+            var permissions = await _cache.Permissions();
+            var permission = permissions.FirstOrDefault(c => c.Id == request.Id);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
-                EventKey = SessionEventKeys.ClaimUpdated
+                EventKey = SessionEventKeys.PermissionUpdated
             });
 
-            response.Notifications.Add($"Claim '{claim.Key}' has been updated", NotificationTypeEnum.Success);
+            response.Notifications.Add($"Permission '{permission.Key}' has been updated", NotificationTypeEnum.Success);
             return response;
         }
 
-        public async Task<CreateClaimResponse> CreateClaim(CreateClaimRequest request)
+        public async Task<CreatePermissionResponse> CreatePermission(CreatePermissionRequest request)
         {
             var session = await _sessionService.GetAuthenticatedSession();
-            var response = new CreateClaimResponse();
+            var response = new CreatePermissionResponse();
 
-            var claims = await _cache.Claims();
-            var claim = claims.FirstOrDefault(c => c.Key == request.Key);
+            var permissions = await _cache.Permissions();
+            var permission = permissions.FirstOrDefault(c => c.Key == request.Key);
 
-            if (claim != null)
+            if (permission != null)
             {
-                response.Notifications.AddError($"A claim already exists with the key {request.Key}");
+                response.Notifications.AddError($"A permission already exists with the key {request.Key}");
                 return response;
             }
 
             int id;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
-                id = await uow.UserRepo.CreateClaim(new Infrastructure.Repositories.UserRepo.Models.CreateClaimRequest()
+                id = await uow.UserRepo.CreatePermission(new Infrastructure.Repositories.UserRepo.Models.CreatePermissionRequest()
                 {
                     Key = request.Key,
                     Description = request.Description,
@@ -1014,14 +1014,14 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            _cache.Remove(CacheConstants.Claims);
+            _cache.Remove(CacheConstants.Permissions);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
-                EventKey = SessionEventKeys.ClaimCreated
+                EventKey = SessionEventKeys.PermissionCreated
             });
 
-            response.Notifications.Add($"Claim '{request.Key}' has been created", NotificationTypeEnum.Success);
+            response.Notifications.Add($"Permission '{request.Key}' has been created", NotificationTypeEnum.Success);
             return response;
         }
 

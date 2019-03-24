@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using Template.Models.DomainModels;
 
-namespace Template.Models.ServiceModels.Admin
+namespace Template.Models.ServiceModels.Admin.PermissionManagement
 {
-    public class GetRoleResponse : ServiceResponse
+    public class GetPermissionManagementResponse : ServiceResponse
     {
-        public RoleEntity Role { get; set; }
-
         public List<PermissionEntity> Permissions { get; set; }
 
-        public GetRoleResponse()
+        public GetPermissionManagementResponse()
         {
             Permissions = new List<PermissionEntity>();
         }

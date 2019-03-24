@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Template.Models.ServiceModels.Admin;
-using Template.Models.ServiceModels.Admin.ClaimManagement;
+using Template.Models.ServiceModels.Admin.PermissionManagement;
 
 namespace Template.Services.Contracts
 {
@@ -32,13 +32,13 @@ namespace Template.Services.Contracts
         Task<CreateRoleResponse> CreateRole(CreateRoleRequest request);
 
 
-        Task<GetClaimManagementResponse> GetClaimManagement();
+        Task<GetPermissionManagementResponse> GetPermissionManagement();
 
-        Task<GetClaimResponse> GetClaim(GetClaimRequest request);
+        Task<GetPermissionResponse> GetPermission(GetPermissionRequest request);
 
-        Task<UpdateClaimResponse> UpdateClaim(UpdateClaimRequest request);
+        Task<UpdatePermissionResponse> UpdatePermission(UpdatePermissionRequest request);
 
-        Task<CreateClaimResponse> CreateClaim(CreateClaimRequest request);
+        Task<CreatePermissionResponse> CreatePermission(CreatePermissionRequest request);
 
 
 

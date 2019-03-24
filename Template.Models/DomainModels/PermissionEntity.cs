@@ -1,6 +1,6 @@
 ﻿namespace Template.Models.DomainModels
 {
-    public class ClaimEntity : BaseEntity
+    public class PermissionEntity : BaseEntity
     {
         public string Key { get; set; }
 

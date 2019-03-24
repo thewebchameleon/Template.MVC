@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[sp_claim_create]
+﻿CREATE PROCEDURE [dbo].[sp_permission_create]
 	@Key				VARCHAR(256),
 	@Name				VARCHAR(256),
 	@Group_Name			VARCHAR(256),
@@ -6,7 +6,7 @@
 	@Created_By			INT
 AS
 BEGIN
-   INSERT INTO [Claim]
+   INSERT INTO [Permission]
 	    (
 		[Key],
 		[Name],

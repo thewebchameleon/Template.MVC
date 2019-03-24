@@ -1,13 +1,13 @@
-﻿@model EditClaimViewModel
+﻿@model EditPermissionViewModel
 @{
-    ViewData["Title"] = "Edit Claim";
+    ViewData["Title"] = "Edit Permission";
 }
 
 <h4>@ViewData["Title"]</h4>
 <hr />
 <div class="row">
     <div class="col-12">
-        <form asp-controller="Admin" asp-action="EditClaim" method="post" class="form-horizontal" role="form">
+        <form asp-controller="Admin" asp-action="EditPermission" method="post" class="form-horizontal" role="form">
             <input asp-for="Request.Id" class="form-control" type="hidden" />
             
             <div asp-validation-summary="All" class="text-danger"></div>

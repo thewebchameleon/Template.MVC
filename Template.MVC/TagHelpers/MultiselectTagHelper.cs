@@ -14,7 +14,7 @@ namespace Template.MVC.TagHelpers
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private string ElementId { get { return SelectedValues.Name.Replace(".", "_"); } }
+        private string ElementId { get { return SelectedValues.Name.Replace(".", "_"); } } // tag ids are for some reason generated with underscores instead of dots
 
         private string ElementName { get { return SelectedValues.Name; } }
 

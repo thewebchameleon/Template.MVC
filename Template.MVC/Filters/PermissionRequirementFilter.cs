@@ -17,8 +17,8 @@ namespace Template.MVC.Filters
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == ClaimConstants.UserPermission && c.Value == _key);
-            if (!hasClaim)
+            var hasPermission = context.HttpContext.User.Claims.Any(c => c.Type == PermissionConstants.UserPermission && c.Value == _key);
+            if (!hasPermission)
             {
                 context.Result = new ForbidResult();
             }

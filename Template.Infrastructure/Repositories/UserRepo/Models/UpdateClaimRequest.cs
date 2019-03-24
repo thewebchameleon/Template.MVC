@@ -1,6 +1,6 @@
 ﻿namespace Template.Infrastructure.Repositories.UserRepo.Models
 {
-    public class UpdateClaimRequest
+    public class UpdatePermissionRequest
     {
         public int Id { get; set; }
 

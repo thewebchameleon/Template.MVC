@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Models.ServiceModels.Admin;
-using Template.Models.ServiceModels.Admin.ClaimManagement;
+using Template.Models.ServiceModels.Admin.PermissionManagement;
 using Template.Models.ViewModels;
 using Template.Models.ViewModels.Admin;
 using Template.MVC.Attributes;
@@ -192,10 +192,10 @@ namespace Template.MVC.Controllers
         [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> CreateRole()
         {
-            var claims = await _cache.Claims();
+            var permissions = await _cache.Permissions();
             var viewModel = new CreateRoleViewModel()
             {
-                ClaimsLookup = claims.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
+                PermissionsLookup = permissions.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
             };
 
             return View(viewModel);
@@ -205,10 +205,10 @@ namespace Template.MVC.Controllers
         [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> CreateRole(CreateRoleRequest request)
         {
-            var claims = await _cache.Claims();
+            var permissions = await _cache.Permissions();
             var viewModel = new CreateRoleViewModel(request)
             {
-                ClaimsLookup = claims.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
+                PermissionsLookup = permissions.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
             };
 
             if (ModelState.IsValid)
@@ -228,10 +228,10 @@ namespace Template.MVC.Controllers
         [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> EditRole(int id)
         {
-            var claims = await _cache.Claims();
+            var permissions = await _cache.Permissions();
             var viewModel = new EditRoleViewModel()
             {
-                ClaimsLookup = claims.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
+                PermissionsLookup = permissions.Select(c => new SelectListItem(c.Name, c.Id, c.Group_Name)).ToList()
             };
 
             var response = await _adminService.GetRole(new GetRoleRequest()
@@ -250,7 +250,7 @@ namespace Template.MVC.Controllers
                 Id = id,
                 Name = response.Role.Name,
                 Description = response.Role.Description,
-                ClaimIds = response.Claims.Select(c => c.Id).ToList()
+                PermissionIds = response.Permissions.Select(c => c.Id).ToList()
             };
 
             return View(viewModel);
@@ -299,52 +299,52 @@ namespace Template.MVC.Controllers
 
         #endregion
 
-        #region Claim Management
+        #region Permission Management
 
         [HttpGet]
-        public async Task<IActionResult> ClaimManagement()
+        public async Task<IActionResult> PermissionManagement()
         {
-            var viewModel = new ClaimManagementViewModel();
+            var viewModel = new PermissionManagementViewModel();
 
-            var response = await _adminService.GetClaimManagement();
-            viewModel.Claims = response.Claims;
+            var response = await _adminService.GetPermissionManagement();
+            viewModel.Permissions = response.Permissions;
 
             return View(viewModel);
         }
 
         [HttpGet]
-        [AuthorizePermission(PermissionKeys.ManageClaims)]
-        public IActionResult CreateClaim()
+        [AuthorizePermission(PermissionKeys.ManagePermissions)]
+        public IActionResult CreatePermission()
         {
-            var viewModel = new CreateClaimViewModel();
+            var viewModel = new CreatePermissionViewModel();
             return View(viewModel);
         }
 
         [HttpPost]
-        [AuthorizePermission(PermissionKeys.ManageClaims)]
-        public async Task<IActionResult> CreateClaim(CreateClaimRequest request)
+        [AuthorizePermission(PermissionKeys.ManagePermissions)]
+        public async Task<IActionResult> CreatePermission(CreatePermissionRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.CreateClaim(request);
+                var response = await _adminService.CreatePermission(request);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
-                    return RedirectToAction(nameof(AdminController.ClaimManagement));
+                    return RedirectToAction(nameof(AdminController.PermissionManagement));
                 }
                 AddFormErrors(response);
             }
-            var viewModel = new CreateClaimViewModel(request);
+            var viewModel = new CreatePermissionViewModel(request);
             return View(viewModel);
         }
 
         [HttpGet]
-        [AuthorizePermission(PermissionKeys.ManageClaims)]
-        public async Task<IActionResult> EditClaim(int id)
+        [AuthorizePermission(PermissionKeys.ManagePermissions)]
+        public async Task<IActionResult> EditPermission(int id)
         {
-            var viewModel = new EditClaimViewModel();
+            var viewModel = new EditPermissionViewModel();
 
-            var response = await _adminService.GetClaim(new GetClaimRequest()
+            var response = await _adminService.GetPermission(new GetPermissionRequest()
             {
                 Id = id
             });
@@ -355,33 +355,33 @@ namespace Template.MVC.Controllers
                 return View(viewModel);
             }
 
-            viewModel.Key = response.Claim.Key;
-            viewModel.Request = new UpdateClaimRequest()
+            viewModel.Key = response.Permission.Key;
+            viewModel.Request = new UpdatePermissionRequest()
             {
-                Id = response.Claim.Id,
-                Name = response.Claim.Name,
-                Description = response.Claim.Description,
-                GroupName = response.Claim.Group_Name,
+                Id = response.Permission.Id,
+                Name = response.Permission.Name,
+                Description = response.Permission.Description,
+                GroupName = response.Permission.Group_Name,
             };
 
             return View(viewModel);
         }
 
         [HttpPost]
-        [AuthorizePermission(PermissionKeys.ManageClaims)]
-        public async Task<IActionResult> EditClaim(UpdateClaimRequest request)
+        [AuthorizePermission(PermissionKeys.ManagePermissions)]
+        public async Task<IActionResult> EditPermission(UpdatePermissionRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await _adminService.UpdateClaim(request);
+                var response = await _adminService.UpdatePermission(request);
                 if (response.IsSuccessful)
                 {
                     AddNotifications(response);
-                    return RedirectToAction(nameof(AdminController.ClaimManagement));
+                    return RedirectToAction(nameof(AdminController.PermissionManagement));
                 }
                 AddFormErrors(response);
             }
-            var viewModel = new EditClaimViewModel(request);
+            var viewModel = new EditPermissionViewModel(request);
             return View(viewModel);
         }
 

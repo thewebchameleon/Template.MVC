@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace Template.Models.ServiceModels.Admin.ClaimManagement
+namespace Template.Models.ServiceModels.Admin.PermissionManagement
 {
-    public class CreateClaimRequest : IValidatableObject
+    public class CreatePermissionRequest : IValidatableObject
     {
         [Required]
         public string Key { get; set; }
@@ -22,7 +22,7 @@ namespace Template.Models.ServiceModels.Admin.ClaimManagement
         {
             if (!Regex.IsMatch(Key, @"^[A-Z0-9_]+$"))
             {
-                yield return new ValidationResult("Claim key is invalid, please ensure it is uppercase, contains only letters and numbers and uses underscores instead of spaces");
+                yield return new ValidationResult("Permission key is invalid, please ensure it is uppercase, contains only letters and numbers and uses underscores instead of spaces");
             }
         }
     }

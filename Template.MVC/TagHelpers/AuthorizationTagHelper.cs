@@ -25,7 +25,7 @@ namespace Template.MVC.TagHelpers
         {
             var isAuthenticated = _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
             var hasPermission = _httpContextAccessor.HttpContext.User.HasClaim(c =>
-                                    c.Type == ClaimConstants.UserPermission
+                                    c.Type == PermissionConstants.UserPermission
                                     && c.Value == Permission
                                 );
 
