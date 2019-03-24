@@ -10,7 +10,7 @@
 <h4>@ViewData["Title"]</h4>
 <hr />
 
-<div class="panel-controls">
+<div class="panel-controls" asp-authorize asp-permission="@PermissionKeys.ManageRoles">
     <a href="@Url.Action("CreateRole", "Admin" )" class="btn btn-primary">Create Role</a>
     <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedRoleId" type="hidden" />

@@ -11,7 +11,7 @@
 <hr />
 
 
-<div class="panel-controls">
+<div class="panel-controls" asp-authorize asp-permission="@PermissionKeys.ManageUsers">
     <a href="@Url.Action("CreateUser", "Admin" )" class="btn btn-primary">Create User</a>
     <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedUserId" type="hidden" />

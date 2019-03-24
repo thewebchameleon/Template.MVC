@@ -180,8 +180,6 @@ namespace Template.Services
                 return response;
             }
 
-            var password = "";
-
             int id;
             using (var uow = _uowFactory.GetUnitOfWork())
             {
@@ -192,7 +190,7 @@ namespace Template.Services
                     Last_Name = request.LastName,
                     Mobile_Number = request.MobileNumber,
                     Email_Address = request.EmailAddress,
-                    Password_Hash = password,
+                    Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                     Created_By = session.User.Id,
                     Is_Enabled = true
                 });

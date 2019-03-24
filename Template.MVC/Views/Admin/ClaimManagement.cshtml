@@ -11,7 +11,7 @@
 <hr />
 
 
-<div class="panel-controls">
+<div class="panel-controls" asp-authorize asp-permission="@PermissionKeys.ManageClaims">
     <a href="@Url.Action("CreateClaim", "Admin" )" class="btn btn-primary">Create Item</a>
     <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedClaimId" type="hidden" />

@@ -11,7 +11,7 @@
 <hr />
 
 
-<div class="panel-controls">
+<div class="panel-controls" asp-authorize asp-permission="@PermissionKeys.ManageSessionEvents">
     <a href="@Url.Action("CreateSessionEvent", "Admin" )" class="btn btn-primary">Create Event</a>
     <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedSessionEventId" type="hidden" />
