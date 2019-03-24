@@ -109,4 +109,8 @@ a.btn {
     color: white !important;
 }
 
+.alert {
+    margin-top: 10px;
+}
+
 /* #endregion  */

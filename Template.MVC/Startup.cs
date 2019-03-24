@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
+using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
@@ -57,6 +58,8 @@ namespace Template.MVC
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
+            services.AddDistributedMemoryCache();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -69,10 +72,12 @@ namespace Template.MVC
             });
 
             // authentication and authorization
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => { options = ApplicationConstants.CookieAuthenticationOptions; });
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            {
+                options = ApplicationConstants.CookieAuthenticationOptions;
+            });
             services.AddAuthorization(options => { });
 
-            services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(ApplicationConstants.SessionTimeoutSeconds);

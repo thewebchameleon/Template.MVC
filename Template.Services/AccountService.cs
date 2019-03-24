@@ -126,7 +126,7 @@ namespace Template.Services
                     Username = request.Username
                 });
 
-                if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password_Hash))
+                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password_Hash))
                 {
                     response.Notifications.AddError("Username or password is incorrect");
                     return response;
