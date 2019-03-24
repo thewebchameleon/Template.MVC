@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using System;
 
 namespace Template.Infrastructure.Configuration
@@ -20,18 +19,6 @@ namespace Template.Infrastructure.Configuration
                 options.LoginPath = "/Account/Login";
                 options.ExpireTimeSpan = TimeSpan.FromSeconds(ApplicationConstants.SessionTimeoutSeconds);
                 options.SlidingExpiration = true;
-
-                return options;
-            }
-        }
-
-        public static AuthorizationOptions AuthorizationOptions
-        {
-            get
-            {
-                var options = new AuthorizationOptions();
-
-                //options.AddPolicy(Policies.ViewAllUsersPolicy, policy => policy.RequireClaim(ClaimConstants.Permission, ApplicationPermissions.ViewUsers));
 
                 return options;
             }

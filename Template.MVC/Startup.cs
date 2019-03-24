@@ -70,19 +70,18 @@ namespace Template.MVC
 
             // authentication and authorization
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => { options = ApplicationConstants.CookieAuthenticationOptions; });
-            services.AddAuthorization(options => { options = ApplicationConstants.AuthorizationOptions; });
+            services.AddAuthorization(options => { });
 
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
-                options = new SessionOptions();
-
                 options.IdleTimeout = TimeSpan.FromSeconds(ApplicationConstants.SessionTimeoutSeconds);
                 options.Cookie.HttpOnly = true;
             });
 
             services.AddMvc(options =>
             {
+                options.Filters.Add(typeof(SessionRequirementFilter));
                 options.Filters.Add(typeof(SessionLoggingFilter));
             })
 #if DEBUG

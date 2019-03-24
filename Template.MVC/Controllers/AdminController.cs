@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Models.ServiceModels.Admin;
 using Template.Models.ServiceModels.Admin.ClaimManagement;
 using Template.Models.ViewModels.Admin;
+using Template.MVC.Attributes;
 using Template.Services.Contracts;
 
 namespace Template.MVC.Controllers
 {
-    [Authorize]
+    [AuthorizePermission(PermissionKeys.ViewAdmin)]
     public class AdminController : BaseController
     {
         #region Instance Fields
@@ -27,11 +27,11 @@ namespace Template.MVC.Controllers
 
         public AdminController(
             IAdminService adminService,
-            IApplicationCache entityCache,
+            IApplicationCache cache,
             ILoggerFactory loggerFactory)
         {
             _adminService = adminService;
-            _cache = entityCache;
+            _cache = cache;
             _logger = loggerFactory.CreateLogger<AdminController>();
         }
 
@@ -53,6 +53,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageUsers)]
         public async Task<IActionResult> CreateUser()
         {
             var viewModel = new CreateUserViewModel()
@@ -65,6 +66,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageUsers)]
         public async Task<IActionResult> CreateUser(CreateUserRequest request)
         {
             if (ModelState.IsValid)
@@ -86,6 +88,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageUsers)]
         public async Task<IActionResult> EditUser(int id)
         {
             var viewModel = new EditUserViewModel()
@@ -107,7 +110,7 @@ namespace Template.MVC.Controllers
 
             viewModel.Request = new UpdateUserRequest()
             {
-                UserId = id,
+                Id = id,
                 Username = response.User.Username,
                 EmailAddress = response.User.Email_Address,
                 FirstName = response.User.First_Name,
@@ -123,12 +126,11 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditUser(int id, UpdateUserRequest request)
+        [AuthorizePermission(PermissionKeys.ManageUsers)]
+        public async Task<IActionResult> EditUser(UpdateUserRequest request)
         {
             if (ModelState.IsValid)
             {
-                request.UserId = id;
-
                 var response = await _adminService.UpdateUser(request);
                 if (response.IsSuccessful)
                 {
@@ -146,6 +148,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageUsers)]
         public async Task<IActionResult> DisableUser(DisableUserRequest request)
         {
             if (ModelState.IsValid)
@@ -157,6 +160,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageUsers)]
         public async Task<IActionResult> EnableUser(EnableUserRequest request)
         {
             if (ModelState.IsValid)
@@ -183,6 +187,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> CreateRole()
         {
             var viewModel = new CreateRoleViewModel()
@@ -194,6 +199,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> CreateRole(CreateRoleRequest request)
         {
             var viewModel = new CreateRoleViewModel(request)
@@ -215,6 +221,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> EditRole(int id)
         {
             var viewModel = new EditRoleViewModel()
@@ -245,12 +252,11 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditRole(int id, UpdateRoleRequest request)
+        [AuthorizePermission(PermissionKeys.ManageRoles)]
+        public async Task<IActionResult> EditRole(UpdateRoleRequest request)
         {
             if (ModelState.IsValid)
             {
-                request.Id = id;
-
                 var response = await _adminService.UpdateRole(request);
                 if (response.IsSuccessful)
                 {
@@ -263,6 +269,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> DisableRole(DisableRoleRequest request)
         {
             if (ModelState.IsValid)
@@ -274,6 +281,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageRoles)]
         public async Task<IActionResult> EnableRole(EnableRoleRequest request)
         {
             if (ModelState.IsValid)
@@ -300,6 +308,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageClaims)]
         public IActionResult CreateClaim()
         {
             var viewModel = new CreateClaimViewModel();
@@ -307,6 +316,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageClaims)]
         public async Task<IActionResult> CreateClaim(CreateClaimRequest request)
         {
             if (ModelState.IsValid)
@@ -324,6 +334,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageClaims)]
         public async Task<IActionResult> EditClaim(int id)
         {
             var viewModel = new EditClaimViewModel();
@@ -342,6 +353,7 @@ namespace Template.MVC.Controllers
             viewModel.Key = response.Claim.Key;
             viewModel.Request = new UpdateClaimRequest()
             {
+                Id = response.Claim.Id,
                 Name = response.Claim.Name,
                 Description = response.Claim.Description,
                 GroupName = response.Claim.Group_Name,
@@ -351,9 +363,9 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditClaim(int id, UpdateClaimRequest request)
+        [AuthorizePermission(PermissionKeys.ManageClaims)]
+        public async Task<IActionResult> EditClaim(UpdateClaimRequest request)
         {
-            request.Id = id;
             if (ModelState.IsValid)
             {
                 var response = await _adminService.UpdateClaim(request);
@@ -385,6 +397,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageConfiguration)]
         public IActionResult CreateConfigurationItem()
         {
             var viewModel = new CreateConfigurationItemViewModel();
@@ -392,6 +405,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageConfiguration)]
         public async Task<IActionResult> CreateConfigurationItem(CreateConfigurationItemRequest request)
         {
             if (ModelState.IsValid)
@@ -409,6 +423,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageConfiguration)]
         public async Task<IActionResult> EditConfigurationItem(int id)
         {
             var viewModel = new EditConfigurationItemViewModel();
@@ -427,6 +442,7 @@ namespace Template.MVC.Controllers
             viewModel.Key = response.ConfigurationItem.Key;
             viewModel.Request = new UpdateConfigurationItemRequest()
             {
+                Id = response.ConfigurationItem.Id,
                 Description = response.ConfigurationItem.Description,
                 BooleanValue = response.ConfigurationItem.Boolean_Value,
                 DateTimeValue = response.ConfigurationItem.DateTime_Value,
@@ -440,9 +456,9 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditConfigurationItem(int id, UpdateConfigurationItemRequest request)
+        [AuthorizePermission(PermissionKeys.ManageConfiguration)]
+        public async Task<IActionResult> EditConfigurationItem(UpdateConfigurationItemRequest request)
         {
-            request.Id = id;
             if (ModelState.IsValid)
             {
                 var response = await _adminService.UpdateConfigurationItem(request);
@@ -473,6 +489,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageSessionEvents)]
         public IActionResult CreateSessionEvent()
         {
             var viewModel = new CreateSessionEventViewModel();
@@ -480,6 +497,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageSessionEvents)]
         public async Task<IActionResult> CreateSessionEvent(CreateSessionEventRequest request)
         {
             if (ModelState.IsValid)
@@ -497,6 +515,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ManageSessionEvents)]
         public async Task<IActionResult> EditSessionEvent(int id)
         {
             var viewModel = new EditSessionEventViewModel();
@@ -522,9 +541,9 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditSessionEvent(int id, UpdateSessionEventRequest request)
+        [AuthorizePermission(PermissionKeys.ManageSessionEvents)]
+        public async Task<IActionResult> EditSessionEvent(UpdateSessionEventRequest request)
         {
-            request.Id = id;
             if (ModelState.IsValid)
             {
                 var response = await _adminService.UpdateSessionEvent(request);
@@ -545,6 +564,7 @@ namespace Template.MVC.Controllers
         #region Sessions
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ViewSessions)]
         public async Task<IActionResult> Sessions()
         {
             var viewModel = new SessionsViewModel();
@@ -556,6 +576,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [AuthorizePermission(PermissionKeys.ViewSessions)]
         public async Task<IActionResult> Sessions(GetSessionsRequest request)
         {
             var viewModel = new SessionsViewModel(request);
@@ -574,6 +595,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthorizePermission(PermissionKeys.ViewSessions)]
         public async Task<IActionResult> Session(int id)
         {
             var viewModel = new SessionViewModel();
@@ -584,6 +606,7 @@ namespace Template.MVC.Controllers
 
             if (response.IsSuccessful)
             {
+                viewModel.User = response.User;
                 viewModel.Session = response.Session;
                 viewModel.Logs = response.Logs;
             };

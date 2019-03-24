@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 using Template.Models.ServiceModels;
 using Template.Models.ServiceModels.Account;
@@ -10,7 +9,6 @@ using Template.Services.Contracts;
 
 namespace Template.MVC.Controllers
 {
-    [Authorize]
     public class AccountController : BaseController
     {
         #region Instance Fields
@@ -38,7 +36,6 @@ namespace Template.MVC.Controllers
         #region Public Methods
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -46,7 +43,6 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginRequest request, string returnUrl = null)
         {
@@ -66,7 +62,6 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -74,7 +69,6 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterRequest request, string returnUrl = null)
         {
@@ -95,7 +89,6 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Logout()
         {
             _accountService.Logout();
@@ -103,7 +96,6 @@ namespace Template.MVC.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
             return View();
@@ -136,6 +128,7 @@ namespace Template.MVC.Controllers
         //}
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Profile()
         {
             var viewModel = new ProfileViewModel();
@@ -155,6 +148,7 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Profile(UpdateProfileRequest request)
         {
@@ -174,6 +168,13 @@ namespace Template.MVC.Controllers
             viewModel.Roles = profileResponse.Roles;
             return View(viewModel);
         }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
 
         #region External Login
 

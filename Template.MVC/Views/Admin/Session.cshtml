@@ -66,7 +66,7 @@
 <style>
 
     .has-events {
-        box-shadow: 0 0 0 5px #f3cb3c !important;
+        box-shadow: 0 0 0 5px #007bff !important;
     }
 
     .prettyprint {
@@ -79,9 +79,9 @@
         margin-bottom: 0;
     }
 
-        .prettyprint span:first-child {
-            float: left;
-        }
+    .prettyprint span:first-child {
+        float: left;
+    }
 
     code {
         white-space: pre-wrap;
@@ -353,6 +353,35 @@
 <h4>@ViewData["Title"]</h4>
 <hr />
 
+<dl class="row">
+    <dt class="col-sm-3">Session Id</dt>
+    <dd class="col-sm-9">@Model.Session.Id</dd>
+    @if (Model.User != null)
+    {
+        <dt class="col-sm-3">User</dt>
+        <dd class="col-sm-9">
+            <dl class="row">
+                <dt class="col-sm-4">Id</dt>
+                <dd class="col-sm-8">@Model.User.Id</dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-sm-4">Name</dt>
+                <dd class="col-sm-8">@Model.User.First_Name</dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">@Model.User.Email_Address</dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-sm-4">Mobile Number</dt>
+                <dd class="col-sm-8">@Model.User.Mobile_Number</dd>
+            </dl>
+        </dd>
+    }
+</dl>
+
+<h5>Journey</h5>
+<hr />
 
 <div class="row">
     <div class="col-12">
@@ -394,7 +423,7 @@
                                     }
                                     else
                                     {
-                                        <div class="alert alert-success" role="alert">
+                                        <div class="alert alert-primary" role="alert">
                                             <h5 class="alert-heading">@sessionLogEvent.Event.Description</h5>
                                         </div>
                                     }

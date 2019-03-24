@@ -35,14 +35,14 @@ namespace Template.Services
             ILogger<SessionService> logger,
             ISessionProvider sessionProvider,
             IUnitOfWorkFactory uowFactory,
-            IApplicationCache entityCache,
+            IApplicationCache cache,
             IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _uowFactory = uowFactory;
             _sessionProvider = sessionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _cache = entityCache;
+            _cache = cache;
         }
 
         #endregion

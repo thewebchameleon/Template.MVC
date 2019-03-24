@@ -22,18 +22,26 @@ namespace Template.MVC.Filters
 
         public SessionLoggingFilter(
             ISessionService sessionService,
-            IApplicationCache entityCache,
+            IApplicationCache cache,
             IUnitOfWorkFactory uowFactory,
             ISessionProvider sessionProvider)
         {
             _sessionService = sessionService;
             _uowFactory = uowFactory;
-            _cache = entityCache;
+            _cache = cache;
             _sessionProvider = sessionProvider;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
+            // validate feature is enabled
+            var config = await _cache.Configuration();
+            if (!config.Session_Logging_Is_Enabled)
+            {
+                await next();
+                return;
+            }
+
             var session = await _sessionService.GetSession();
 
             int sessionLogId;

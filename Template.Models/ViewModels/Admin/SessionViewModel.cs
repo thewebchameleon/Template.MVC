@@ -15,6 +15,8 @@ namespace Template.Models.ViewModels.Admin
 
         #endregion
 
+        public UserEntity User { get; set; }
+
         public SessionEntity Session { get; set; }
 
         public List<SessionLog> Logs { get; set; }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Template.Common.Notifications;
+using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Session;
@@ -41,13 +42,13 @@ namespace Template.Services
             IAccountService accountService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
-            IApplicationCache entityCache)
+            IApplicationCache cache)
         {
             _logger = logger;
 
             _uowFactory = uowFactory;
 
-            _cache = entityCache;
+            _cache = cache;
             _emailService = emailService;
             _accountService = accountService;
             _sessionService = sessionService;
@@ -220,7 +221,7 @@ namespace Template.Services
                 EmailAddress = request.EmailAddress,
                 Username = request.Username,
                 MobileNumber = request.MobileNumber,
-                UserId = request.UserId
+                UserId = request.Id
             });
 
             if (duplicateResponse.Notifications.HasErrors)
@@ -233,12 +234,12 @@ namespace Template.Services
             {
                 var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    User_Id = request.UserId
+                    User_Id = request.Id
                 });
 
                 var dbRequest = new Infrastructure.Repositories.UserRepo.Models.UpdateUserRequest()
                 {
-                    Id = request.UserId,
+                    Id = request.Id,
                     Username = request.Username,
                     First_Name = request.FirstName,
                     Last_Name = request.LastName,
@@ -258,7 +259,7 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            await CreateOrDeleteUserRoles(request.RoleIds, request.UserId, session.User.Id);
+            await CreateOrDeleteUserRoles(request.RoleIds, request.Id, session.User.Id);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {

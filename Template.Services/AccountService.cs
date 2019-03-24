@@ -46,7 +46,7 @@ namespace Template.Services
             IEmailService emailService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
-            IApplicationCache entityCache,
+            IApplicationCache cache,
             ISessionProvider sessionProvider,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -56,7 +56,7 @@ namespace Template.Services
             _uowFactory = uowFactory;
             _sessionProvider = sessionProvider;
 
-            _cache = entityCache;
+            _cache = cache;
             _emailService = emailService;
             _sessionService = sessionService;
         }
@@ -155,10 +155,27 @@ namespace Template.Services
                 await _sessionProvider.Set(SessionConstants.SessionEntity, sessionEntity);
             }
 
+            #region Create identity and sign in
+
+            var usersRoles = await _cache.UserRoles();
+            var userRoleIds = usersRoles.Where(ur => ur.User_Id == user.Id).Select(ur => ur.Role_Id);
+
+            var roleClaims = await _cache.RoleClaims();
+            var userRoleClaimIds = roleClaims.Where(rc => userRoleIds.Contains(rc.Role_Id)).Select(rc => rc.Claim_Id);
+
+            var claimsLookup = await _cache.Claims();
+            var userClaimsData = claimsLookup.Where(c => userRoleClaimIds.Contains(c.Id));
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimConstants.SessionId, session.Id.ToString()),
             };
+
+            // add any claims from the roles that the user currently has
+            foreach (var userClaim in userClaimsData)
+            {
+                claims.Add(new Claim(ClaimConstants.UserPermission, userClaim.Key));
+            }
 
             var claimsIdentity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -170,6 +187,8 @@ namespace Template.Services
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 properties);
+
+            #endregion
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {

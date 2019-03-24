@@ -6,7 +6,7 @@ namespace Template.Models.ServiceModels.Admin
 {
     public class UpdateUserRequest : IValidatableObject
     {
-        public int UserId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string Username { get; set; }

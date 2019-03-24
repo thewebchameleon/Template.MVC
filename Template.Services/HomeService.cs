@@ -20,10 +20,10 @@ namespace Template.Services
 
         public HomeService(
             ILogger<HomeService> logger,
-            IApplicationCache entityCache)
+            IApplicationCache cache)
         {
             _logger = logger;
-            _cache = entityCache;
+            _cache = cache;
         }
 
         #endregion
