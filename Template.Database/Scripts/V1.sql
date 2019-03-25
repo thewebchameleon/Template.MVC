@@ -129,7 +129,7 @@ VALUES ('ROLES_MANAGE', 'Admin', 'Manage roles', 'Create, edit and moderate role
 
 INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
-VALUES ('PERMISSION_MANAGE', 'Admin', 'Manage permissions', 'Create and edit permissions', 1, GETDATE(), 1, GETDATE())
+VALUES ('PERMISSIONS_MANAGE', 'Admin', 'Manage permissions', 'Create and edit permissions', 1, GETDATE(), 1, GETDATE())
 
 INSERT INTO [Permission]
 ([Key], [Group_Name], [Name], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
