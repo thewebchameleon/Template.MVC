@@ -10,7 +10,7 @@ AS
                 [Mobile_Number],
                 [Password_Hash],
                 [Is_Locked_Out],
-                [Lockout_End],
+                [Invalid_Login_Attempts],
 				[Is_Enabled],
                 [Created_By],
                 [Created_Date],

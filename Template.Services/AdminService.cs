@@ -15,6 +15,7 @@ using Template.Models.ServiceModels;
 using Template.Models.ServiceModels.Admin;
 using Template.Models.ServiceModels.Admin.PermissionManagement;
 using Template.Models.ServiceModels.Admin.SessionManagement;
+using Template.Models.ServiceModels.Admin.UserManagement;
 using Template.Services.Contracts;
 
 namespace Template.Services
@@ -83,12 +84,12 @@ namespace Template.Services
             {
                 user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    User_Id = request.Id
+                    Id = request.Id
                 });
 
                 await uow.UserRepo.EnableUser(new Infrastructure.Repositories.UserRepo.Models.EnableUserRequest()
                 {
-                    User_Id = request.Id,
+                    Id = request.Id,
                     Updated_By = session.User.Id
                 });
                 uow.Commit();
@@ -113,12 +114,13 @@ namespace Template.Services
             {
                 user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    User_Id = request.Id
+                    Id = request.Id
                 });
 
                 await uow.UserRepo.DisableUser(new Infrastructure.Repositories.UserRepo.Models.DisableUserRequest()
                 {
-                    Id = request.Id
+                    Id = request.Id,
+                    Updated_By = session.User.Id
                 });
                 uow.Commit();
 
@@ -144,7 +146,7 @@ namespace Template.Services
             {
                 var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    User_Id = request.UserId
+                    Id = request.UserId
                 });
                 uow.Commit();
 
@@ -232,7 +234,7 @@ namespace Template.Services
             {
                 var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                 {
-                    User_Id = request.Id
+                    Id = request.Id
                 });
 
                 var dbRequest = new Infrastructure.Repositories.UserRepo.Models.UpdateUserRequest()
@@ -312,6 +314,36 @@ namespace Template.Services
             }
         }
 
+        public async Task<UnlockUserResponse> UnlockUser(UnlockUserRequest request)
+        {
+            var session = await _sessionService.GetAuthenticatedSession();
+            var response = new UnlockUserResponse();
+
+            UserEntity user;
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                {
+                    Id = request.Id
+                });
+
+                await uow.UserRepo.UnlockUser(new Infrastructure.Repositories.UserRepo.Models.UnlockUserRequest()
+                {
+                    Id = request.Id,
+                    Updated_By = session.User.Id
+                });
+                uow.Commit();
+
+                await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+                {
+                    EventKey = SessionEventKeys.UserUnlocked
+                });
+            }
+
+            response.Notifications.Add($"User '{user.Username}' has been unlocked", NotificationTypeEnum.Success);
+            return response;
+        }
+
         #endregion
 
         #region Role Management
@@ -331,7 +363,7 @@ namespace Template.Services
             var response = new EnableRoleResponse();
 
             var roles = await _cache.Roles();
-            var role = roles.FirstOrDefault(u => u.Id == request.RoleId);
+            var role = roles.FirstOrDefault(u => u.Id == request.Id);
 
             using (var uow = _uowFactory.GetUnitOfWork())
             {
@@ -668,7 +700,7 @@ namespace Template.Services
                 {
                     var user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                     {
-                        User_Id = session.User_Id.Value
+                        Id = session.User_Id.Value
                     });
                     response.User = user;
                 }

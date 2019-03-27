@@ -95,7 +95,7 @@ namespace Template.Services
                 {
                     user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                     {
-                        User_Id = session.User_Id.Value
+                        Id = session.User_Id.Value
                     });
                     uow.Commit();
 

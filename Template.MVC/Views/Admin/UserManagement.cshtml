@@ -15,10 +15,12 @@
     <a href="@Url.Action("CreateUser", "Admin" )" class="btn btn-primary">Create User</a>
     <div class="panel-right-controls" style="display: none;">
         <input id="hdnSelectedUserId" type="hidden" />
-        <button id="btnLockoutUserModal" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalLockoutUser" style="display: none;">Lock out</button>
+        <button id="btnEditUser" type="button" class="btn btn-primary">Edit</button>
+
+        <button id="btnUnlockUserModal" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalUnlockUser" style="display: none;">Unlock</button>
+
         <button id="btnDisableUserModal" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalDisableUser" style="display: none;">Disable</button>
         <button id="btnEnableUserModal" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalEnableUser" style="display: none;">Enable</button>
-        <button id="btnEditUser" type="button" class="btn btn-primary">Edit</button>
     </div>
 </div>
 
@@ -40,6 +42,7 @@
                 <td class="user-identifier">
                     <input class="u-userId" type="hidden" value="@user.Id" />
                     <input class="u-isEnabled" type="hidden" value="@user.Is_Enabled.ToString()" />
+                    <input class="u-isLockedOut" type="hidden" value="@user.Is_Locked_Out.ToString()" />
                     @user.Username
                 </td>
                 <td>@user.Email_Address</td>
@@ -52,7 +55,7 @@
     </tbody>
 </table>
 
-@* deactivate modal *@
+@* disable modal *@
 <div class="modal fade" id="modalDisableUser" tabindex="-1" role="dialog" aria-labelledby="modalDisableUserLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -68,7 +71,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
                 <form asp-controller="Admin" asp-action="DisableUser" method="post" role="form">
-                    <input id="hdnDisableUserId" name="UserId" type="hidden" />
+                    <input id="hdnDisableUserId" name="Id" type="hidden" />
                     <button type="submit" class="btn btn-primary">Yes</button>
                 </form>
             </div>
@@ -76,7 +79,7 @@
     </div>
 </div>
 
-@* activate modal *@
+@* enable modal *@
 <div class="modal fade" id="modalEnableUser" tabindex="-1" role="dialog" aria-labelledby="modalEnableUserLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -92,7 +95,31 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
                 <form asp-controller="Admin" asp-action="EnableUser" method="post" role="form">
-                    <input id="hdnEnableUserId" name="UserId" type="hidden" />
+                    <input id="hdnEnableUserId" name="Id" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* unlock modal *@
+<div class="modal fade" id="modalUnlockUser" tabindex="-1" role="dialog" aria-labelledby="modalUnlockUserLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUnlockUserLabel">Unlock User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to unlock this user?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
+                <form asp-controller="Admin" asp-action="UnlockUser" method="post" role="form">
+                    <input id="hdnUnlockUserId" name="Id" type="hidden" />
                     <button type="submit" class="btn btn-primary">Yes</button>
                 </form>
             </div>
@@ -130,14 +157,21 @@
                 else
                 {
                     var userId = $(this).children('.user-identifier').children('input.u-userId').val();
-                    var isEnabled = $(this).children('.user-identifier').children('input.u-isEnabled').val();
 
+                    var isEnabled = $(this).children('.user-identifier').children('input.u-isEnabled').val();
                     if (isEnabled == 'False') {
                         $('#btnEnableUserModal').show();
                         $('#btnDisableUserModal').hide();
                     } else {
                         $('#btnEnableUserModal').hide();
                         $('#btnDisableUserModal').show();
+                    }
+
+                    var isLockedOut = $(this).children('.user-identifier').children('input.u-isLockedOut').val();
+                    if (isLockedOut == 'False') {
+                        $('#btnUnlockUserModal').hide();
+                    } else {
+                        $('#btnUnlockUserModal').show();
                     }
 
                     table.$('tr.selected').removeClass('selected');
@@ -149,16 +183,22 @@
 
         });
 
-        // deactivate user
+        // disable user
         $('#btnDisableUserModal').click(function () {
             var userId = GetSelectedUserId();
             $("#hdnDisableUserId").val(userId);
         });
 
-        // activate user
+        // enable user
         $('#btnEnableUserModal').click(function () {
             var userId = GetSelectedUserId();
             $("#hdnEnableUserId").val(userId);
+        });
+
+        // unlock user
+        $('#btnUnlockUserModal').click(function () {
+            var userId = GetSelectedUserId();
+            $("#hdnUnlockUserId").val(userId);
         });
 
         // edit user

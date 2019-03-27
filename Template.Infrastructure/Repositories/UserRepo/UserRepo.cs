@@ -519,6 +519,59 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.FirstOrDefault();
         }
 
+        public async Task LockoutUser(LockoutUserRequest request)
+        {
+            var sqlStoredProc = "sp_user_lockout";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.First() == 0)
+            {
+                throw new Exception("No items have been locked");
+            }
+        }
+
+        public async Task UnlockUser(UnlockUserRequest request)
+        {
+            var sqlStoredProc = "sp_user_unlock";
+
+            var response = await DapperAdapter.GetFromStoredProcAsync<int>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+            if (response == null || response.First() == 0)
+            {
+                throw new Exception("No items have been unlocked");
+            }
+        }
+
+        public async Task AddInvalidLoginAttempt(AddInvalidLoginAttemptRequest request)
+        {
+            var sqlStoredProc = "sp_user_add_invalid_login_attempt";
+
+            await DapperAdapter.GetFromStoredProcAsync<int?>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+
+        }
+
         #endregion
     }
 }

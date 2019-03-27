@@ -3,5 +3,7 @@
     public class ActivateAccountRequest
     {
         public string Token { get; set; }
+
+        public int Updated_By { get; set; }
     }
 }

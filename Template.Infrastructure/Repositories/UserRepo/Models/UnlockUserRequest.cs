@@ -1,6 +1,6 @@
 ﻿namespace Template.Infrastructure.Repositories.UserRepo.Models
 {
-    public class EnableUserRequest
+    public class UnlockUserRequest
     {
         public int Id { get; set; }
 

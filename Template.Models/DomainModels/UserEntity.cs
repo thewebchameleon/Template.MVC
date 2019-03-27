@@ -20,6 +20,8 @@ namespace Template.Models.DomainModels
 
         public DateTime? Lockout_End { get; set; }
 
+        public int Invalid_Login_Attempts { get; set; }
+
         public bool Is_Locked_Out { get; set; }
 
         public bool Is_Enabled { get; set; }

@@ -117,8 +117,9 @@ namespace Template.Services
 
         public async Task<LoginResponse> Login(LoginRequest request)
         {
-            var session = await _sessionService.GetSession();
             var response = new LoginResponse();
+            var config = await _cache.Configuration();
+            var session = await _sessionService.GetSession();
 
             UserEntity user;
             using (var uow = _uowFactory.GetUnitOfWork())
@@ -128,10 +129,80 @@ namespace Template.Services
                     Username = request.Username
                 });
 
+                // check if we found a user or if their password was incorrect
                 if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password_Hash))
                 {
+                    // if we found the user, handle invalid login attempts else generic fail message
+                    if (user != null)
+                    {
+                        // check if we need to lock the user
+                        if (user.Invalid_Login_Attempts >= config.Max_Login_Attempts && !user.Is_Locked_Out)
+                        {
+                            await uow.UserRepo.LockoutUser(new Infrastructure.Repositories.UserRepo.Models.LockoutUserRequest()
+                            {
+                                Id = user.Id,
+                                Lockout_End = DateTime.Now.AddMinutes(config.Account_Lockout_Expiry_Minutes),
+                                Updated_By = ApplicationConstants.SystemUserId
+                            });
+
+                            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+                            {
+                                EventKey = SessionEventKeys.UserLocked
+                            });
+                        }
+                        else
+                        {
+                            var dbRequest = new Infrastructure.Repositories.UserRepo.Models.AddInvalidLoginAttemptRequest()
+                            {
+                                User_Id = user.Id,
+                                Updated_By = ApplicationConstants.SystemUserId
+                            };
+
+                            // if we are already locked out then extend the lockout time
+                            if (user.Lockout_End.HasValue)
+                            {
+                                dbRequest.Lockout_End = DateTime.Now.AddMinutes(config.Account_Lockout_Expiry_Minutes);
+                            }
+
+                            await uow.UserRepo.AddInvalidLoginAttempt(dbRequest);
+
+                        }
+                        uow.Commit();
+                    }
                     response.Notifications.AddError("Username or password is incorrect");
                     return response;
+                }
+
+                if (user.Is_Locked_Out)
+                {
+                    if (user.Lockout_End <= DateTime.Now)
+                    {
+                        await uow.UserRepo.UnlockUser(new Infrastructure.Repositories.UserRepo.Models.UnlockUserRequest()
+                        {
+                            Id = user.Id,
+                            Updated_By = ApplicationConstants.SystemUserId
+                        });
+                        uow.Commit();
+
+                        await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+                        {
+                            EventKey = SessionEventKeys.UserUnlocked
+                        });
+                    }
+                    else
+                    {
+                        response.Notifications.AddError($"Your account has been locked, please try again in {config.Account_Lockout_Expiry_Minutes} minute(s)");
+                        return response;
+                    }
+                }
+                else if (user.Invalid_Login_Attempts > 0) // cleanup of old invalid login attempts
+                {
+                    await uow.UserRepo.UnlockUser(new Infrastructure.Repositories.UserRepo.Models.UnlockUserRequest()
+                    {
+                        Id = user.Id,
+                        Updated_By = ApplicationConstants.SystemUserId
+                    });
+                    uow.Commit();
                 }
 
                 if (!user.Is_Enabled)
@@ -140,9 +211,9 @@ namespace Template.Services
                     return response;
                 }
 
-                if (user.Is_Locked_Out)
+                if (!user.Registration_Confirmed)
                 {
-                    response.Notifications.AddError("Your account has been locked due to too many invalid login attempts, please try again later");
+                    response.Notifications.AddError("Please check your email to activate your account");
                     return response;
                 }
 

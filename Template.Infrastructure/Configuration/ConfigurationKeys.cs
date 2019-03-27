@@ -7,5 +7,7 @@
     {
         public const string Session_Logging_Is_Enabled = "SESSION_LOGGING_IS_ENABLED";
         public const string Home_Promo_Banner_Is_Enabled = "HOME_PROMO_BANNER_IS_ENABLED";
+        public const string Account_Lockout_Expiry_Minutes = "ACCOUNT_LOCKOUT_EXPIRY_MINUTES";
+        public const string Max_Login_Attempts = "MAX_LOGIN_ATTEMPTS";
     }
 }

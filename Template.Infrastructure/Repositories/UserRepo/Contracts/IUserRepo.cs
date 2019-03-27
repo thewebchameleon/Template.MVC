@@ -62,5 +62,11 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
         Task<UserEntity> GetUserByEmail(GetUserByEmailRequest request);
 
         Task<UserEntity> GetUserByMobileNumber(GetUserByMobileNumberRequest request);
+
+        Task LockoutUser(LockoutUserRequest request);
+
+        Task UnlockUser(UnlockUserRequest request);
+
+        Task AddInvalidLoginAttempt(AddInvalidLoginAttemptRequest request);
     }
 }

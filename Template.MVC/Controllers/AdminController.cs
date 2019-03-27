@@ -6,6 +6,7 @@ using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Models.ServiceModels.Admin;
 using Template.Models.ServiceModels.Admin.PermissionManagement;
+using Template.Models.ServiceModels.Admin.UserManagement;
 using Template.Models.ViewModels;
 using Template.Models.ViewModels.Admin;
 using Template.MVC.Attributes;
@@ -168,6 +169,18 @@ namespace Template.MVC.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _adminService.EnableUser(request);
+                AddNotifications(response);
+            }
+            return RedirectToAction(nameof(AdminController.UserManagement));
+        }
+
+        [HttpPost]
+        [AuthorizePermission(PermissionKeys.ManageUsers)]
+        public async Task<IActionResult> UnlockUser(UnlockUserRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _adminService.UnlockUser(request);
                 AddNotifications(response);
             }
             return RedirectToAction(nameof(AdminController.UserManagement));

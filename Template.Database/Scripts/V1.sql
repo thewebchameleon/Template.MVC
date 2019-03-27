@@ -103,6 +103,15 @@ INSERT INTO [Session_Event]
 ([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('SESSION_EVENT_UPDATED', 'Session event has been updated', 1, GETDATE(), 1, GETDATE())
 
+INSERT INTO [Session_Event]
+([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
+VALUES ('USER_LOCKED', 'User has been locked', 1, GETDATE(), 1, GETDATE())
+
+INSERT INTO [Session_Event]
+([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
+VALUES ('USER_UNLOCKED', 'User has been unlocked', 1, GETDATE(), 1, GETDATE())
+
+
 
 --add configuration
 INSERT INTO [Configuration]
@@ -112,6 +121,14 @@ VALUES ('SESSION_LOGGING_IS_ENABLED', 'Feature switch for session and event trac
 INSERT INTO [Configuration]
 ([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('HOME_PROMO_BANNER_IS_ENABLED', 'Feature switch for a promotional banner on the home page', 1, NULL, NULL, NULL, NULL, NULL, 1, GETDATE(), 1, GETDATE())
+
+INSERT INTO [Configuration]
+([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
+VALUES ('ACCOUNT_LOCKOUT_EXPIRY_MINUTES', 'The amount of time before a locked out user can login again', 1, NULL, NULL, NULL, NULL, NULL, 1, GETDATE(), 1, GETDATE())
+
+INSERT INTO [Configuration]
+([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
+VALUES ('MAX_LOGIN_ATTEMPTS', 'The amount of invalid password login attempts that a user may perform', 1, NULL, NULL, NULL, NULL, NULL, 1, GETDATE(), 1, GETDATE())
 
 
 --add permissions

@@ -13,6 +13,7 @@ BEGIN
 		[U].[Password_Hash],
 		[U].[Is_Locked_Out],
 		[U].[Lockout_End],
+		[U].[Invalid_Login_Attempts],
 		[U].[Created_By],
 		[U].[Created_Date],
 		[U].[Updated_By],

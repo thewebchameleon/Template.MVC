@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_user_disable]
-	@User_Id    INT,
+	@Id    INT,
 	@Updated_By INT
 AS
 BEGIN
@@ -9,7 +9,7 @@ BEGIN
 		[Updated_By] = @Updated_By,
 		[Updated_Date] = GETDATE()
    WHERE
-		[Id] = @User_Id
+		[Id] = @Id
    SELECT
-		@User_Id AS [Id]
+		@Id AS [Id]
 END

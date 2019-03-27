@@ -17,6 +17,8 @@ namespace Template.MVC.Filters
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
+            // todo: should store claims in session rather and check if the current session has the required claim
+
             var hasPermission = context.HttpContext.User.Claims.Any(c => c.Type == PermissionConstants.UserPermission && c.Value == _key);
             if (!hasPermission)
             {

@@ -25,5 +25,7 @@
         public const string UserRolesUpdated = "USER_ROLES_UPDATED";
         public const string SessionEventCreated = "SESSION_EVENT_CREATED";
         public const string SessionEventUpdated = "SESSION_EVENT_UPDATED";
+        public const string UserUnlocked = "USER_UNLOCKED";
+        public const string UserLocked = "USER_LOCKED";
     }
 }

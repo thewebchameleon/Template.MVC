@@ -44,7 +44,7 @@
     </tbody>
 </table>
 
-@* deactivate modal *@
+@* disable modal *@
 <div class="modal fade" id="modalDisableRole" tabindex="-1" role="dialog" aria-labelledby="modalDisableRoleLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -60,7 +60,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
                 <form asp-controller="Admin" asp-action="DisableRole" method="post" role="form">
-                    <input id="hdnDisableRoleId" name="RoleId" type="hidden" />
+                    <input id="hdnDisableRoleId" name="Id" type="hidden" />
                     <button type="submit" class="btn btn-primary">Yes</button>
                 </form>
             </div>
@@ -68,7 +68,7 @@
     </div>
 </div>
 
-@* activate modal *@
+@* enable modal *@
 <div class="modal fade" id="modalEnableRole" tabindex="-1" role="dialog" aria-labelledby="modalEnableRoleLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -84,7 +84,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
                 <form asp-controller="Admin" asp-action="EnableRole" method="post" role="form">
-                    <input id="hdnEnableRoleId" name="RoleId" type="hidden" />
+                    <input id="hdnEnableRoleId" name="Id" type="hidden" />
                     <button type="submit" class="btn btn-primary">Yes</button>
                 </form>
             </div>

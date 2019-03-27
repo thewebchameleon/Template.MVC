@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Template.Models.ServiceModels.Admin;
 using Template.Models.ServiceModels.Admin.PermissionManagement;
+using Template.Models.ServiceModels.Admin.UserManagement;
 
 namespace Template.Services.Contracts
 {
@@ -11,6 +12,8 @@ namespace Template.Services.Contracts
         Task<DisableUserResponse> DisableUser(DisableUserRequest request);
 
         Task<EnableUserResponse> EnableUser(EnableUserRequest request);
+
+        Task<UnlockUserResponse> UnlockUser(UnlockUserRequest request);
 
         Task<GetUserResponse> GetUser(GetUserRequest request);
 

@@ -33,6 +33,24 @@ namespace Template.Infrastructure.Configuration.Models
             }
         }
 
+        public int Max_Login_Attempts
+        {
+            get
+            {
+                var item = GetItem(ConfigurationKeys.Max_Login_Attempts);
+                return item.Int_Value.Value;
+            }
+        }
+
+        public int Account_Lockout_Expiry_Minutes
+        {
+            get
+            {
+                var item = GetItem(ConfigurationKeys.Account_Lockout_Expiry_Minutes);
+                return item.Int_Value.Value;
+            }
+        }
+
         #endregion
 
         #region Constructors

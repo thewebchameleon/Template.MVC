@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_user_get_by_id]
-	@User_Id INT
+	@Id INT
 AS
 BEGIN
    SELECT
@@ -13,6 +13,7 @@ BEGIN
 		[U].[Password_Hash],
 		[U].[Is_Locked_Out],
 		[U].[Lockout_End],
+		[U].[Invalid_Login_Attempts],
 		[U].[Created_By],
 		[U].[Created_Date],
 		[U].[Updated_By],
@@ -20,6 +21,6 @@ BEGIN
 		[U].Is_Deleted,
 		[U].Is_Enabled
    FROM   [User] [U](NOLOCK)
-   WHERE  [U].[Id] = @User_Id
+   WHERE  [U].[Id] = @Id
    AND [U].Is_Deleted = 0;
 END
