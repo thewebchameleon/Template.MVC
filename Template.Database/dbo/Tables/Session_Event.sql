@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Session_Event] (
     [Id]           INT           IDENTITY (1, 1) NOT NULL,
-    [Key]          VARCHAR (100) NOT NULL,
+    [Key]          VARCHAR (256) NOT NULL,
     [Description]  VARCHAR (256) NOT NULL,
     [Created_By]   INT           NOT NULL,
     [Created_Date] DATETIME      NOT NULL,

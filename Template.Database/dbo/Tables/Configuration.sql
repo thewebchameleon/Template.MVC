@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Configuration] (
     [Id]             INT             IDENTITY (1, 1) NOT NULL,
-    [Key]            VARCHAR (200)   NOT NULL,
-    [Description]    VARCHAR (500)   NOT NULL,
+    [Key]            VARCHAR (256)   NOT NULL,
+    [Description]    VARCHAR (256)   NOT NULL,
     [Boolean_Value]  BIT             NULL,
     [DateTime_Value] DATETIME        NULL,
     [Decimal_Value]  DECIMAL (18, 2) NULL,

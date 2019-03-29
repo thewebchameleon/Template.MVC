@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
+using Template.Common.Helpers;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Session;
@@ -60,7 +60,7 @@ namespace Template.MVC.Filters
                 if (context.ActionArguments.Any())
                 {
                     var jsonString = JsonConvert.SerializeObject(context.ActionArguments, Formatting.Indented).Trim();
-                    dbRequest.Action_Data_JSON = jsonString;
+                    dbRequest.Action_Data_JSON = JsonHelper.ObfuscateFieldValue(jsonString, ApplicationConstants.ObfuscatedActionArgumentFields);
                 }
 
                 sessionLogId = await uow.SessionRepo.CreateSessionLog(dbRequest);

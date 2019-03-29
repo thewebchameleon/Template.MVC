@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System;
+using System.Collections.Generic;
 
 namespace Template.Infrastructure.Configuration
 {
@@ -35,6 +36,17 @@ namespace Template.Infrastructure.Configuration
                 };
 
                 return properties;
+            }
+        }
+
+        public static List<string> ObfuscatedActionArgumentFields
+        {
+            get
+            {
+                return new List<string>()
+                {
+                    "Password", "password"
+                };
             }
         }
     }

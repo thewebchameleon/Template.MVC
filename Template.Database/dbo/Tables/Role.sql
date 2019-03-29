@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Role] (
     [Id]           INT           IDENTITY (1, 1) NOT NULL,
     [Name]         VARCHAR (256) NOT NULL,
-    [Description]  VARCHAR (500) NULL,
+    [Description]  VARCHAR (256) NULL,
     [Is_Enabled]   BIT           NOT NULL,
     [Created_By]   INT           NOT NULL,
     [Created_Date] DATETIME      NOT NULL,

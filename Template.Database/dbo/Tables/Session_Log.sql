@@ -5,7 +5,7 @@
     [Controller]       VARCHAR (256) NOT NULL,
     [Action]           VARCHAR (256) NOT NULL,
     [Action_Data_JSON] VARCHAR (MAX) NULL,
-    [Url]              VARCHAR (256) NOT NULL,
+    [Url]              VARCHAR (MAX) NOT NULL,
     [Created_By]       INT           NOT NULL,
     [Created_Date]     DATETIME      NOT NULL,
     [Updated_By]       INT           NOT NULL,

@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Template.Common\Template.Common.csproj" />
     <ProjectReference Include="..\Template.Infrastructure\Template.Infrastructure.csproj" />
     <ProjectReference Include="..\Template.Models\Template.Models.csproj" />
   </ItemGroup>

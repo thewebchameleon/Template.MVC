@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Models", "Template
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Infrastructure", "Template.Infrastructure\Template.Infrastructure.csproj", "{19573A0E-E6E2-45F8-B9A0-1E66772BC9EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Common", "Template.Common\Template.Common.csproj", "{2760FCE4-C0BC-472F-AB57-95C9608E84AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Common", "Template.Common\Template.Common.csproj", "{2760FCE4-C0BC-472F-AB57-95C9608E84AA}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Template.Database", "Template.Database\Template.Database.sqlproj", "{22DB86E0-BD4E-4186-BD71-3D4F70AFB59A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Tests", "Template.Tests\Template.Tests.csproj", "{DC493483-150B-48A1-A093-556F195E78A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{22DB86E0-BD4E-4186-BD71-3D4F70AFB59A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22DB86E0-BD4E-4186-BD71-3D4F70AFB59A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22DB86E0-BD4E-4186-BD71-3D4F70AFB59A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{DC493483-150B-48A1-A093-556F195E78A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC493483-150B-48A1-A093-556F195E78A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC493483-150B-48A1-A093-556F195E78A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC493483-150B-48A1-A093-556F195E78A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
