@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
@@ -51,7 +53,6 @@ namespace Template.MVC
             services.AddTransient<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
             services.AddTransient<IAccountService, AccountService>();
-            services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<ISessionService, SessionService>();
             services.AddTransient<IHomeService, HomeService>();
@@ -92,6 +93,12 @@ namespace Template.MVC
                 options.Cookie.Name = "Session";
             });
 
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<GzipCompressionProvider>();
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "image/svg+xml" });
+                options.EnableForHttps = true; // https://docs.microsoft.com/en-us/aspnet/core/performance/response-compression#compression-with-secure-protocol
+            });
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(SessionRequirementFilter));
@@ -121,8 +128,18 @@ namespace Template.MVC
                 app.UseHsts();
             }
 
+            app.UseResponseCompression();
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    const int durationInSeconds = 60 * 60 * 24; // 24 hours
+                    ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] =
+                        "public,max-age=" + durationInSeconds;
+                }
+            });
 
             app.UseRouting(routes =>
             {

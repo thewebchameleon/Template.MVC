@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Template.Models\Template.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Authentication\Contracts\" />
-  </ItemGroup>
-
 </Project>

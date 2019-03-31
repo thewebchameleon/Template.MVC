@@ -26,7 +26,6 @@ namespace Template.Services
 
         private readonly ILogger<AdminService> _logger;
 
-        private readonly IEmailService _emailService;
         private readonly IAccountService _accountService;
         private readonly ISessionService _sessionService;
 
@@ -39,7 +38,6 @@ namespace Template.Services
 
         public AdminService(
             ILogger<AdminService> logger,
-            IEmailService emailService,
             IAccountService accountService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
@@ -50,7 +48,6 @@ namespace Template.Services
             _uowFactory = uowFactory;
 
             _cache = cache;
-            _emailService = emailService;
             _accountService = accountService;
             _sessionService = sessionService;
         }

@@ -31,7 +31,6 @@ namespace Template.Services
 
         private readonly ILogger<AccountService> _logger;
 
-        private readonly IEmailService _emailService;
         private readonly ISessionService _sessionService;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -45,7 +44,6 @@ namespace Template.Services
 
         public AccountService(
             ILogger<AccountService> logger,
-            IEmailService emailService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
             IApplicationCache cache,
@@ -59,7 +57,6 @@ namespace Template.Services
             _sessionProvider = sessionProvider;
 
             _cache = cache;
-            _emailService = emailService;
             _sessionService = sessionService;
         }
 
@@ -98,11 +95,6 @@ namespace Template.Services
 
                 uow.Commit();
             }
-
-            await _emailService.SendAccountActivationEmail(new SendAccountActivationEmailRequest()
-            {
-                UserID = id
-            });
 
             _cache.Remove(CacheConstants.UserRoles);
 
@@ -251,11 +243,6 @@ namespace Template.Services
         {
             _sessionProvider.Remove(SessionConstants.SessionEntity).Wait();
             _httpContextAccessor.HttpContext.SignOutAsync().Wait();
-        }
-
-        public Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<GetProfileResponse> GetProfile()

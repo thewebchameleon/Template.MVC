@@ -132,7 +132,8 @@ namespace Template.Services
 
         public async Task RehydrateSession()
         {
-            await _sessionProvider.Remove(SessionConstants.User);
+            await _sessionProvider.Remove(SessionConstants.User); // clear
+            await GetSession(); // hydrate
         }
 
         public async Task WriteSessionLogEvent(CreateSessionLogEventRequest request)
@@ -158,8 +159,6 @@ namespace Template.Services
                     Created_By = ApplicationConstants.SystemUserId
                 });
                 uow.Commit();
-
-                await _sessionProvider.Set(SessionConstants.SessionEntity, session);
             }
         }
 
