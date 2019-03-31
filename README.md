@@ -17,17 +17,17 @@ Serving as a template for **small self-contained business applications**, this t
 - Stored procedures are used to perform CRUD-like operations on the database.
 
 ### UI
-- [ZeptoJS]([https://zeptojs.com/](https://zeptojs.com/)) (JQuery compatable javascript API)
-- [Bootstrap 4]([https://getbootstrap.com/](https://getbootstrap.com/))
-- [DataTables]([https://datatables.net/](https://datatables.net/)) (JQuery)
+- [JQuery](https://jquery.com/)
+- [JQuery DataTables](https://datatables.net/)
+- [Bootstrap 4](https://getbootstrap.com/)
 - Custom tag helpers
 	- Multiselect dropdown (`MultiselectTagHelper.cs`)
-	- Authorization attribute (`AuthorizationTagHelper`)
+	- Authorization attribute (`AuthorizationTagHelper.cs`)
 
 ## Features
 ### Security
 - Cookie authentication (cookies are not persisted) using authorization with permissions.
-- Passwords are hashed using [BCrypt]([https://github.com/BcryptNet/bcrypt.net](https://github.com/BcryptNet/bcrypt.net)).
+- Passwords are hashed using [BCrypt](https://github.com/BcryptNet/bcrypt.net).
 - Users are locked out after a configurable amount of invalid attempts.
 - All form posts are marked with an `ValidateAntiForgeryToken` attribute.
 
