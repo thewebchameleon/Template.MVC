@@ -74,14 +74,22 @@ namespace Template.MVC
             // authentication and authorization
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
-                options = ApplicationConstants.CookieAuthenticationOptions;
+                options.AccessDeniedPath = "/Home/AccessDenied";
+                options.LoginPath = "/Account/Login";
+                options.ExpireTimeSpan = TimeSpan.FromSeconds(ApplicationConstants.SessionTimeoutSeconds);
+                options.SlidingExpiration = true;
+
+                options.Cookie = ApplicationConstants.SecureNamelessCookie;
+                options.Cookie.Name = "Authentication";
             });
             services.AddAuthorization(options => { });
 
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(ApplicationConstants.SessionTimeoutSeconds);
-                options.Cookie.HttpOnly = true;
+
+                options.Cookie = ApplicationConstants.SecureNamelessCookie;
+                options.Cookie.Name = "Session";
             });
 
             services.AddMvc(options =>

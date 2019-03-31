@@ -2,25 +2,26 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
 using System.Threading.Tasks;
-using Template.Infrastructure.Authentication;
+using Template.Services.Contracts;
 
 namespace Template.MVC.Filters
 {
     public class PermissionRequirementFilter : IAsyncAuthorizationFilter
     {
         private readonly string _key;
+        private readonly ISessionService _sessionService;
 
-        public PermissionRequirementFilter(string key)
+        public PermissionRequirementFilter(string key, ISessionService sessionService)
         {
             _key = key;
+            _sessionService = sessionService;
         }
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            // todo: should store claims in session rather and check if the current session has the required claim
+            var session = await _sessionService.GetSession();
 
-            var hasPermission = context.HttpContext.User.Claims.Any(c => c.Type == PermissionConstants.UserPermission && c.Value == _key);
-            if (!hasPermission)
+            if (session.User == null || !session.User.PermissionKeys.Any(c => c == _key))
             {
                 context.Result = new ForbidResult();
             }

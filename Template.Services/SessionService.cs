@@ -70,7 +70,7 @@ namespace Template.Services
             {
                 // flush any authenticated cookies in the event the application restarts
                 await _httpContextAccessor.HttpContext.SignOutAsync(); 
-                await _sessionProvider.Remove(SessionConstants.UserEntity);
+                await _sessionProvider.Remove(SessionConstants.User);
 
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
@@ -87,19 +87,42 @@ namespace Template.Services
             response.SessionLogId = await _sessionProvider.Get<int>(SessionConstants.SessionLogId);
 
             // get or hydrate user from session
-            var user = await _sessionProvider.Get<UserEntity>(SessionConstants.UserEntity);
+            var user = await _sessionProvider.Get<User>(SessionConstants.User);
             if (user == null
                 && session.User_Id.HasValue)
             {
                 using (var uow = _uowFactory.GetUnitOfWork())
                 {
-                    user = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
+                    user = new User();
+                    user.Entity = await uow.UserRepo.GetUserById(new Infrastructure.Repositories.UserRepo.Models.GetUserByIdRequest()
                     {
                         Id = session.User_Id.Value
                     });
                     uow.Commit();
 
-                    await _sessionProvider.Set(SessionConstants.UserEntity, user);
+                    var usersRoles = await _cache.UserRoles();
+                    var userRoleIds = usersRoles.Where(ur => ur.User_Id == user.Entity.Id).Select(ur => ur.Role_Id);
+
+                    var rolePermissions = await _cache.RolePermissions();
+                    var userRolePermissionIds = rolePermissions.Where(rc => userRoleIds.Contains(rc.Role_Id)).Select(rc => rc.Permission_Id);
+
+                    var permissionsLookup = await _cache.Permissions();
+                    var userPermissionsData = permissionsLookup.Where(c => userRolePermissionIds.Contains(c.Id));
+
+                    var rolesLookup = await _cache.Roles();
+                    var userRolesData = rolesLookup.Where(r => userRoleIds.Contains(r.Id));
+
+                    foreach (var userPermission in userPermissionsData)
+                    {
+                        user.PermissionKeys.Add(userPermission.Key);
+                    }
+
+                    foreach (var userRole in userRolesData)
+                    {
+                        user.RoleIds.Add(userRole.Id);
+                    }
+
+                    await _sessionProvider.Set(SessionConstants.User, user);
                 }
             }
             response.User = user;
@@ -109,7 +132,7 @@ namespace Template.Services
 
         public async Task RehydrateSession()
         {
-            await _sessionProvider.Remove(SessionConstants.UserEntity);
+            await _sessionProvider.Remove(SessionConstants.User);
         }
 
         public async Task WriteSessionLogEvent(CreateSessionLogEventRequest request)

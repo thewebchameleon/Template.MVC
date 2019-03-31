@@ -224,44 +224,20 @@ namespace Template.Services
                     Updated_By = ApplicationConstants.SystemUserId
                 });
                 uow.Commit();
-
                 await _sessionProvider.Set(SessionConstants.SessionEntity, sessionEntity);
             }
 
-            #region Create identity and sign in
-
-            var usersRoles = await _cache.UserRoles();
-            var userRoleIds = usersRoles.Where(ur => ur.User_Id == user.Id).Select(ur => ur.Role_Id);
-
-            var rolePermissions = await _cache.RolePermissions();
-            var userRolePermissionIds = rolePermissions.Where(rc => userRoleIds.Contains(rc.Role_Id)).Select(rc => rc.Permission_Id);
-
-            var permissionsLookup = await _cache.Permissions();
-            var userPermissionsData = permissionsLookup.Where(c => userRolePermissionIds.Contains(c.Id));
-
-            var claims = new List<Claim>
+            var claims = new List<Claim>()
             {
-                new Claim(PermissionConstants.SessionId, session.Id.ToString()),
+                new Claim(ClaimTypes.Name, session.Id.ToString())
             };
-
-            // add any permissions from the roles that the user currently has
-            foreach (var userPermission in userPermissionsData)
-            {
-                claims.Add(new Claim(PermissionConstants.UserPermission, userPermission.Key));
-            }
 
             var claimsIdentity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            var properties = ApplicationConstants.AuthenticationProperties;
-            properties.IsPersistent = request.RememberMe;
-
             await _httpContextAccessor.HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                properties);
-
-            #endregion
+                new ClaimsPrincipal(claimsIdentity)); // user principal is controlled in session
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
@@ -289,15 +265,15 @@ namespace Template.Services
             var user = session.User;
             var roles = await _cache.Roles();
             var userRoles = await _cache.UserRoles();
-            var usersRoles = userRoles.Where(ur => ur.User_Id == session.User.Id).Select(ur => ur.Role_Id);
+            var usersRoles = userRoles.Where(ur => ur.User_Id == session.User.Entity.Id).Select(ur => ur.Role_Id);
 
             return new GetProfileResponse()
             {
-                EmailAddress = user.Email_Address,
-                FirstName = user.First_Name,
-                LastName = user.Last_Name,
-                MobileNumber = user.Mobile_Number,
-                Username = user.Username,
+                EmailAddress = user.Entity.Email_Address,
+                FirstName = user.Entity.First_Name,
+                LastName = user.Entity.Last_Name,
+                MobileNumber = user.Entity.Mobile_Number,
+                Username = user.Entity.Username,
                 Roles = roles.Where(r => usersRoles.Contains(r.Id)).ToList()
             };
         }
@@ -309,15 +285,15 @@ namespace Template.Services
 
             var dbRequest = new Infrastructure.Repositories.UserRepo.Models.UpdateUserRequest()
             {
-                Id = session.User.Id,
+                Id = session.User.Entity.Id,
                 Username = request.Username,
                 Email_Address = request.EmailAddress,
                 First_Name = request.FirstName,
                 Last_Name = request.LastName,
                 Mobile_Number = request.MobileNumber,
-                Password_Hash = session.User.Password_Hash,
-                Registration_Confirmed = session.User.Registration_Confirmed,
-                Updated_By = session.User.Id
+                Password_Hash = session.User.Entity.Password_Hash,
+                Registration_Confirmed = session.User.Entity.Registration_Confirmed,
+                Updated_By = session.User.Entity.Id
             };
 
             if (!string.IsNullOrEmpty(request.Password))

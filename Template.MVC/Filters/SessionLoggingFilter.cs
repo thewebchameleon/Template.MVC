@@ -60,7 +60,7 @@ namespace Template.MVC.Filters
                 if (context.ActionArguments.Any())
                 {
                     var jsonString = JsonConvert.SerializeObject(context.ActionArguments, Formatting.Indented).Trim();
-                    dbRequest.Action_Data_JSON = JsonHelper.ObfuscateFieldValue(jsonString, ApplicationConstants.ObfuscatedActionArgumentFields);
+                    dbRequest.Action_Data_JSON = JsonHelper.ObfuscateFieldValues(jsonString, ApplicationConstants.ObfuscatedActionArgumentFields);
                 }
 
                 sessionLogId = await uow.SessionRepo.CreateSessionLog(dbRequest);

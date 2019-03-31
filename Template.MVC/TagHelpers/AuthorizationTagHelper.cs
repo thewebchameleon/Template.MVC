@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Template.Infrastructure.Authentication;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using System.Threading.Tasks;
+using Template.Services.Contracts;
 
 namespace Template.MVC.TagHelpers
 {
@@ -8,11 +8,11 @@ namespace Template.MVC.TagHelpers
     [HtmlTargetElement(Attributes = "asp-authorize,asp-permission")]
     public class AuthorizationTagHelper : TagHelper
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISessionService _sessionService;
 
-        public AuthorizationTagHelper(IHttpContextAccessor httpContextAccessor)
+        public AuthorizationTagHelper(ISessionService sessionService)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _sessionService = sessionService;
         }
 
         /// <summary>
@@ -21,21 +21,16 @@ namespace Template.MVC.TagHelpers
         [HtmlAttributeName("asp-permission")]
         public string Permission { get; set; }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var isAuthenticated = _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
-            var hasPermission = _httpContextAccessor.HttpContext.User.HasClaim(c =>
-                                    c.Type == PermissionConstants.UserPermission
-                                    && c.Value == Permission
-                                );
-
-            if (!isAuthenticated)
+            var session = await _sessionService.GetSession();
+            if (session.User == null)
             {
                 output.SuppressOutput();
                 return;
             }
 
-            if (!string.IsNullOrEmpty(Permission) && !hasPermission)
+            if (!string.IsNullOrEmpty(Permission) && !session.User.PermissionKeys.Contains(Permission))
             {
                 output.SuppressOutput();
                 return;

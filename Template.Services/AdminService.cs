@@ -90,7 +90,7 @@ namespace Template.Services
                 await uow.UserRepo.EnableUser(new Infrastructure.Repositories.UserRepo.Models.EnableUserRequest()
                 {
                     Id = request.Id,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
 
@@ -120,7 +120,7 @@ namespace Template.Services
                 await uow.UserRepo.DisableUser(new Infrastructure.Repositories.UserRepo.Models.DisableUserRequest()
                 {
                     Id = request.Id,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
 
@@ -193,13 +193,13 @@ namespace Template.Services
                     Mobile_Number = request.MobileNumber,
                     Email_Address = request.EmailAddress,
                     Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                    Created_By = session.User.Id,
+                    Created_By = session.User.Entity.Id,
                     Is_Enabled = true
                 });
                 uow.Commit();
             }
 
-            await CreateOrDeleteUserRoles(request.RoleIds, id, session.User.Id);
+            await CreateOrDeleteUserRoles(request.RoleIds, id, session.User.Entity.Id);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
@@ -247,7 +247,7 @@ namespace Template.Services
                     Email_Address = request.EmailAddress,
                     Password_Hash = user.Password_Hash,
                     Registration_Confirmed = request.RegistrationConfirmed,
-                    Updated_By = session.User.Id,
+                    Updated_By = session.User.Entity.Id,
                 };
 
                 if (!string.IsNullOrEmpty(request.Password))
@@ -259,7 +259,7 @@ namespace Template.Services
                 uow.Commit();
             }
 
-            await CreateOrDeleteUserRoles(request.RoleIds, request.Id, session.User.Id);
+            await CreateOrDeleteUserRoles(request.RoleIds, request.Id, session.User.Entity.Id);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
@@ -330,7 +330,7 @@ namespace Template.Services
                 await uow.UserRepo.UnlockUser(new Infrastructure.Repositories.UserRepo.Models.UnlockUserRequest()
                 {
                     Id = request.Id,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
 
@@ -370,7 +370,7 @@ namespace Template.Services
                 await uow.UserRepo.EnableRole(new Infrastructure.Repositories.UserRepo.Models.EnableRoleRequest()
                 {
                     Role_Id = role.Id,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }
@@ -399,7 +399,7 @@ namespace Template.Services
                 await uow.UserRepo.DisableRole(new Infrastructure.Repositories.UserRepo.Models.DisableRoleRequest()
                 {
                     Id = role.Id,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }
@@ -462,7 +462,7 @@ namespace Template.Services
                 {
                     Name = request.Name,
                     Description = request.Description,
-                    Created_By = session.User.Id,
+                    Created_By = session.User.Entity.Id,
                 });
                 uow.Commit();
             }
@@ -472,7 +472,7 @@ namespace Template.Services
             var roles = await _cache.Roles();
             var role = roles.FirstOrDefault(r => r.Id == id);
 
-            await CreateOrDeleteRolePermissions(request.PermissionIds, id, session.User.Id);
+            await CreateOrDeleteRolePermissions(request.PermissionIds, id, session.User.Entity.Id);
 
             await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
             {
@@ -498,12 +498,12 @@ namespace Template.Services
                     Id = request.Id,
                     Name = request.Name,
                     Description = request.Description,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }
 
-            await CreateOrDeleteRolePermissions(request.PermissionIds, request.Id, session.User.Id);
+            await CreateOrDeleteRolePermissions(request.PermissionIds, request.Id, session.User.Entity.Id);
 
             _cache.Remove(CacheConstants.Roles);
             _cache.Remove(CacheConstants.RolePermissions);
@@ -604,7 +604,7 @@ namespace Template.Services
                     Int_Value = request.IntValue,
                     Money_Value = request.MoneyValue,
                     String_Value = request.StringValue,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }
@@ -650,7 +650,7 @@ namespace Template.Services
                     Int_Value = request.IntValue,
                     Money_Value = request.MoneyValue,
                     String_Value = request.StringValue,
-                    Created_By = session.User.Id
+                    Created_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }
@@ -905,7 +905,7 @@ namespace Template.Services
                 {
                     Id = request.Id,
                     Description = request.Description,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }
@@ -945,7 +945,7 @@ namespace Template.Services
                 {
                     Key = request.Key,
                     Description = request.Description,
-                    Created_By = session.User.Id
+                    Created_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }
@@ -999,7 +999,7 @@ namespace Template.Services
                     Name = request.Name,
                     Group_Name = request.GroupName,
                     Description = request.Description,
-                    Updated_By = session.User.Id
+                    Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }
@@ -1041,7 +1041,7 @@ namespace Template.Services
                     Description = request.Description,
                     Group_Name = request.GroupName,
                     Name = request.Name,
-                    Created_By = session.User.Id
+                    Created_By = session.User.Entity.Id
                 });
                 uow.Commit();
             }

@@ -7,12 +7,12 @@ namespace Template.Common.Helpers
 {
     public static class JsonHelper
     {
-        public static string ObfuscateFieldValue(this string jsonData, List<string> properties)
+        public static string ObfuscateFieldValues(this string jsonData, List<string> fieldNames)
         {
             // props to this person
             // https://stackoverflow.com/questions/33130489/find-and-replace-a-string-in-a-json-response-in-net#answer-33130706
 
-            var propsToMask = new HashSet<string>(properties);
+            var propsToMask = new HashSet<string>(fieldNames);
             var jObj = JObject.Parse(jsonData);
 
             var fieldValuesToObfuscate = new List<string>();

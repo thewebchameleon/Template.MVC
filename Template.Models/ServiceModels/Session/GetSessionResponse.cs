@@ -1,4 +1,5 @@
-﻿using Template.Models.DomainModels;
+﻿using System.Collections.Generic;
+using Template.Models.DomainModels;
 
 namespace Template.Models.ServiceModels.Session
 {
@@ -8,6 +9,21 @@ namespace Template.Models.ServiceModels.Session
 
         public int SessionLogId { get; set; }
 
-        public UserEntity User { get; set; }
+        public User User { get; set; }
+    }
+
+    public class User
+    {
+        public UserEntity Entity { get; set; }
+
+        public List<int> RoleIds { get; set; }
+
+        public List<string> PermissionKeys { get; set; }
+
+        public User()
+        {
+            RoleIds = new List<int>();
+            PermissionKeys = new List<string>();
+        }
     }
 }

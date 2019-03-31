@@ -169,13 +169,6 @@ namespace Template.MVC.Controllers
             return View(viewModel);
         }
 
-        [HttpGet]
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
-
-
         #region External Login
 
         //[HttpPost]

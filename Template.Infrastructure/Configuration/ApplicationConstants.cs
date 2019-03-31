@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 
@@ -11,31 +10,17 @@ namespace Template.Infrastructure.Configuration
         public const string CultureInfo = "en-ZA";
         public const int SessionTimeoutSeconds = 60 * 10; // 10 minutes
 
-        public static CookieAuthenticationOptions CookieAuthenticationOptions
+        public static CookieBuilder SecureNamelessCookie
         {
             get
             {
-                var options = new CookieAuthenticationOptions();
-
-                options.LoginPath = "/Account/Login";
-                options.ExpireTimeSpan = TimeSpan.FromSeconds(ApplicationConstants.SessionTimeoutSeconds);
-                options.SlidingExpiration = true;
-
-                return options;
-            }
-        }
-
-        public static AuthenticationProperties AuthenticationProperties
-        {
-            get
-            {
-                var properties = new AuthenticationProperties
+                return new CookieBuilder()
                 {
-                    ExpiresUtc = DateTime.UtcNow.AddSeconds(ApplicationConstants.SessionTimeoutSeconds),
-                    IssuedUtc = DateTime.UtcNow
+                    SameSite = SameSiteMode.Strict,
+                    SecurePolicy = CookieSecurePolicy.Always,
+                    IsEssential = true,
+                    HttpOnly = false
                 };
-
-                return properties;
             }
         }
 
