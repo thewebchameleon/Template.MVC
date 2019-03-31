@@ -16,7 +16,7 @@ Serving as a template for **small self-contained business applications**, this t
 
 
 ## Features
-### Authentication
+### Security
 - Cookie authentication (cookies are not persisted for added security).
 - Passwords are hashed using [BCrypt]([https://github.com/BcryptNet/bcrypt.net](https://github.com/BcryptNet/bcrypt.net)).
 - Users are locked out after a configurable amount of invalid attempts.
