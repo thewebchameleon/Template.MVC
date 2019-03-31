@@ -27,7 +27,7 @@ Serving as a template for **small self-contained business applications**, this t
 ## Features
 ### Security
 - Cookie authentication (cookies are not persisted) using authorization with permissions.
-- Passwords are hashed using [BCrypt]([https://github.com/BcryptNet/bcrypt.net](https://github.com/BcryptNet/bcrypt.net)).
+- Passwords are hashed using [BCrypt](https://github.com/BcryptNet/bcrypt.net).
 - Users are locked out after a configurable amount of invalid attempts.
 - All form posts are marked with an `ValidateAntiForgeryToken` attribute.
 
