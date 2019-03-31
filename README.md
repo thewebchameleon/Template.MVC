@@ -47,9 +47,8 @@ Serving as a template for **small self-contained business applications**, this t
 - Permissions can be created and updated in admin.
 
 ### Admin
-- Various pages that control the following features
-	- Users (`create`, `update`, `unlock`, `disable`, `enable`)
-	- Roles (`create`, `update`, `disable`, `enable`)
-	- Permissions (`create`, `update`)
-	- Configuration (`create`, `update`)
-	- Session Events (`create`, `update`)
+- Users (`create`, `update`, `unlock`, `disable`, `enable`)
+- Roles (`create`, `update`, `disable`, `enable`)
+- Permissions (`create`, `update`)
+- Configuration (`create`, `update`)
+- Session Events (`create`, `update`)
