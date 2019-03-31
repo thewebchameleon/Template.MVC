@@ -7,12 +7,17 @@ Serving as a template for **small self-contained business applications**, this t
 
  - Uses the latest version of Visual Studio 2019 and [ASP.NET Core 3](https://asp.net). 
 
-- Cookie authentication has been used and cookies are not persisted by design.
-
-- Database project targets SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper). It contains an initial roll out script `V1.sql`. Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity. Stored procedures are used to perform CRUD operations on the database.
+## Database
+- Database project targets SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper). 
+- Initial roll out script `V1.sql` is included and contains lookup data and an admin user. 
+- Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity. 
+- Stored procedures are used to perform CRUD operations on the database.
 
 
 ## Features
+### Authentication
+- Cookie authentication has been used and cookies are not persisted by design.
+
 ### Sessions
 - Sessions are recorded to the database. 
 - Page tracking can be toggled and includes user input (can be obfuscated to mask any sensitive data).
