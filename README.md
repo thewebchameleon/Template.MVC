@@ -1,5 +1,6 @@
+
 # Template.MVC
-Serving as a template for a **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
+Serving as a template for **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
 
 ## Architecture
 
@@ -7,7 +8,7 @@ Serving as a template for a **small self-contained business applications**, this
 
 - Cookie authentication has been used and cookies are not persisted by design.
 
-- Database project targets SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper). It contains an initial roll out script `V1.sql`. Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity.
+- Database project targets SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper). It contains an initial roll out script `V1.sql`. Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity. Stored procedures are used to perform CRUD operations on the database.
 
 
 ## Features
