@@ -22,7 +22,7 @@ Serving as a template for **small self-contained business applications**, this t
 - [Bootstrap 4](https://getbootstrap.com/)
 - Custom tag helpers
 	- Multiselect dropdown (`MultiselectTagHelper.cs`)
-	- Authorization attribute (`AuthorizationTagHelper`)
+	- Authorization attribute (`AuthorizationTagHelper.cs`)
 
 ## Features
 ### Security
