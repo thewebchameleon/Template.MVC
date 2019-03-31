@@ -1,10 +1,11 @@
 # Template.MVC
+Serving as a template for a **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
 
 ## Architecture
 
- - Uses the latest version of Visual Studio 2019 and [ASP.NET Core 3](https://asp.net). Solution has been structured as layered projects and serves as a **template for a small self-contained business applications**.
+ - Uses the latest version of Visual Studio 2019 and [ASP.NET Core 3](https://asp.net). 
 
-- Cookie authentication has been used and is not persistent by design.
+- Cookie authentication has been used and cookies are not persisted by design.
 
 - Database project targets SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper). It contains an initial roll out script `V1.sql`. Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity.
 
