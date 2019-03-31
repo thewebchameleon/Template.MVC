@@ -1,4 +1,5 @@
 
+
 # Template.MVC
 Serving as a template for **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
 
@@ -32,8 +33,8 @@ Serving as a template for **small self-contained business applications**, this t
 
 ### Admin
 - Various pages that control the following features
-	- Users (create, update, unlock, disable, enable)
-	- Roles (create, update, disable, enable)
-	- Permissions (create, update)
-	- Configuration (create, update)
-	- Session Events (create, update)
+	- Users (`create`, `update`, `unlock`, `disable`, `enable`)
+	- Roles (`create`, `update`, `disable`, `enable`)
+	- Permissions (`create`, `update`)
+	- Configuration (`create`, `update`)
+	- Session Events (`create`, `update`)
