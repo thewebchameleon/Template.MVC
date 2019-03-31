@@ -17,9 +17,9 @@ Serving as a template for **small self-contained business applications**, this t
 - Stored procedures are used to perform CRUD-like operations on the database.
 
 ### UI
-- [JQuery]([https://jquery.com/](https://jquery.com/))
-- [JQuery DataTables]([https://datatables.net/](https://datatables.net/))
-- [Bootstrap 4]([https://getbootstrap.com/](https://getbootstrap.com/))
+- [JQuery](https://jquery.com/)
+- [JQuery DataTables](https://datatables.net/)
+- [Bootstrap 4](https://getbootstrap.com/)
 - Custom tag helpers
 	- Multiselect dropdown (`MultiselectTagHelper.cs`)
 	- Authorization attribute (`AuthorizationTagHelper`)
