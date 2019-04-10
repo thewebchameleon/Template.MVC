@@ -22,7 +22,7 @@ namespace Template.Tests
         }
 
         [TestMethod]
-        public void Ensure_JsonHelper_Can_Obfuscate_Field_Values_Without_Fields()
+        public void Ensure_JsonHelper_Can_Obfuscate_Field_Values_With_Random_Data()
         {
             var fieldsToObfuscate = new List<string>() { "NonExistantFieldValue" };
 
