@@ -133,9 +133,8 @@ namespace Template.MVC
             {
                 OnPrepareResponse = ctx =>
                 {
-                    const int durationInSeconds = 60 * 60 * 24; // 24 hours
                     ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] =
-                        "public,max-age=" + durationInSeconds;
+                        "public,max-age=" + ApplicationConstants.ResponseCachingSeconds;
                 }
             });
 

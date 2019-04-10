@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Generic;
 
 namespace Template.Infrastructure.Configuration
@@ -9,6 +8,7 @@ namespace Template.Infrastructure.Configuration
         public const int SystemUserId = 1;
         public const string CultureInfo = "en-ZA";
         public const int SessionTimeoutSeconds = 60 * 10; // 10 minutes
+        public const int ResponseCachingSeconds = 60 * 60 * 24; // 24 hours
 
         public static CookieBuilder SecureNamelessCookie
         {
@@ -24,6 +24,9 @@ namespace Template.Infrastructure.Configuration
             }
         }
 
+        /// <summary>
+        /// a list of field names that may contain user-sensitive data to be used in 
+        /// </summary>
         public static List<string> ObfuscatedActionArgumentFields
         {
             get
