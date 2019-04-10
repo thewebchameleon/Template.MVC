@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -104,16 +105,13 @@ namespace Template.MVC
                 options.Filters.Add(typeof(SessionRequirementFilter));
                 options.Filters.Add(typeof(SessionLoggingFilter));
             })
-#if DEBUG
-                // todo: this is causing routing to throw an exception - https://github.com/aspnet/AspNetCore/issues/7647
-                //.AddRazorRuntimeCompilation()
-#endif
-                .AddNewtonsoftJson();
+            .AddRazorRuntimeCompilation()
+            .AddNewtonsoftJson();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseRequestLocalization(ApplicationConstants.CultureInfo);
 
@@ -143,10 +141,10 @@ namespace Template.MVC
 
             app.UseRouting(routes =>
             {
-                routes.MapApplication();
                 routes.MapControllerRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRazorPages();
             });
 
             app.UseCookiePolicy();
