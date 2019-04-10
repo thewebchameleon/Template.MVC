@@ -29,7 +29,7 @@ Serving as a template for **small self-contained business applications**, this t
 - Cookie authentication (cookies are not persisted) using authorization with permissions.
 - Passwords are hashed using [BCrypt](https://github.com/BcryptNet/bcrypt.net).
 - Users are locked out after a configurable amount of invalid attempts.
-- All form posts are marked with an `ValidateAntiForgeryToken` attribute.
+- All form posts are marked with a `[ValidateAntiForgeryToken]` attribute.
 
 ### Sessions
 - Sessions are recorded to the database and be viewed in detail.
@@ -47,9 +47,8 @@ Serving as a template for **small self-contained business applications**, this t
 - Permissions can be created and updated in admin.
 
 ### Admin
-- Various pages that control the following features
-	- Users (`create`, `update`, `unlock`, `disable`, `enable`)
-	- Roles (`create`, `update`, `disable`, `enable`)
-	- Permissions (`create`, `update`)
-	- Configuration (`create`, `update`)
-	- Session Events (`create`, `update`)
+- Users (`create`, `update`, `unlock`, `disable`, `enable`)
+- Roles (`create`, `update`, `disable`, `enable`)
+- Permissions (`create`, `update`)
+- Configuration (`create`, `update`)
+- Session Events (`create`, `update`)
