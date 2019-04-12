@@ -128,7 +128,7 @@ VALUES ('ACCOUNT_LOCKOUT_EXPIRY_MINUTES', 'The amount of time before a locked ou
 
 INSERT INTO [Configuration]
 ([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
-VALUES ('MAX_LOGIN_ATTEMPTS', 'The amount of invalid password login attempts that a user may perform', 1, NULL, NULL, NULL, NULL, NULL, 1, GETDATE(), 1, GETDATE())
+VALUES ('MAX_LOGIN_ATTEMPTS', 'The amount of invalid password login attempts that a user may perform', NULL, NULL, NULL, 1, NULL, NULL, 1, GETDATE(), 1, GETDATE())
 
 
 --add permissions
