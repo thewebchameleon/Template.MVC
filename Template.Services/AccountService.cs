@@ -103,7 +103,7 @@ namespace Template.Services
                 EventKey = SessionEventKeys.UserRegistered
             });
 
-            response.Notifications.Add($"You have been successfully registered, please check {request.EmailAddress} for an activation link", NotificationTypeEnum.Success);
+            response.Notifications.Add($"You have been successfully registered, please login in with {request.EmailAddress}.", NotificationTypeEnum.Success);
             return response;
         }
 

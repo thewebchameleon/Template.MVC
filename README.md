@@ -3,7 +3,7 @@
 
 
 # Template.MVC
-Serving as a template for **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
+Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
 
 ## Architecture
 
