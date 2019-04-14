@@ -6,12 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Permissions;
-using System.Security.Permissions;
 using System.Threading.Tasks;
 using Template.Common.Extensions;
 using Template.Common.Notifications;
-using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
@@ -103,7 +100,7 @@ namespace Template.Services
                 EventKey = SessionEventKeys.UserRegistered
             });
 
-            response.Notifications.Add($"You have been successfully registered, please login in with {request.EmailAddress}.", NotificationTypeEnum.Success);
+            response.Notifications.Add($"You have been successfully registered, your username is: {username}.", NotificationTypeEnum.Success);
             return response;
         }
 
@@ -219,6 +216,11 @@ namespace Template.Services
                 await _sessionProvider.Set(SessionConstants.SessionEntity, sessionEntity);
             }
 
+            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
+            {
+                EventKey = SessionEventKeys.UserLoggedIn
+            });
+
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, session.Id.ToString())
@@ -230,11 +232,6 @@ namespace Template.Services
             await _httpContextAccessor.HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity)); // user principal is controlled in session
-
-            await _sessionService.WriteSessionLogEvent(new Models.ServiceModels.Session.CreateSessionLogEventRequest()
-            {
-                EventKey = SessionEventKeys.UserLoggedIn
-            });
 
             return response;
         }

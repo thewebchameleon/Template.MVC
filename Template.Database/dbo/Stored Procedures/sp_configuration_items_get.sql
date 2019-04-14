@@ -6,6 +6,8 @@ AS
                 [Description],
                 [Boolean_Value],
                 [DateTime_Value],
+				[Date_Value],
+				[Time_Value],
                 [Decimal_Value],
                 [Int_Value],
                 [Money_Value],

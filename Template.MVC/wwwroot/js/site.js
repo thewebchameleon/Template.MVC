@@ -5,6 +5,7 @@ $(".selectpicker").on('changed.bs.select', function (e, clickedIndex, isSelected
 
     var selectedValues = $(this).val();
     selectedValues.forEach(function (value, index) {
-        $(container).append("<input type='hidden' name='" + e.target.id + "' value=" + value + " />");
+        var elementName = e.target.id.replace('_', '.');
+        $(container).append("<input type='hidden' name='" + elementName + "' value=" + value + " />");
     });
 });

@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace Template.Models.ServiceModels
 {
     public class DuplicateUserCheckRequest : IValidatableObject
     {
         /// <summary>
-        /// UserID of the logged in user (optional)
+        /// If we are updating, we need to exclude the user in our check
         /// </summary>
         public int? UserId { get; set; }
 

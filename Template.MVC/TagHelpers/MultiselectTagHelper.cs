@@ -14,7 +14,7 @@ namespace Template.MVC.TagHelpers
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private string ElementId { get { return SelectedValues.Name.Replace(".", "_"); } } // tag ids are for some reason generated with underscores instead of dots
+        private string ElementId { get { return SelectedValues.Name.Replace(".", "_"); } } // tag names are generated with a dot (.) which makes it difficulte for jquery selections
 
         private string ElementName { get { return SelectedValues.Name; } }
 

@@ -63,6 +63,16 @@
                 <span asp-validation-for="Request.DateTimeValue" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Request.DateValue" class="control-label"></label>
+                <input asp-for="Request.DateValue" class="form-control" />
+                <span asp-validation-for="Request.DateValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.TimeValue" class="control-label"></label>
+                <input asp-for="Request.TimeValue" class="form-control" />
+                <span asp-validation-for="Request.TimeValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Request.StringValue" class="control-label"></label>
                 <input asp-for="Request.StringValue" class="form-control" />
                 <span asp-validation-for="Request.StringValue" class="text-danger"></span>
@@ -78,17 +88,17 @@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script type="text/javascript">
-            $("input[name='Request.BooleanValue']").change(function () {
-                $("#btnBoolean_Value").show();
-            });
+        $("input[name='Request.BooleanValue']").change(function () {
+            $("#btnBoolean_Value").show();
+        });
 
-            $("#btnBoolean_Value").click(function () {
-                $("input[name='Request.BooleanValue']").prop('checked', false);
-                $("#btnBoolean_Value").hide();
-            })
+        $("#btnBoolean_Value").click(function () {
+            $("input[name='Request.BooleanValue']").prop('checked', false);
+            $("#btnBoolean_Value").hide();
+        })
 
-            if ($("input[name='Request.BooleanValue']:checked").length == 0) {
-                 $("#btnBoolean_Value").hide();
-            }
+        if ($("input[name='Request.BooleanValue']:checked").length == 0) {
+            $("#btnBoolean_Value").hide();
+        }
     </script>
 }

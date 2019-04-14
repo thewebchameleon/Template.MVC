@@ -12,6 +12,10 @@ namespace Template.Infrastructure.Repositories.ConfigurationRepo.Models
 
         public DateTime? DateTime_Value { get; set; }
 
+        public DateTime? Date_Value { get; set; }
+
+        public DateTime? Time_Value { get; set; }
+
         public decimal? Decimal_Value { get; set; }
 
         public int? Int_Value { get; set; }

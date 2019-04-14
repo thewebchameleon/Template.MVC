@@ -21,7 +21,6 @@ namespace Template.MVC.Controllers
 
         private readonly IAdminService _adminService;
         private readonly IApplicationCache _cache;
-        private readonly ILogger _logger;
 
         #endregion
 
@@ -29,12 +28,10 @@ namespace Template.MVC.Controllers
 
         public AdminController(
             IAdminService adminService,
-            IApplicationCache cache,
-            ILoggerFactory loggerFactory)
+            IApplicationCache cache)
         {
             _adminService = adminService;
             _cache = cache;
-            _logger = loggerFactory.CreateLogger<AdminController>();
         }
 
         #endregion

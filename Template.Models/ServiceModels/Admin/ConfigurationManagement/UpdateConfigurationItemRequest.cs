@@ -18,6 +18,14 @@ namespace Template.Models.ServiceModels.Admin
         [Display(Name = "Date and time value")]
         public DateTime? DateTimeValue { get; set; }
 
+        [DataType(DataType.Date)]
+        [Display(Name = "Date value")]
+        public DateTime? DateValue { get; set; }
+
+        [DataType(DataType.Time)]
+        [Display(Name = "Time value")]
+        public DateTime? TimeValue { get; set; }
+
         [Display(Name = "Decimal value")]
         public decimal? DecimalValue { get; set; }
 
@@ -41,6 +49,16 @@ namespace Template.Models.ServiceModels.Admin
             }
 
             if (DateTimeValue != null)
+            {
+                populatedFieldCount++;
+            }
+
+            if (DateValue != null)
+            {
+                populatedFieldCount++;
+            }
+
+            if (TimeValue != null)
             {
                 populatedFieldCount++;
             }

@@ -9,7 +9,7 @@
     <div class="col-12">
         <form asp-controller="Admin" asp-action="EditConfigurationItem" method="post" class="form-horizontal" role="form">
             <input asp-for="Request.Id" class="form-control" type="hidden" />
-            
+
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Key" class="control-label"></label>
@@ -21,54 +21,88 @@
                 <input asp-for="Request.Description" class="form-control" />
                 <span asp-validation-for="Request.Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Request.BooleanValue" class="control-label"></label>
-                <div>
-                    <div class="form-check form-check-inline">
-                        <label class="control-label">
-                            <input asp-for="Request.BooleanValue" type="radio" class="form-check-input" value="@false" />
-                            False
-                        </label>
+            @if (Model.Request.BooleanValue.HasValue)
+            {
+                <div class="form-group">
+                    <label asp-for="Request.BooleanValue" class="control-label"></label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <label class="control-label">
+                                <input asp-for="Request.BooleanValue" type="radio" class="form-check-input" value="@false" />
+                                False
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <label class="control-label">
+                                <input asp-for="Request.BooleanValue" type="radio" class="form-check-input" value="@true" />
+                                True
+                            </label>
+                        </div>
+                        <button id="btnBoolean_Value" type="button" class="btn btn-primary btn-sm">Clear</button>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <label class="control-label">
-                            <input asp-for="Request.BooleanValue" type="radio" class="form-check-input" value="@true" />
-                            True
-                        </label>
-                    </div>
-                    <button id="btnBoolean_Value" type="button" class="btn btn-primary btn-sm">Clear</button>
                 </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.IntValue" class="control-label"></label>
-                <input asp-for="Request.IntValue" class="form-control" />
-                <span asp-validation-for="Request.IntValue" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.DecimalValue" class="control-label"></label>
-                <input asp-for="Request.DecimalValue" class="form-control" />
-                <span asp-validation-for="Request.DecimalValue" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.MoneyValue" class="control-label"></label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">R</div>
-                    </div>
-                    <input asp-for="Request.MoneyValue" class="form-control" />
+            }
+            @if (Model.Request.IntValue.HasValue)
+            {
+                <div class="form-group">
+                    <label asp-for="Request.IntValue" class="control-label"></label>
+                    <input asp-for="Request.IntValue" class="form-control" />
+                    <span asp-validation-for="Request.IntValue" class="text-danger"></span>
                 </div>
-                <span asp-validation-for="Request.MoneyValue" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.DateTimeValue" class="control-label"></label>
-                <input asp-for="Request.DateTimeValue" class="form-control" />
-                <span asp-validation-for="Request.DateTimeValue" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Request.StringValue" class="control-label"></label>
-                <input asp-for="Request.StringValue" class="form-control" />
-                <span asp-validation-for="Request.StringValue" class="text-danger"></span>
-            </div>
+            }
+            @if (Model.Request.DecimalValue.HasValue)
+            {
+                <div class="form-group">
+                    <label asp-for="Request.DecimalValue" class="control-label"></label>
+                    <input asp-for="Request.DecimalValue" class="form-control" />
+                    <span asp-validation-for="Request.DecimalValue" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.Request.MoneyValue.HasValue)
+            {
+                <div class="form-group">
+                    <label asp-for="Request.MoneyValue" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">R</div>
+                        </div>
+                        <input asp-for="Request.MoneyValue" class="form-control" />
+                    </div>
+                    <span asp-validation-for="Request.MoneyValue" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.Request.DateTimeValue.HasValue)
+            {
+                <div class="form-group">
+                    <label asp-for="Request.DateTimeValue" class="control-label"></label>
+                    <input asp-for="Request.DateTimeValue" class="form-control" />
+                    <span asp-validation-for="Request.DateTimeValue" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.Request.DateValue.HasValue)
+            {
+                <div class="form-group">
+                    <label asp-for="Request.DateValue" class="control-label"></label>
+                    <input asp-for="Request.DateValue" class="form-control" />
+                    <span asp-validation-for="Request.DateValue" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.Request.TimeValue.HasValue)
+            {
+                <div class="form-group">
+                    <label asp-for="Request.TimeValue" class="control-label"></label>
+                    <input asp-for="Request.TimeValue" class="form-control" />
+                    <span asp-validation-for="Request.TimeValue" class="text-danger"></span>
+                </div>
+            }
+            @if (Model.Request.StringValue != null)
+            {
+                <div class="form-group">
+                    <label asp-for="Request.StringValue" class="control-label"></label>
+                    <input asp-for="Request.StringValue" class="form-control" />
+                    <span asp-validation-for="Request.StringValue" class="text-danger"></span>
+                </div>
+            }
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Update</button>
             </div>
@@ -90,7 +124,7 @@
         })
 
         if ($("input[name='Request.BooleanValue']:checked").length == 0) {
-             $("#btnBoolean_Value").hide();
+            $("#btnBoolean_Value").hide();
         }
     </script>
 }
