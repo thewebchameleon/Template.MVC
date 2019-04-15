@@ -549,6 +549,7 @@ namespace Template.MVC.Controllers
             viewModel.Key = response.SessionEvent.Key;
             viewModel.Request = new UpdateSessionEventRequest()
             {
+                Id = response.SessionEvent.Id,
                 Description = response.SessionEvent.Description
             };
 
