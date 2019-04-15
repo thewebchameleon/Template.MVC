@@ -9,7 +9,8 @@ using Template.Models.ViewModels;
 namespace Template.MVC.TagHelpers
 {
     [HtmlTargetElement("multiselect")]
-    [HtmlTargetElement(Attributes = "asp-for,asp-items,asp-groupby")]
+    [HtmlTargetElement(Attributes = "asp-items")]
+    [HtmlTargetElement(Attributes = "asp-for")]
     public class MultiSelectTagHelper : TagHelper
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
