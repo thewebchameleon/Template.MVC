@@ -124,7 +124,7 @@ VALUES ('HOME_PROMO_BANNER_IS_ENABLED', 'Feature switch for a promotional banner
 
 INSERT INTO [Configuration]
 ([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
-VALUES ('ACCOUNT_LOCKOUT_EXPIRY_MINUTES', 'The amount of time before a locked out user can login again', 1, NULL, NULL, NULL, NULL, NULL, 1, GETDATE(), 1, GETDATE())
+VALUES ('ACCOUNT_LOCKOUT_EXPIRY_MINUTES', 'The amount of time before a locked out user can login again', NULL, NULL, NULL, 10, NULL, NULL, 1, GETDATE(), 1, GETDATE())
 
 INSERT INTO [Configuration]
 ([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
