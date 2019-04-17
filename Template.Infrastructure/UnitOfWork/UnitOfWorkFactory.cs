@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 using Template.Infrastructure.Configuration.Models;
 using Template.Infrastructure.UnitOfWork.Contracts;
 
@@ -17,7 +16,14 @@ namespace Template.Infrastructure.UnitOfWork
 
         public IUnitOfWork GetUnitOfWork(bool beginTransaction = true)
         {
-            return new UnitOfWork(_connectionSettings, beginTransaction);
+            var connectionString = _connectionSettings.DefaultConnection;
+            return new UnitOfWork(new SqlConnection(connectionString), _connectionSettings, beginTransaction);
+        }
+
+        public IUnitOfWork GetMySQLUnitOfWork(bool beginTransaction = true)
+        {
+            var connectionString = _connectionSettings.DefaultConnection;
+            return new UnitOfWork(new MySqlConnection(connectionString), _connectionSettings, beginTransaction);
         }
     }
 }

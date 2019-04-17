@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Text;
 using Template.Infrastructure.Configuration.Models;
 using Template.Infrastructure.Repositories.ConfigurationRepo;
 using Template.Infrastructure.Repositories.ConfigurationRepo.Contracts;
@@ -32,19 +29,18 @@ namespace Template.Infrastructure.UnitOfWork
 
         #region Constructor
 
-        public UnitOfWork(ConnectionStringSettings connectionStrings, bool beginTransaction = true) : base(connectionStrings)
+        public UnitOfWork(IDbConnection dbConnection, ConnectionStringSettings connectionStrings, bool beginTransaction = true) : base(connectionStrings)
         {
-
             _connectionSettings = connectionStrings;
 
-            var connString = DefaultUowConnectionString;
-
             // Setup Connection & Transaction
-            _connection = new SqlConnection(connString);
+            _connection = dbConnection;
             _connection.Open();
 
             if (beginTransaction)
+            {
                 _transaction = _connection.BeginTransaction();
+            }
         }
 
         #endregion
