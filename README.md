@@ -11,10 +11,11 @@ Intended for building **small self-contained business applications**, this templ
  - UI validation is shared with backend validation (client-side can only perform basic rules).
 
 ### Database
-- Database project targets SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper). 
+- Database project targets Microsoft SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper). 
 - Initial roll out script `V1.sql` is included and contains lookup data and an admin user. 
 - Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity. 
 - Stored procedures are used to perform CRUD-like operations on the database.
+- Connecting to a MySQL database is supported
 
 ### UI
 - [JQuery](https://jquery.com/)
