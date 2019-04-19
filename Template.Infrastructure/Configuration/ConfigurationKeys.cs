@@ -9,5 +9,6 @@
         public const string Home_Promo_Banner_Is_Enabled = "HOME_PROMO_BANNER_IS_ENABLED";
         public const string Account_Lockout_Expiry_Minutes = "ACCOUNT_LOCKOUT_EXPIRY_MINUTES";
         public const string Max_Login_Attempts = "MAX_LOGIN_ATTEMPTS";
+        public const string System_From_Email_Address = "SYSTEM_FROM_EMAIL_ADDRESS";
     }
 }

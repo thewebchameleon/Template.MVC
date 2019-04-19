@@ -189,7 +189,7 @@ namespace Template.Services
                     Last_Name = request.LastName,
                     Mobile_Number = request.MobileNumber,
                     Email_Address = request.EmailAddress,
-                    Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                    Password_Hash = PasswordHelper.HashPassword(request.Password),
                     Created_By = session.User.Entity.Id,
                     Is_Enabled = true
                 });
@@ -249,7 +249,7 @@ namespace Template.Services
 
                 if (!string.IsNullOrEmpty(request.Password))
                 {
-                    dbRequest.Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                    dbRequest.Password_Hash = PasswordHelper.HashPassword(request.Password);
                 }
 
                 await uow.UserRepo.UpdateUser(dbRequest);

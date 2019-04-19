@@ -81,7 +81,7 @@ namespace Template.MVC.Controllers
                     AddNotifications(response);
                     return RedirectToHome(returnUrl);
                 }
-                AddFormErrors(response);   
+                AddFormErrors(response);
             }
 
             // If we got this far, something failed, redisplay form
@@ -98,7 +98,79 @@ namespace Template.MVC.Controllers
         [HttpGet]
         public IActionResult ForgotPassword()
         {
-            return View();
+            return View(new ForgotPasswordViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _accountService.ForgotPassword(request);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToHome();
+                }
+                AddFormErrors(response);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(new ForgotPasswordViewModel(request));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ActivateAccount([FromQuery] string token)
+        {
+            var response = await _accountService.ActivateAccount(new ActivateAccountRequest()
+            {
+                Token = token
+            });
+
+            AddNotifications(response);
+            return RedirectToHome();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword([FromQuery] string token)
+        {
+            var response = await _accountService.ValidateResetPasswordToken(new ValidateResetPasswordTokenRequest()
+            {
+                Token = token
+            });
+
+            if (response.IsSuccessful)
+            {
+                var viewModel = new ResetPasswordViewModel();
+                viewModel.Request = new ResetPasswordRequest()
+                {
+                    Token = token
+                };
+
+                return View(viewModel);
+            }
+            AddNotifications(response);
+            return RedirectToHome();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword([FromQuery] string token, ResetPasswordRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                request.Token = token;
+
+                var response = await _accountService.ResetPassword(request);
+                if (response.IsSuccessful)
+                {
+                    AddNotifications(response);
+                    return RedirectToLogin();
+                }
+                AddFormErrors(response);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(new ResetPasswordViewModel(request));
         }
 
         [HttpGet]

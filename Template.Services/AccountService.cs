@@ -9,12 +9,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Template.Common.Extensions;
 using Template.Common.Notifications;
+using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Session;
 using Template.Infrastructure.Session.Contracts;
 using Template.Infrastructure.UnitOfWork.Contracts;
+using Template.Models;
 using Template.Models.DomainModels;
 using Template.Models.ServiceModels;
 using Template.Models.ServiceModels.Account;
@@ -29,6 +31,7 @@ namespace Template.Services
         private readonly ILogger<AccountService> _logger;
 
         private readonly ISessionService _sessionService;
+        private readonly IEmailService _emailService;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWorkFactory _uowFactory;
@@ -42,6 +45,7 @@ namespace Template.Services
         public AccountService(
             ILogger<AccountService> logger,
             ISessionService sessionService,
+            IEmailService emailService,
             IUnitOfWorkFactory uowFactory,
             IApplicationCache cache,
             ISessionProvider sessionProvider,
@@ -55,6 +59,7 @@ namespace Template.Services
 
             _cache = cache;
             _sessionService = sessionService;
+            _emailService = emailService;
         }
 
         #endregion
@@ -85,7 +90,7 @@ namespace Template.Services
                 {
                     Username = username,
                     Email_Address = request.EmailAddress,
-                    Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                    Password_Hash = PasswordHelper.HashPassword(request.Password),
                     Is_Enabled = true,
                     Created_By = ApplicationConstants.SystemUserId,
                 });
@@ -100,7 +105,101 @@ namespace Template.Services
                 EventKey = SessionEventKeys.UserRegistered
             });
 
+            await _emailService.SendAccountActivation(new Models.ServiceModels.Email.SendAccountActivationRequest()
+            {
+                UserId = id
+            });
+
             response.Notifications.Add($"You have been successfully registered, your username is: {username}.", NotificationTypeEnum.Success);
+            return response;
+        }
+
+        public async Task<ActivateAccountResponse> ActivateAccount(ActivateAccountRequest request)
+        {
+            var response = new ActivateAccountResponse();
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                var userToken = await uow.UserRepo.GetUserTokenByGuid(new Infrastructure.Repositories.UserRepo.Models.GetUserTokenByGuidRequest()
+                {
+                    Guid = new Guid(request.Token)
+                });
+
+                if (userToken == null)
+                {
+                    response.Notifications.AddError("Token does not exist");
+                    return response;
+                }
+
+                if (userToken.Type_Id != TokenTypeEnum.AccountActivation)
+                {
+                    response.Notifications.AddError("Invalid token provided");
+                    return response;
+                }
+
+                if (userToken.Processed)
+                {
+                    response.Notifications.AddError($"This account has already been activated");
+                    return response;
+                }
+
+                await uow.UserRepo.ActivateAccount(new Infrastructure.Repositories.UserRepo.Models.ActivateAccountRequest()
+                {
+                    User_Id = userToken.User_Id,
+                    Updated_By = ApplicationConstants.SystemUserId
+                });
+                uow.Commit();
+            }
+
+            response.Notifications.Add($"Your account has been activated", NotificationTypeEnum.Success);
+            return response;
+        }
+
+        public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request)
+        {
+            var response = new ResetPasswordResponse();
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                var userToken = await uow.UserRepo.GetUserTokenByGuid(new Infrastructure.Repositories.UserRepo.Models.GetUserTokenByGuidRequest()
+                {
+                    Guid = new Guid(request.Token)
+                });
+
+                if (userToken == null)
+                {
+                    response.Notifications.AddError("Token does not exist");
+                    return response;
+                }
+
+                if (userToken.Type_Id != TokenTypeEnum.ResetPassword)
+                {
+                    response.Notifications.AddError("Invalid token provided");
+                    return response;
+                }
+
+                if (userToken.Processed)
+                {
+                    response.Notifications.AddError($"This account has already performed a password reset");
+                    return response;
+                }
+
+                await uow.UserRepo.UpdateUserPassword(new Infrastructure.Repositories.UserRepo.Models.UpdateUserPasswordRequest()
+                {
+                    User_Id = userToken.User_Id,
+                    Password_Hash = PasswordHelper.HashPassword(request.NewPassword),
+                    Updated_By = ApplicationConstants.SystemUserId
+                });
+
+                await uow.UserRepo.ProcessUserToken(new Infrastructure.Repositories.UserRepo.Models.ProcessUserTokenRequest()
+                {
+                    Guid = userToken.Guid,
+                    Updated_By = ApplicationConstants.SystemUserId
+                });
+                uow.Commit();
+            }
+
+            response.Notifications.Add($"Your password has been reset", NotificationTypeEnum.Success);
             return response;
         }
 
@@ -119,7 +218,7 @@ namespace Template.Services
                 });
 
                 // check if we found a user or if their password was incorrect
-                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password_Hash))
+                if (user == null || !PasswordHelper.Verify(request.Password, user.Password_Hash))
                 {
                     // if we found the user, handle invalid login attempts else generic fail message
                     if (user != null)
@@ -282,7 +381,7 @@ namespace Template.Services
 
             if (!string.IsNullOrEmpty(request.Password))
             {
-                dbRequest.Password_Hash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                dbRequest.Password_Hash = PasswordHelper.HashPassword(request.Password);
             }
 
             using (var uow = _uowFactory.GetUnitOfWork())
@@ -380,6 +479,67 @@ namespace Template.Services
                 response.Notifications.AddError($"There is already a role with the name {request.Name}");
                 return response;
             }
+            return response;
+        }
+
+        public async Task<ValidateResetPasswordTokenResponse> ValidateResetPasswordToken(ValidateResetPasswordTokenRequest request)
+        {
+            var response = new ValidateResetPasswordTokenResponse();
+
+            UserTokenEntity userToken;
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                userToken = await uow.UserRepo.GetUserTokenByGuid(new Infrastructure.Repositories.UserRepo.Models.GetUserTokenByGuidRequest()
+                {
+                    Guid = new Guid(request.Token)
+                });
+                uow.Commit();
+            }
+
+            if (userToken == null)
+            {
+                response.Notifications.AddError("Token does not exist");
+                return response;
+            }
+
+            if (userToken.Type_Id != TokenTypeEnum.ResetPassword)
+            {
+                response.Notifications.AddError("Invalid token provided");
+                return response;
+            }
+
+            if (userToken.Processed)
+            {
+                response.Notifications.AddError($"This account has already performed a password reset");
+                return response;
+            }
+
+            return response;
+        }
+
+        public async Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
+        {
+            var response = new ForgotPasswordResponse();
+
+            UserEntity user;
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                user = await uow.UserRepo.GetUserByEmail(new Infrastructure.Repositories.UserRepo.Models.GetUserByEmailRequest()
+                {
+                    Email_Address = request.EmailAddress
+                });
+                uow.Commit();
+            }
+
+            if (user != null)
+            {
+                await _emailService.SendResetPassword(new Models.ServiceModels.Email.SendResetPasswordRequest()
+                {
+                    UserId = user.Id
+                });
+            }
+
+            response.Notifications.Add("We have sent a reset password link to your email address if it matches our records", NotificationTypeEnum.Success);
             return response;
         }
 

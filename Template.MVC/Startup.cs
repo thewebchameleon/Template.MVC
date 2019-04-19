@@ -14,6 +14,8 @@ using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Configuration.Models;
+using Template.Infrastructure.Email;
+using Template.Infrastructure.Email.Contracts;
 using Template.Infrastructure.Session;
 using Template.Infrastructure.Session.Contracts;
 using Template.Infrastructure.UnitOfWork;
@@ -42,17 +44,22 @@ namespace Template.MVC
             // Add our config options
             services.Configure<ConnectionStringSettings>(_configuration.GetSection("ConnectionStrings"));
             services.Configure<CacheSettings>(_configuration.GetSection("Cache"));
+            services.Configure<EmailSettings>(_configuration.GetSection("Email"));
 
             // add our config options directly to dependancy injection
             services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<ConnectionStringSettings>>().Value);
             services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<CacheSettings>>().Value);
+            services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<EmailSettings>>().Value);
 
             // Configure services
             services.AddTransient<ISessionProvider, SessionProvider>();
             services.AddTransient<ICacheProvider, MemoryCacheProvider>();
+            services.AddTransient<IEmailProvider, EmailProvider>();
+
             services.AddTransient<IApplicationCache, ApplicationCache>();
             services.AddTransient<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
+            services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<ISessionService, SessionService>();

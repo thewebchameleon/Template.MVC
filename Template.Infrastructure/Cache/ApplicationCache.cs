@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration.Models;
@@ -65,25 +62,6 @@ namespace Template.Infrastructure.Cache
                 uow.Commit();
             }
             _cacheProvider.Set(CacheConstants.Roles, items);
-
-            return items;
-        }
-
-        public async Task<List<TokenEntity>> Tokens()
-        {
-            var items = new List<TokenEntity>();
-            if (_cacheProvider.TryGet(CacheConstants.Tokens, out items))
-            {
-                return items;
-            }
-
-            using (var uow = _uowFactory.GetUnitOfWork())
-            {
-                items = await uow.UserRepo.GetTokens();
-
-                uow.Commit();
-            }
-            _cacheProvider.Set(CacheConstants.Tokens, items);
 
             return items;
         }

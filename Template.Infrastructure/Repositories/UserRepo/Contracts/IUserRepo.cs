@@ -31,7 +31,7 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
 
         Task ActivateAccount(ActivateAccountRequest request);
 
-        Task CreateToken(CreateTokenRequest request);
+        Task CreateUserToken(CreateUserTokenRequest request);
 
         Task<UserEntity> FetchDuplicateUser(FetchDuplicateUserRequest request);
 
@@ -41,7 +41,9 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
 
         Task<List<RolePermission>> GetRolePermissions();
 
-        Task<List<TokenEntity>> GetTokens();
+        Task<UserTokenEntity> GetUserTokenByGuid(GetUserTokenByGuidRequest request);
+
+        Task UpdateUserPassword(UpdateUserPasswordRequest request);
 
         Task<List<UserRoleEntity>> GetUserRoles();
 
@@ -68,5 +70,7 @@ namespace Template.Infrastructure.Repositories.UserRepo.Contracts
         Task UnlockUser(UnlockUserRequest request);
 
         Task AddInvalidLoginAttempt(AddInvalidLoginAttemptRequest request);
+
+        Task ProcessUserToken(ProcessUserTokenRequest request);
     }
 }

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_user_token_get_by_guid]
-	@Guid VARCHAR(60)
+	@Guid UNIQUEIDENTIFIER
 AS
 BEGIN
    SELECT TOP 1
@@ -7,7 +7,7 @@ BEGIN
 		[UT].[User_Id],
 		[UT].[Guid],
 		[UT].[Type_Id],
-		[UT].[Expiry_Date],
+		[UT].[Processed],
 		[UT].[Created_By],
 		[UT].[Created_Date],
 		[UT].[Updated_By],

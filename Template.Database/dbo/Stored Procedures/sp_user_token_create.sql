@@ -2,7 +2,6 @@
 	@User_Id     INT,
 	@Token      VARCHAR(256),
 	@Type_Id     INT,
-	@Expiry_Date DATETIME,
 	@Created_By  INT
 AS
 BEGIN
@@ -11,7 +10,7 @@ BEGIN
 		[User_Id],
 		[Guid],
 		[Type_Id],
-		[Expiry_Date],
+		[Processed],
 		[Created_By],
 		[Created_Date],
 		[Updated_By],
@@ -23,7 +22,7 @@ BEGIN
 		@User_Id,
 		@Token,
 		@Type_Id,
-		@Expiry_Date,
+		0,
 		@Created_By,
 		GETDATE(),
 		@Created_By,

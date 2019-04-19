@@ -7,7 +7,7 @@ namespace Template.Infrastructure.UnitOfWork
 {
     public class UnitOfWorkFactory : IUnitOfWorkFactory
     {
-        private ConnectionStringSettings _connectionSettings;
+        private readonly ConnectionStringSettings _connectionSettings;
 
         public UnitOfWorkFactory(ConnectionStringSettings connectionSettings) : base()
         {

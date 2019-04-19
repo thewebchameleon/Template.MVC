@@ -53,7 +53,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
             }
         }
 
-        public async Task CreateToken(CreateTokenRequest request)
+        public async Task CreateUserToken(CreateUserTokenRequest request)
         {
             var sqlStoredProc = "sp_user_token_create";
 
@@ -136,20 +136,20 @@ namespace Template.Infrastructure.Repositories.UserRepo
             return response.ToList();
         }
 
-        public async Task<List<TokenEntity>> GetTokens()
+        public async Task<UserTokenEntity> GetUserTokenByGuid(GetUserTokenByGuidRequest request)
         {
-            var sqlStoredProc = "sp_user_tokens_get";
+            var sqlStoredProc = "sp_user_token_get_by_guid";
 
-            var response = await DapperAdapter.GetFromStoredProcAsync<TokenEntity>
+            var response = await DapperAdapter.GetFromStoredProcAsync<UserTokenEntity>
                 (
                     storedProcedureName: sqlStoredProc,
-                    parameters: new { },
+                    parameters: request,
                     dbconnectionString: DefaultConnectionString,
                     sqltimeout: DefaultTimeOut,
                     dbconnection: _connection,
                     dbtransaction: _transaction);
 
-            return response.ToList();
+            return response.FirstOrDefault();
         }
 
         public async Task<List<UserRoleEntity>> GetUserRoles()
@@ -570,6 +570,34 @@ namespace Template.Infrastructure.Repositories.UserRepo
                     dbconnection: _connection,
                     dbtransaction: _transaction);
 
+        }
+
+        public async Task UpdateUserPassword(UpdateUserPasswordRequest request)
+        {
+            var sqlStoredProc = "sp_user_update_password";
+
+            await DapperAdapter.GetFromStoredProcAsync<int?>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
+        }
+
+        public async Task ProcessUserToken(ProcessUserTokenRequest request)
+        {
+            var sqlStoredProc = "sp_user_token_process";
+
+            await DapperAdapter.GetFromStoredProcAsync<int?>
+                (
+                    storedProcedureName: sqlStoredProc,
+                    parameters: request,
+                    dbconnectionString: DefaultConnectionString,
+                    sqltimeout: DefaultTimeOut,
+                    dbconnection: _connection,
+                    dbtransaction: _transaction);
         }
 
         #endregion

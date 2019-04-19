@@ -27,6 +27,11 @@ namespace Template.MVC.Controllers
             return RedirectToHome(string.Empty);
         }
 
+        public IActionResult RedirectToLogin()
+        {
+            return RedirectToAction(nameof(AccountController.Login), "Account");
+        }
+
         public IActionResult RedirectToHome(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))

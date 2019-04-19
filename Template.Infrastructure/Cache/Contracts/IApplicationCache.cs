@@ -17,8 +17,6 @@ namespace Template.Infrastructure.Cache.Contracts
 
         Task<List<PermissionEntity>> Permissions();
 
-        Task<List<TokenEntity>> Tokens();
-
         Task<List<SessionEventEntity>> SessionEvents();
 
         void Remove(string key);

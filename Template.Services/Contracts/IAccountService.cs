@@ -6,9 +6,17 @@ namespace Template.Services.Contracts
 {
     public interface IAccountService
     {
+        Task<LoginResponse> Login(LoginRequest request);
+
         Task<RegisterResponse> Register(RegisterRequest request);
 
-        Task<LoginResponse> Login(LoginRequest request);
+        Task<ActivateAccountResponse> ActivateAccount(ActivateAccountRequest request);
+
+        Task<ValidateResetPasswordTokenResponse> ValidateResetPasswordToken(ValidateResetPasswordTokenRequest request);
+
+        Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request);
+
+        Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request);
 
         void Logout();
 

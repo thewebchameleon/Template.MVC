@@ -1,7 +1,11 @@
-﻿namespace Template.Models.ServiceModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Template.Models.ServiceModels
 {
     public class ForgotPasswordRequest
     {
-        public string Username { get; set; }
+        [Required]
+        [Display(Name = "Email Address")]
+        public string EmailAddress { get; set; }
     }
 }
