@@ -110,7 +110,7 @@ namespace Template.Services
                 UserId = id
             });
 
-            response.Notifications.Add($"You have been successfully registered, your username is: {username}.", NotificationTypeEnum.Success);
+            response.Notifications.Add($"You have been successfully registered, please check {request.EmailAddress} for a link to activate your account.", NotificationTypeEnum.Success);
             return response;
         }
 
