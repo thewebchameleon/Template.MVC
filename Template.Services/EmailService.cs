@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
+using Template.Common.Extensions;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Email.Contracts;
 using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models;
 using Template.Models.DomainModels;
+using Template.Models.EmailTemplates;
 using Template.Models.ServiceModels.Email;
 using Template.Services.Contracts;
 
@@ -14,10 +16,16 @@ namespace Template.Services
 {
     public class EmailService : IEmailService
     {
+        #region Instance Fields
+
         private readonly IEmailProvider _emailProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IApplicationCache _cache;
         private readonly IUnitOfWorkFactory _uowFactory;
+
+        #endregion
+
+        #region Constructors
 
         public EmailService(
             IEmailProvider emailProvider,
@@ -30,6 +38,10 @@ namespace Template.Services
             _cache = cache;
             _uowFactory = uowFactory;
         }
+
+        #endregion
+
+        #region Public Methods
 
         public async Task SendAccountActivation(SendAccountActivationRequest request)
         {
@@ -57,30 +69,24 @@ namespace Template.Services
 
             var configuration = await _cache.Configuration();
 
-            var httpRequest = _httpContextAccessor.HttpContext.Request;
-            var host = httpRequest.Host.ToUriComponent();
-            var pathBase = httpRequest.PathBase.ToUriComponent();
+            var baseUrl = _httpContextAccessor.HttpContext.Request.GetBaseUrl();
+            var template = new AccountActivationTemplate()
+            {
+                ActivationURL = $"{baseUrl}/Account/Activate?token={activationToken}"
+            };
 
-            var baseUrl = $"{httpRequest.Scheme}://{host}{pathBase}";
-
-            var tokenLink = $"{baseUrl}/Account/Activate?token={activationToken}";
             await _emailProvider.Send(new Infrastructure.Email.Models.SendRequest()
             {
                 FromAddress = configuration.System_From_Email_Address,
                 ToAddress = user.Email_Address,
-                Subject = "Please activate your account",
-                Body = $@"
-                    <html>
-                        <h1>Please activate your account by clicking the link below</h1>
-                        <a href='{tokenLink}'>Activate</a>
-                    </html>
-                    "
+                Subject = template.Subject,
+                Body = template.GetHTMLContent()
             });
         }
 
         public async Task SendResetPassword(SendResetPasswordRequest request)
         {
-            var activationToken = string.Empty;
+            var resetToken = string.Empty;
 
             UserEntity user;
             using (var uow = _uowFactory.GetUnitOfWork())
@@ -90,12 +96,12 @@ namespace Template.Services
                     Id = request.UserId
                 });
 
-                activationToken = GenerateUniqueUserToken(uow);
+                resetToken = GenerateUniqueUserToken(uow);
 
                 await uow.UserRepo.CreateUserToken(new Infrastructure.Repositories.UserRepo.Models.CreateUserTokenRequest()
                 {
                     User_Id = request.UserId,
-                    Token = new Guid(activationToken),
+                    Token = new Guid(resetToken),
                     Type_Id = (int)TokenTypeEnum.ResetPassword,
                     Created_By = ApplicationConstants.SystemUserId,
                 });
@@ -104,27 +110,24 @@ namespace Template.Services
 
             var configuration = await _cache.Configuration();
 
-            var httpRequest = _httpContextAccessor.HttpContext.Request;
-            var host = httpRequest.Host.ToUriComponent();
-            var pathBase = httpRequest.PathBase.ToUriComponent();
+            var baseUrl = _httpContextAccessor.HttpContext.Request.GetBaseUrl();
+            var template = new ForgotPasswordTemplate()
+            {
+                ResetPasswordURL = $"{baseUrl}/Account/ResetPassword?token={resetToken}"
+            };
 
-            var baseUrl = $"{httpRequest.Scheme}://{host}{pathBase}";
-
-            var tokenLink = $"{baseUrl}/Account/ResetPassword?token={activationToken}";
             await _emailProvider.Send(new Infrastructure.Email.Models.SendRequest()
             {
                 FromAddress = configuration.System_From_Email_Address,
                 ToAddress = user.Email_Address,
-                Subject = "Forgot password request",
-                Body = $@"
-                    <html>
-                        <h1>A forgot password request has been made to your account</h1>
-                        <h2>Please reset your password by clicking the link below</h2>
-                        <a href='{tokenLink}'>Reset Password</a>
-                    </html>
-                    "
+                Subject = template.Subject,
+                Body = template.GetHTMLContent()
             });
         }
+
+        #endregion
+
+        #region Private Methods
 
         private string GenerateUniqueUserToken(IUnitOfWork uow)
         {
@@ -151,5 +154,7 @@ namespace Template.Services
             tokenResult.Wait();
             return tokenResult.Result != null;
         }
+
+        #endregion
     }
 }
