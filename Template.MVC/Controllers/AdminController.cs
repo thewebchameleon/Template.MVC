@@ -93,7 +93,7 @@ namespace Template.MVC.Controllers
             var roles = await _cache.Roles();
             var viewModel = new EditUserViewModel()
             {
-                RolesLookup = roles.Select(r => new SelectListItem(r.Name, r.Id)).ToList()
+                RolesLookup = roles.Where(r => r.Is_Enabled).Select(r => new SelectListItem(r.Name, r.Id)).ToList()
             };
 
             var response = await _adminService.GetUser(new GetUserRequest()

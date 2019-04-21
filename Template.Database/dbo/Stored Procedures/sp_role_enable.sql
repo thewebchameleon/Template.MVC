@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_role_enable]
-	@Role_d        INT,
+	@Id        INT,
 	@Updated_By INT
 AS
 BEGIN
@@ -9,7 +9,7 @@ BEGIN
 		[Updated_By] = @Updated_By,
 		[Updated_Date] = GETDATE()
    WHERE
-		[Id] = @Role_d
+		[Id] = @Id
    SELECT
-		@Role_d
+		@Id
 END
