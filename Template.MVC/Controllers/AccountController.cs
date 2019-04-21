@@ -154,12 +154,10 @@ namespace Template.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword([FromQuery] string token, ResetPasswordRequest request)
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
         {
             if (ModelState.IsValid)
             {
-                request.Token = token;
-
                 var response = await _accountService.ResetPassword(request);
                 if (response.IsSuccessful)
                 {

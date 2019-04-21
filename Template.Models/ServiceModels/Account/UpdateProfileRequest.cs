@@ -5,8 +5,6 @@ namespace Template.Models.ServiceModels.Account
 {
     public class UpdateProfileRequest : IValidatableObject
     {
-        public int UserId { get; set; }
-
         [Required]
         public string Username { get; set; }
 
