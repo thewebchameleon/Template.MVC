@@ -357,7 +357,7 @@ namespace Template.Services
                 LastName = user.Entity.Last_Name,
                 MobileNumber = user.Entity.Mobile_Number,
                 Username = user.Entity.Username,
-                Roles = roles.Where(r => usersRoles.Contains(r.Id) && r.Is_Enabled).ToList()
+                Roles = roles.Where(r => usersRoles.Contains(r.Id)).ToList()
             };
         }
 

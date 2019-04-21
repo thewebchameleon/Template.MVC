@@ -149,7 +149,7 @@ namespace Template.Services
 
                 var usersRoles = userRoles.Where(ur => ur.User_Id == request.UserId).Select(ur => ur.Role_Id);
 
-                response.Roles = roles.Where(r => usersRoles.Contains(r.Id) && r.Is_Enabled).ToList();
+                response.Roles = roles.Where(r => usersRoles.Contains(r.Id)).ToList();
 
                 if (user == null)
                 {
@@ -366,7 +366,7 @@ namespace Template.Services
             {
                 await uow.UserRepo.EnableRole(new Infrastructure.Repositories.UserRepo.Models.EnableRoleRequest()
                 {
-                    Id = role.Id,
+                    Role_Id = role.Id,
                     Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
