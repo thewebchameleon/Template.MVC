@@ -43,6 +43,7 @@ Intended for building **small self-contained business applications**, this templ
 - Roles are a grouping of permissions assigned to users. 
 - A user can be assigned 1 or more roles.
 - Roles can be created and updated in admin.
+- Users can perform a forgot password request and reset their password via an email containing an activation link
 
 ### Permissions
 - Permissions are access rights assigned to roles allowing access to otherwise restricted areas of the application.
