@@ -24,8 +24,6 @@ namespace Template.Services
     {
         #region Instance Fields
 
-        private readonly ILogger<AdminService> _logger;
-
         private readonly IAccountService _accountService;
         private readonly ISessionService _sessionService;
 
@@ -37,14 +35,11 @@ namespace Template.Services
         #region Constructor
 
         public AdminService(
-            ILogger<AdminService> logger,
             IAccountService accountService,
             ISessionService sessionService,
             IUnitOfWorkFactory uowFactory,
             IApplicationCache cache)
         {
-            _logger = logger;
-
             _uowFactory = uowFactory;
 
             _cache = cache;
@@ -347,9 +342,10 @@ namespace Template.Services
 
         public async Task<GetRoleManagementResponse> GetRoleManagement()
         {
-            var response = new GetRoleManagementResponse();
-
-            response.Roles = await _cache.Roles();
+            var response = new GetRoleManagementResponse
+            {
+                Roles = await _cache.Roles()
+            };
 
             return response;
         }
@@ -366,7 +362,7 @@ namespace Template.Services
             {
                 await uow.UserRepo.EnableRole(new Infrastructure.Repositories.UserRepo.Models.EnableRoleRequest()
                 {
-                    Role_Id = role.Id,
+                    Id = role.Id,
                     Updated_By = session.User.Entity.Id
                 });
                 uow.Commit();
@@ -876,9 +872,10 @@ namespace Template.Services
 
         public async Task<GetSessionEventManagementResponse> GetSessionEventManagement()
         {
-            var response = new GetSessionEventManagementResponse();
-
-            response.SessionEvents = await _cache.SessionEvents();
+            var response = new GetSessionEventManagementResponse
+            {
+                SessionEvents = await _cache.SessionEvents()
+            };
 
             return response;
         }
@@ -968,9 +965,10 @@ namespace Template.Services
 
         public async Task<GetPermissionManagementResponse> GetPermissionManagement()
         {
-            var response = new GetPermissionManagementResponse();
-
-            response.Permissions = await _cache.Permissions();
+            var response = new GetPermissionManagementResponse
+            {
+                Permissions = await _cache.Permissions()
+            };
 
             return response;
         }

@@ -16,8 +16,8 @@ namespace Template.Infrastructure.Repositories.UserRepo
     {
         #region Instance Fields
 
-        private IDbConnection _connection;
-        private IDbTransaction _transaction;
+        private readonly IDbConnection _connection;
+        private readonly IDbTransaction _transaction;
 
         #endregion
 
