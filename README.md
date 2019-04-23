@@ -48,6 +48,7 @@ Intended for building **small self-contained business applications**, this templ
 
 ### Configuratation
 - Configuration items are used to control various aspects of the application ranging from features to core settings
+- Stored as strong types (`boolean`, `datetime`, `date`, `time`, `decimal`, `int`, `money`, `string`)
 
 ### Admin
 - Users can be created, updated, enabled and disabled
