@@ -2,7 +2,7 @@
 Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand
 
 ## Architecture
-
+ - N-tier application with a focus on seperation of concerns
  - Uses MVC 6 with the latest version of Visual Studio 2019 and [ASP.NET Core 3](https://asp.net)
  - UI validation is shared with backend validation (client-side can only perform basic rules)
 
