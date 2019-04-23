@@ -15,7 +15,7 @@ Intended for building **small self-contained business applications**, this templ
 
 ### Backend
 - Uses the Request / Response pattern
-- Each view has a dedicated ViewModel
+- Each view has a dedicated `ViewModel`
 - Business logic is contained within the Service layer
 - Caching is used for lookup data via an `ICacheProvider`
 
