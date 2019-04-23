@@ -40,14 +40,10 @@ Intended for building **small self-contained business applications**, this templ
 - Session logs are recorded for each `GET` and `POST` request and include form data (sensitive data can be obfuscated)
 - Session log events are high level actions that users may perform and may be useful for tracking / auditing user behavior
 
-### Users
+### Users, Roles, Permissions
 - Users can register, login and update their profile.
 - Users can perform a forgot password request and reset their password via an email containing an activation link
-
-### Roles
 - Roles are a grouping of permissions assigned to users
-
-### Permissions
 - Permissions are access rights assigned to roles allowing access to otherwise restricted areas of the application
 
 ### Configuratation
