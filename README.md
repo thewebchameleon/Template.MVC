@@ -1,7 +1,3 @@
-
-
-
-
 # Template.MVC
 Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
 
@@ -16,6 +12,11 @@ Intended for building **small self-contained business applications**, this templ
 - Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity. 
 - Stored procedures are used to perform CRUD-like operations on the database.
 - Connecting to a MySQL database is supported
+
+### Backend
+- Uses the Request / Response pattern
+- Each view has a dedicated ViewModel
+- Business logic is contained within the Service layer
 
 ### UI
 - [JQuery](https://jquery.com/)
