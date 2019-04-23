@@ -17,6 +17,7 @@ Intended for building **small self-contained business applications**, this templ
 - Uses the Request / Response pattern
 - Each view has a dedicated ViewModel
 - Business logic is contained within the Service layer
+- Caching is used for lookup data
 
 ### UI
 - [JQuery](https://jquery.com/)
