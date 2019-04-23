@@ -23,7 +23,7 @@ Intended for building **small self-contained business applications**, this templ
 - [JQuery DataTables](https://datatables.net/)
 - [Bootstrap 4](https://getbootstrap.com/)
 - Custom tag helpers
-	- Multiselect dropdown (`MultiselectTagHelper.cs`)
+	- [Multiselect](https://developer.snapappointments.com/bootstrap-select/) dropdown (`MultiselectTagHelper.cs`)
 	- Authorization attribute (`AuthorizationTagHelper.cs`)
 
 ## Features
