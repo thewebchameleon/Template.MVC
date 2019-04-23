@@ -1,15 +1,15 @@
 # Template.MVC
-Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
+Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand
 
 ## Architecture
 
- - Uses MVC 6 with the latest version of Visual Studio 2019 and [ASP.NET Core 3](https://asp.net). 
- - UI validation is shared with backend validation (client-side can only perform basic rules).
+ - Uses MVC 6 with the latest version of Visual Studio 2019 and [ASP.NET Core 3](https://asp.net)
+ - UI validation is shared with backend validation (client-side can only perform basic rules)
 
 ### Database
-- Database project targets Microsoft SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper). 
-- Initial roll out script `V1.sql` is included and contains lookup data and an admin user. 
-- Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity. 
+- Database project targets Microsoft SQL Server 2017 and uses the micro ORM [Dapper](https://github.com/StackExchange/Dapper)
+- Initial roll out script `V1.sql` is included and contains lookup data and an admin user
+- Tables contain a soft-delete metadata column `Is_Deleted` to allow foreign key integrity
 - Stored procedures are used to perform CRUD-like operations on the database.
 - Connecting to a MySQL database is supported
 
@@ -28,31 +28,34 @@ Intended for building **small self-contained business applications**, this templ
 
 ## Features
 ### Security
-- Cookie authentication using authorization with permissions.
+- Cookie authentication using authorization with permissions
 	- Session / authentication cookies are **not** stored on the user's machine
-- Passwords are hashed using [BCrypt](https://github.com/BcryptNet/bcrypt.net).
-- Users are locked out after a configurable amount of invalid attempts.
-- All form posts are marked with a `[ValidateAntiForgeryToken]` attribute.
+- Passwords are hashed using [BCrypt](https://github.com/BcryptNet/bcrypt.net)
+- Users are locked out after a configurable amount of invalid attempts
+- All form posts are marked with a `[ValidateAntiForgeryToken]` attribute
 
 ### Sessions
-- Sessions are recorded to the database and be viewed in detail.
-- Session logs are recorded for each `GET` and `POST` request (sensitive data can be obfuscated).
-- Session log events are high level actions that users may perform and may be useful for tracking / auditing user behavior.
+- Custom session logging implementation which is recorded to the database
+- Sessions can be viewed in detail on the `Sessions` page
+- Session logs are recorded for each `GET` and `POST` request and include form data (sensitive data can be obfuscated)
+- Session log events are high level actions that users may perform and may be useful for tracking / auditing user behavior
 
-### Users and Roles
+### Users
 - Users can register, login and update their profile.
-- Roles are a grouping of permissions assigned to users. 
-- A user can be assigned 1 or more roles.
-- Roles can be created and updated in admin.
 - Users can perform a forgot password request and reset their password via an email containing an activation link
 
+### Roles
+- Roles are a grouping of permissions assigned to users
+
 ### Permissions
-- Permissions are access rights assigned to roles allowing access to otherwise restricted areas of the application.
-- Permissions can be created and updated in admin.
+- Permissions are access rights assigned to roles allowing access to otherwise restricted areas of the application
+
+### Configuratation
+- Configuration items are used to control various aspects of the application ranging from features to core settings
 
 ### Admin
-- Users (`create`, `update`, `unlock`, `disable`, `enable`)
-- Roles (`create`, `update`, `disable`, `enable`)
-- Permissions (`create`, `update`)
-- Configuration (`create`, `update`)
-- Session Events (`create`, `update`)
+- Users can be created, updated, enabled and disabled
+- Roles can be created, updated, enabled and disabled
+- Permissions can be created and updated
+- Configuration items can be created and updated
+- Session log events can be created and updated
