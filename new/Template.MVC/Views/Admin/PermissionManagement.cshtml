@@ -1,0 +1,97 @@
+﻿@model PermissionManagementViewModel
+
+@{
+    ViewData["Title"] = "Permission Management";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+
+
+<div class="panel-controls" asp-authorize asp-permission="@PermissionKeys.ManagePermissions">
+    <a href="@Url.Action("CreatePermission", "Admin" )" class="btn btn-primary">Create Item</a>
+    <div class="panel-right-controls" style="display: none;">
+        <input id="hdnSelectedPermissionId" type="hidden" />
+        <button id="btnEditPermission" type="button" class="btn btn-primary">Edit</button>
+    </div>
+</div>
+
+<table id="permissionmanagementTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Group Name</th>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var permission in Model.Permissions)
+        {
+            <tr>
+                <td class="permission-identifier">
+                    <input class="u-permissionId" type="hidden" value="@permission.Id" />
+                    @permission.Group_Name
+                </td>
+                <td>@permission.Name</td>
+                <td>@permission.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts  {
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var table = $('#permissionmanagementTable').DataTable({
+                responsive: {
+                    details: false
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },
+                ]
+            });
+
+            // select row feature
+            $('#permissionmanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $('.panel-right-controls').hide();
+                    $("#hdnSelectedPermissionId").val('');
+                }
+                else
+                {
+                    var permissionId = $(this).children('.permission-identifier').children('input.u-permissionId').val();
+
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('.panel-right-controls').show();
+                    $("#hdnSelectedPermissionId").val(permissionId);
+                }
+            });
+
+        });
+
+        // edit permission
+        $('#btnEditPermission').click(function () {
+            var permissionId = GetSelectedPermissionId();
+            window.location.href = '@(Url.Action(nameof(AdminController.EditPermission), "Admin"))/' + permissionId;
+        });
+
+        function GetSelectedPermissionId() {
+            return $("#hdnSelectedPermissionId").val();
+        }
+
+    </script>
+
+}

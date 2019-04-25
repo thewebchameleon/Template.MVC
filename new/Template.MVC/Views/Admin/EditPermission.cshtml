@@ -1,0 +1,44 @@
+﻿@model EditPermissionViewModel
+@{
+    ViewData["Title"] = "Edit Permission";
+}
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+<div class="row">
+    <div class="col-12">
+        <form asp-controller="Admin" asp-action="EditPermission" method="post" class="form-horizontal" role="form">
+            <input asp-for="Request.Id" class="form-control" type="hidden" />
+            
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Key" class="control-label"></label>
+                <input asp-for="Key" class="form-control" readonly />
+                <span asp-validation-for="Key" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Name" class="control-label"></label>
+                <input asp-for="Request.Name" class="form-control" />
+                <span asp-validation-for="Request.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.GroupName" class="control-label"></label>
+                <input asp-for="Request.GroupName" class="form-control" />
+                <span asp-validation-for="Request.GroupName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Description" class="control-label"></label>
+                <input asp-for="Request.Description" class="form-control" />
+                <span asp-validation-for="Request.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+}

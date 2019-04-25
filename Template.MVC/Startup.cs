@@ -1,18 +1,21 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
+using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
 using Template.Infrastructure.Configuration.Models;
+using Template.Infrastructure.Email;
+using Template.Infrastructure.Email.Contracts;
 using Template.Infrastructure.Session;
 using Template.Infrastructure.Session.Contracts;
 using Template.Infrastructure.UnitOfWork;
@@ -41,17 +44,22 @@ namespace Template.MVC
             // Add our config options
             services.Configure<ConnectionStringSettings>(_configuration.GetSection("ConnectionStrings"));
             services.Configure<CacheSettings>(_configuration.GetSection("Cache"));
+            services.Configure<EmailSettings>(_configuration.GetSection("Email"));
 
             // add our config options directly to dependancy injection
             services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<ConnectionStringSettings>>().Value);
             services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<CacheSettings>>().Value);
+            services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<EmailSettings>>().Value);
 
             // Configure services
             services.AddTransient<ISessionProvider, SessionProvider>();
             services.AddTransient<ICacheProvider, MemoryCacheProvider>();
+            services.AddTransient<IEmailProvider, EmailProvider>();
+
             services.AddTransient<IApplicationCache, ApplicationCache>();
             services.AddTransient<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
+            services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<ISessionService, SessionService>();
@@ -103,7 +111,9 @@ namespace Template.MVC
             {
                 options.Filters.Add(typeof(SessionRequirementFilter));
                 options.Filters.Add(typeof(SessionLoggingFilter));
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

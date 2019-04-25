@@ -1,0 +1,69 @@
+﻿@model ProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+<div class="row">
+    <div class="col-12">
+        <form asp-controller="Account" asp-action="Profile" method="post" class="form-horizontal" role="form">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Request.Username" class="control-label"></label>
+                <input asp-for="Request.Username" class="form-control" />
+                <span asp-validation-for="Request.Username" class="text-danger"></span>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.FirstName" class="control-label"></label>
+                    <input asp-for="Request.FirstName" class="form-control" />
+                    <span asp-validation-for="Request.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.LastName" class="control-label"></label>
+                    <input asp-for="Request.LastName" class="form-control" />
+                    <span asp-validation-for="Request.LastName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.MobileNumber" class="control-label"></label>
+                    <input asp-for="Request.MobileNumber" class="form-control" />
+                    <span asp-validation-for="Request.MobileNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.EmailAddress" class="control-label"></label>
+                    <input asp-for="Request.EmailAddress" class="form-control" />
+                    <span asp-validation-for="Request.EmailAddress" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.PasswordConfirm" class="control-label"></label>
+                    <input asp-for="Request.PasswordConfirm" class="form-control" />
+                    <span asp-validation-for="Request.PasswordConfirm" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Request.Password" class="control-label"></label>
+                    <input asp-for="Request.Password" class="form-control" />
+                    <span asp-validation-for="Request.Password" class="text-danger"></span>
+                </div>
+            </div>
+            @if (Model.Roles.Any())
+            {
+                <div class="form-group">
+                    <label class="control-label">Roles</label>
+                    <input class="form-control" value="@string.Join(", ", Model.Roles.Select(r => r.Name))" readonly />
+                </div>
+            }
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

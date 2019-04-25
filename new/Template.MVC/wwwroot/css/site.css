@@ -1,0 +1,116 @@
+﻿a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+html {
+    font-size: 14px;
+}
+
+form {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    height: 60px;
+    line-height: 60px;
+}
+
+/* #region notifications */
+
+.notification {
+    padding: 5px 5px 5px 25px;
+}
+
+.notification-type-success {
+    background-color: lightgreen;
+}
+
+.notification-type-error {
+    background-color: lightcoral;
+}
+
+.notification-type-information {
+    background-color: lightblue;
+}
+
+.notification-type-warning {
+    background-color: #ffd9b2;
+}
+
+/* #endregion */
+
+/* #region admin pages */
+
+.panel-controls {
+    margin-bottom: 20px;
+}
+
+.panel-right-controls {
+    display: inline-block;
+    float: right;
+}
+
+tr.disabled-user td, tr.disabled-role td {
+    color: #bbbbbb;
+}
+
+input[type='checkbox'].form-control {
+    width: 40px;
+    cursor: pointer;
+}
+
+tr.selected td {
+    background-color: #d4e9ff !important;
+}
+
+tr:hover {
+    cursor: pointer;
+}
+
+a.btn {
+    color: white !important;
+}
+
+.alert {
+    margin-top: 10px;
+}
+
+/* #endregion  */

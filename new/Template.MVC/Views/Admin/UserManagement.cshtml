@@ -1,0 +1,216 @@
+﻿@model UserManagementViewModel
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" />
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+
+
+<div class="panel-controls" asp-authorize asp-permission="@PermissionKeys.ManageUsers">
+    <a href="@Url.Action("CreateUser", "Admin" )" class="btn btn-primary">Create User</a>
+    <div class="panel-right-controls" style="display: none;">
+        <input id="hdnSelectedUserId" type="hidden" />
+        <button id="btnEditUser" type="button" class="btn btn-primary">Edit</button>
+
+        <button id="btnUnlockUserModal" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalUnlockUser" style="display: none;">Unlock</button>
+
+        <button id="btnDisableUserModal" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalDisableUser" style="display: none;">Disable</button>
+        <button id="btnEnableUserModal" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalEnableUser" style="display: none;">Enable</button>
+    </div>
+</div>
+
+<table id="usermanagementTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email Address</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Mobile Number</th>
+            <th>Registered Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr class="@(user.Is_Enabled ? string.Empty: " disabled-user")">
+                <td class="user-identifier">
+                    <input class="u-userId" type="hidden" value="@user.Id" />
+                    <input class="u-isEnabled" type="hidden" value="@user.Is_Enabled.ToString()" />
+                    <input class="u-isLockedOut" type="hidden" value="@user.Is_Locked_Out.ToString()" />
+                    @user.Username
+                </td>
+                <td>@user.Email_Address</td>
+                <td>@user.First_Name</td>
+                <td>@user.Last_Name</td>
+                <td>@user.Mobile_Number</td>
+                <td>@user.Created_Date.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* disable modal *@
+<div class="modal fade" id="modalDisableUser" tabindex="-1" role="dialog" aria-labelledby="modalDisableUserLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDisableUserLabel">Disable User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to disable this user?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
+                <form asp-controller="Admin" asp-action="DisableUser" method="post" role="form">
+                    <input id="hdnDisableUserId" name="Id" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* enable modal *@
+<div class="modal fade" id="modalEnableUser" tabindex="-1" role="dialog" aria-labelledby="modalEnableUserLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEnableUserLabel">Enable User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to enable this user?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
+                <form asp-controller="Admin" asp-action="EnableUser" method="post" role="form">
+                    <input id="hdnEnableUserId" name="Id" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* unlock modal *@
+<div class="modal fade" id="modalUnlockUser" tabindex="-1" role="dialog" aria-labelledby="modalUnlockUserLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUnlockUserLabel">Unlock User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to unlock this user?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">No</button>
+                <form asp-controller="Admin" asp-action="UnlockUser" method="post" role="form">
+                    <input id="hdnUnlockUserId" name="Id" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts  {
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var table = $('#usermanagementTable').DataTable({
+                responsive: {
+                    details: false
+                },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 0 },
+                ]
+            });
+
+            // select row feature
+            $('#usermanagementTable tbody').on('click', 'tr', function (e) {
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $('.panel-right-controls').hide();
+                    $("#hdnSelectedUserId").val('');
+                }
+                else
+                {
+                    var userId = $(this).children('.user-identifier').children('input.u-userId').val();
+
+                    var isEnabled = $(this).children('.user-identifier').children('input.u-isEnabled').val();
+                    if (isEnabled == 'False') {
+                        $('#btnEnableUserModal').show();
+                        $('#btnDisableUserModal').hide();
+                    } else {
+                        $('#btnEnableUserModal').hide();
+                        $('#btnDisableUserModal').show();
+                    }
+
+                    var isLockedOut = $(this).children('.user-identifier').children('input.u-isLockedOut').val();
+                    if (isLockedOut == 'False') {
+                        $('#btnUnlockUserModal').hide();
+                    } else {
+                        $('#btnUnlockUserModal').show();
+                    }
+
+                    table.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('.panel-right-controls').show();
+                    $("#hdnSelectedUserId").val(userId);
+                }
+            });
+
+        });
+
+        // disable user
+        $('#btnDisableUserModal').click(function () {
+            var userId = GetSelectedUserId();
+            $("#hdnDisableUserId").val(userId);
+        });
+
+        // enable user
+        $('#btnEnableUserModal').click(function () {
+            var userId = GetSelectedUserId();
+            $("#hdnEnableUserId").val(userId);
+        });
+
+        // unlock user
+        $('#btnUnlockUserModal').click(function () {
+            var userId = GetSelectedUserId();
+            $("#hdnUnlockUserId").val(userId);
+        });
+
+        // edit user
+        $('#btnEditUser').click(function () {
+            var userId = GetSelectedUserId();
+            window.location.href = '@(Url.Action(nameof(AdminController.EditUser), "Admin"))/' + userId;
+        });
+
+        function GetSelectedUserId() {
+            return $("#hdnSelectedUserId").val();
+        }
+
+    </script>
+
+}
