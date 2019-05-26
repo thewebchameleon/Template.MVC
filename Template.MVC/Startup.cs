@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
-using Template.Infrastructure.Authentication;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
@@ -112,13 +111,12 @@ namespace Template.MVC
                 options.Filters.Add(typeof(SessionRequirementFilter));
                 options.Filters.Add(typeof(SessionLoggingFilter));
             })
-            .AddRazorRuntimeCompilation()
-            .AddNewtonsoftJson();
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseRequestLocalization(ApplicationConstants.CultureInfo);
 
@@ -145,20 +143,17 @@ namespace Template.MVC
                 }
             });
 
-            app.UseRouting(routes =>
-            {
-                routes.MapControllerRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRazorPages();
-            });
-
             app.UseCookiePolicy();
             app.UseSession();
             app.UseSessionMiddleware();
             app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseMvc();
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }
