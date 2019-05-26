@@ -7,8 +7,9 @@ Intended for building **small self-contained business applications**, this templ
  - User Journeys (Sessions)
 
 ## Architecture
+ - Built with [MVC](https://docs.microsoft.com/en-us/aspnet/core/mvc/overview)
  - N-tier application with a focus on seperation of concerns
- - Uses MVC 6 with the latest version of Visual Studio 2019 and [ASP.NET Core 3](https://asp.net)
+ - Uses MVC 6 with the latest version of Visual Studio 2019 and [ASP.NET Core 2.2](https://asp.net)
  - UI validation is shared with backend validation (client-side can only perform basic rules)
 
 ### Database
