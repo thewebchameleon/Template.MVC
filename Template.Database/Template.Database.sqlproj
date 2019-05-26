@@ -86,7 +86,6 @@
     <Build Include="dbo\Stored Procedures\sp_user_role_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_role_delete.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_roles_get.sql" />
-    <Build Include="dbo\Stored Procedures\sp_user_roles_get_by_user_id.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_token_create.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_token_get_by_guid.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_update.sql" />
@@ -128,6 +127,9 @@
     <Build Include="dbo\Stored Procedures\sp_user_activate.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_update_password.sql" />
     <Build Include="dbo\Stored Procedures\sp_user_token_process.sql" />
+    <Build Include="dbo\Tables\Email_Template.sql" />
+    <Build Include="dbo\Stored Procedures\sp_email_templates_get.sql" />
+    <Build Include="dbo\Stored Procedures\sp_user_roles_get_by_user_id.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Template.Database.refactorlog" />
