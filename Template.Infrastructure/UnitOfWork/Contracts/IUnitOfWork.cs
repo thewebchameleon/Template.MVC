@@ -1,5 +1,6 @@
 ﻿using System;
 using Template.Infrastructure.Repositories.ConfigurationRepo.Contracts;
+using Template.Infrastructure.Repositories.Contracts;
 using Template.Infrastructure.Repositories.SessionRepo.Contracts;
 using Template.Infrastructure.Repositories.UserRepo.Contracts;
 
@@ -12,6 +13,8 @@ namespace Template.Infrastructure.UnitOfWork.Contracts
         ISessionRepo SessionRepo { get; }
 
         IUserRepo UserRepo { get; }
+
+        IEmailTemplateRepo EmailTemplateRepo { get; }
 
         bool Commit();
     }

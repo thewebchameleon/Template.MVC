@@ -3,6 +3,8 @@ using System.Data;
 using Template.Infrastructure.Configuration.Models;
 using Template.Infrastructure.Repositories.ConfigurationRepo;
 using Template.Infrastructure.Repositories.ConfigurationRepo.Contracts;
+using Template.Infrastructure.Repositories.Contracts;
+using Template.Infrastructure.Repositories.EmailTemplateRepo;
 using Template.Infrastructure.Repositories.SessionRepo;
 using Template.Infrastructure.Repositories.SessionRepo.Contracts;
 using Template.Infrastructure.Repositories.UserRepo;
@@ -21,6 +23,7 @@ namespace Template.Infrastructure.UnitOfWork
         private IConfigurationRepo _configurationRepo;
         private ISessionRepo _sessionRepo;
         private IUserRepo _userRepo;
+        private IEmailTemplateRepo _emailTemplateRepo;
 
         private bool _disposed;
         private readonly ConnectionStringSettings _connectionSettings;
@@ -60,6 +63,11 @@ namespace Template.Infrastructure.UnitOfWork
         public IUserRepo UserRepo
         {
             get { return _userRepo ?? (_userRepo = new UserRepo(_connection, _transaction, _connectionSettings)); }
+        }
+
+        public IEmailTemplateRepo EmailTemplateRepo
+        {
+            get { return _emailTemplateRepo ?? (_emailTemplateRepo = new EmailTemplateRepo(_connection, _transaction, _connectionSettings)); }
         }
 
         #endregion

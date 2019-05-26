@@ -19,6 +19,8 @@ namespace Template.Infrastructure.Cache.Contracts
 
         Task<List<SessionEventEntity>> SessionEvents();
 
+        Task<List<EmailTemplateEntity>> EmailTemplates();
+
         void Remove(string key);
     }
 }

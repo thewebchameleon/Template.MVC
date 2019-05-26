@@ -9,5 +9,6 @@
         public const string Tokens = "Tokens";
         public const string Permissions = "Permissions";
         public const string SessionEvents = "SessionEvents";
+        public const string EmailTemplates = "EmailTemplates";
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Template.Common.Extensions;
 using Template.Infrastructure.Cache.Contracts;
 using Template.Infrastructure.Configuration;
+using Template.Infrastructure.Email;
 using Template.Infrastructure.Email.Contracts;
 using Template.Infrastructure.UnitOfWork.Contracts;
 using Template.Models;
@@ -68,11 +70,15 @@ namespace Template.Services
             }
 
             var configuration = await _cache.Configuration();
-
             var baseUrl = _httpContextAccessor.HttpContext.Request.GetBaseUrl();
-            var template = new AccountActivationTemplate()
+
+            var templates = await _cache.EmailTemplates();
+            var templateEntity = templates.FirstOrDefault(t => t.Key == EmailTemplateKeys.AccountActivation);
+
+            var template = new AccountActivationTemplate(templateEntity.Body)
             {
-                ActivationURL = $"{baseUrl}/Account/Activate?token={activationToken}"
+                ActivationUrl = $"{baseUrl}/activate-account?token={activationToken}",
+                ApplicationUrl = baseUrl
             };
 
             await _emailProvider.Send(new Infrastructure.Email.Models.SendRequest()
@@ -109,17 +115,45 @@ namespace Template.Services
             }
 
             var configuration = await _cache.Configuration();
-
             var baseUrl = _httpContextAccessor.HttpContext.Request.GetBaseUrl();
-            var template = new ForgotPasswordTemplate()
+
+            var templates = await _cache.EmailTemplates();
+            var templateEntity = templates.FirstOrDefault(t => t.Key == EmailTemplateKeys.ForgotPassword);
+
+            var template = new ForgotPasswordTemplate(templateEntity.Body)
             {
-                ResetPasswordURL = $"{baseUrl}/Account/ResetPassword?token={resetToken}"
+                ResetPasswordUrl = $"{baseUrl}/reset-password?token={resetToken}",
+                ApplicationUrl = baseUrl
             };
 
             await _emailProvider.Send(new Infrastructure.Email.Models.SendRequest()
             {
                 FromAddress = configuration.System_From_Email_Address,
                 ToAddress = user.Email_Address,
+                Subject = template.Subject,
+                Body = template.GetHTMLContent()
+            });
+        }
+
+        public async Task SendContactMessage(SendContactMessageRequest request)
+        {
+            var configuration = await _cache.Configuration();
+            var baseUrl = _httpContextAccessor.HttpContext.Request.GetBaseUrl();
+
+            var templates = await _cache.EmailTemplates();
+            var templateEntity = templates.FirstOrDefault(t => t.Key == EmailTemplateKeys.ContactMessage);
+
+            var template = new ContactMessageTemplate(templateEntity.Body)
+            {
+                Name = request.Name,
+                Message = request.Message,
+                ApplicationUrl = baseUrl
+            };
+
+            await _emailProvider.Send(new Infrastructure.Email.Models.SendRequest()
+            {
+                FromAddress = request.EmailAddress,
+                ToAddress = configuration.Contact_Email_Address,
                 Subject = template.Subject,
                 Body = template.GetHTMLContent()
             });

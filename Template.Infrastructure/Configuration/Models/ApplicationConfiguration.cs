@@ -60,6 +60,15 @@ namespace Template.Infrastructure.Configuration.Models
             }
         }
 
+        public string Contact_Email_Address
+        {
+            get
+            {
+                var item = GetItem(ConfigurationKeys.Contact_Email_Address);
+                return item.String_Value;
+            }
+        }
+
         #endregion
 
         #region Constructors

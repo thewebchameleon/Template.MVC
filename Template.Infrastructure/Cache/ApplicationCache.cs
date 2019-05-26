@@ -122,9 +122,22 @@ namespace Template.Infrastructure.Cache
             return items;
         }
 
-        public void Remove(string key)
+        public async Task<List<EmailTemplateEntity>> EmailTemplates()
         {
-            _cacheProvider.Remove(key);
+            var items = new List<EmailTemplateEntity>();
+            if (_cacheProvider.TryGet(CacheConstants.EmailTemplates, out items))
+            {
+                return items;
+            }
+
+            using (var uow = _uowFactory.GetUnitOfWork())
+            {
+                items = await uow.EmailTemplateRepo.GetEmailTemplates();
+                uow.Commit();
+            }
+            _cacheProvider.Set(CacheConstants.EmailTemplates, items);
+
+            return items;
         }
 
         public async Task<ApplicationConfiguration> Configuration()
@@ -143,6 +156,11 @@ namespace Template.Infrastructure.Cache
             _cacheProvider.Set(CacheConstants.ConfigurationItems, items);
 
             return new ApplicationConfiguration(items);
+        }
+
+        public void Remove(string key)
+        {
+            _cacheProvider.Remove(key);
         }
 
         #endregion

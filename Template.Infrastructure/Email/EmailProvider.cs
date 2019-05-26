@@ -1,7 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
 using MimeKit.Text;
-using System;
 using System.Threading.Tasks;
 using Template.Infrastructure.Email.Contracts;
 using Template.Infrastructure.Email.Models;
@@ -34,13 +33,10 @@ namespace Template.Infrastructure.Email
                 // For demo-purposes, accept all SSL certificates (in case the server supports STARTTLS)
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-                await client.ConnectAsync(_emailSettings.Smtp.Server, _emailSettings.Smtp.Port, _emailSettings.Smtp.UseSsl);
-
-                // Note: only needed if the SMTP server requires authentication
-                await client.AuthenticateAsync(_emailSettings.Smtp.Username, _emailSettings.Smtp.Password);
-
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
+                client.Connect(_emailSettings.Smtp.Server, _emailSettings.Smtp.Port, _emailSettings.Smtp.UseSsl);
+                client.Authenticate(_emailSettings.Smtp.Username, _emailSettings.Smtp.Password);
+                client.Send(message);
+                client.Disconnect(true);
             }
         }
     }

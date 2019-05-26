@@ -36,7 +36,7 @@ namespace Template.Infrastructure.Repositories.UserRepo
 
         public async Task ActivateAccount(ActivateAccountRequest request)
         {
-            var sqlStoredProc = "sp_user_activate_account";
+            var sqlStoredProc = "sp_user_activate";
 
             var response = await DapperAdapter.GetFromStoredProcAsync<int>
                 (

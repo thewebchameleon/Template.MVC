@@ -1,19 +1,29 @@
 ﻿namespace Template.Models.EmailTemplates
 {
-    public class AccountActivationTemplate : IEmailTemplate
+    public class AccountActivationTemplate : BaseTemplate
     {
-        public string ActivationURL { get; set; }
+        public override string Subject => "Please activate your account";
 
-        public string Subject => "Please activate your account";
+        public string ActivationUrl { get; set; }
 
-        public string GetHTMLContent()
+        #region Constructors
+
+        public AccountActivationTemplate(string body) : base(body)
         {
-            return $@"
-                <html>
-                    <h2>Please activate your account by clicking the link below</h2>
-                    <a href='{ActivationURL}'>Activate</a>
-                </html>
-            ";
         }
+
+        #endregion
+
+        #region Public Methods
+
+        public override string GetHTMLContent()
+        {
+            // perform replacements
+            _body = _body.Replace("{{Activation_Url}}", ActivationUrl);
+
+            return base.GetHTMLContent();
+        }
+
+        #endregion
     }
 }

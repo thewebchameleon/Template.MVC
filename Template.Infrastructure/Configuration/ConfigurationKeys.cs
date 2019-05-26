@@ -10,5 +10,6 @@
         public const string Account_Lockout_Expiry_Minutes = "ACCOUNT_LOCKOUT_EXPIRY_MINUTES";
         public const string Max_Login_Attempts = "MAX_LOGIN_ATTEMPTS";
         public const string System_From_Email_Address = "SYSTEM_FROM_EMAIL_ADDRESS";
+        public const string Contact_Email_Address = "CONTACT_EMAIL_ADDRESS";
     }
 }

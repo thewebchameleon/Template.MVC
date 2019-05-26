@@ -134,6 +134,10 @@ INSERT INTO [Configuration]
 ([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
 VALUES ('SYSTEM_FROM_EMAIL_ADDRESS', 'The email address used for emails from the system', NULL, NULL, NULL, NULL, NULL, 'template.mvc@example.com', 1, GETDATE(), 1, GETDATE())
 
+INSERT INTO [Configuration]
+([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
+VALUES ('CONTACT_EMAIL_ADDRESS', 'The email address used for receiving contact messages', NULL, NULL, NULL, NULL, NULL, 'adrian.brinkus@gmail.com', 1, GETDATE(), 1, GETDATE())
+
 
 --add permissions
 INSERT INTO [Permission]
@@ -180,3 +184,17 @@ INSERT INTO [User_Role]
 ([User_Id], [Role_Id], Created_By, [Created_Date], [Updated_By], [Updated_Date])
 SELECT @AdminUserId AS [User_Id], [Id] AS [Role_Id], 1, GETDATE(), 1, GETDATE()
 FROM [Role]
+
+-- email templates
+INSERT INTO [Email_Template]
+([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
+VALUES ('ACCOUNT_ACTIVATION', 'User account has been activated', 1, GETDATE(), 1, GETDATE())
+
+INSERT INTO [Email_Template]
+([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
+VALUES ('CONTACT_MESSAGE', 'Contact message has been sent', 1, GETDATE(), 1, GETDATE())
+
+INSERT INTO [Email_Template]
+([Key], [Description], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
+VALUES ('FORGOT_PASSWORD', 'User has requested a forgot password', 1, GETDATE(), 1, GETDATE())
+
