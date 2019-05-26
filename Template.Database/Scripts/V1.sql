@@ -136,7 +136,7 @@ VALUES ('SYSTEM_FROM_EMAIL_ADDRESS', 'The email address used for emails from the
 
 INSERT INTO [Configuration]
 ([Key], [Description], [Boolean_Value], [DateTime_Value], [Decimal_Value], [Int_Value], [Money_Value], [String_Value], [Created_By], [Created_Date], [Updated_By], [Updated_Date])
-VALUES ('CONTACT_EMAIL_ADDRESS', 'The email address used for receiving contact messages', NULL, NULL, NULL, NULL, NULL, 'adrian.brinkus@gmail.com', 1, GETDATE(), 1, GETDATE())
+VALUES ('CONTACT_EMAIL_ADDRESS', 'The email address used for receiving contact messages', NULL, NULL, NULL, NULL, NULL, 'contact.template.mvc@example.com', 1, GETDATE(), 1, GETDATE())
 
 
 --add permissions
