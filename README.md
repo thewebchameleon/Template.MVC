@@ -1,5 +1,10 @@
 # Template.MVC
-Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand
+Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
+
+## Features
+ - User profile
+ - Admin section
+ - User Journeys (Sessions)
 
 ## Architecture
  - N-tier application with a focus on seperation of concerns
@@ -27,7 +32,6 @@ Intended for building **small self-contained business applications**, this templ
 	- [Multiselect](https://developer.snapappointments.com/bootstrap-select/) dropdown (`MultiselectTagHelper.cs`)
 	- Authorization attribute (`AuthorizationTagHelper.cs`)
 
-## Features
 ### Security
 - Cookie authentication using authorization with permissions
 	- Session / authentication cookies are **not** stored on the user's machine
