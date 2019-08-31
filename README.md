@@ -1,3 +1,5 @@
+### *this project has been archived and is no longer in development. Check out [TemplateV2.Razor](https://github.com/thewebchameleon/TemplateV2.Razor) ##
+
 # Template.MVC
 Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
 #### [Demo](https://template-mvc.azurewebsites.net)
