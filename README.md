@@ -2,11 +2,6 @@
 
 # Template.MVC
 Intended for building **small self-contained business applications**, this template strives to be fast, secure and easy to understand.
-#### [Demo](https://template-mvc.azurewebsites.net)
-#### Test User
-**U**: admin
-
-**P**: 123456
 
 ## Features
  - User profile
